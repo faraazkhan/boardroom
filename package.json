@@ -1,14 +1,14 @@
 {
-  "author": "Ben Lindsey <ben@carbonfive.com>",
-  "name": "carbonite",
-  "description": "A distributed reflection and introspection tool",
-  "version": "0.0.1",
+  "author": "Carbon Five",
+  "name": "boardroom",
+  "description": "A distributed stickyboard for reflection and introspection",
+  "version": "0.0.2",
   "repository": {
-    "url": "git@github.com:nko2/carbonite.git"
+    "url": "git@github.com:carbonfive/boardroom.git"
   },
   "dependencies": {
     "nko": "~0.1.1",
-    "express": "~2.4.6",
+    "express": "~2.5.9",
     "jade": "~0.15.2",
     "socket.io": "~0.7.9",
     "mongodb": "0",
