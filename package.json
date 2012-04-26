@@ -8,12 +8,12 @@
   },
   "dependencies": {
     "nko": "~0.1.1",
-    "express": "~2.5.9",
-    "jade": "~0.15.2",
+    "express": "2",
+    "jade": "0",
     "socket.io": "0.9",
     "mongodb": "0",
     "cookie-sessions": "0",
-    "less": "~1.1.4"
+    "less": "1"
   },
   "devDependencies": {}
 }
