@@ -11,8 +11,8 @@ io.set('log level', 1);
 process.on( "uncaughtException", function( error ) {
   console.error( "Uncaught exception: " + error.message );
   if (error.stack) {
-    console.log('\nStacktrace:')
-    console.log('====================')
+    console.log('\nStacktrace:');
+    console.log('====================');
     console.log(error.stack);
   }
 });
@@ -35,7 +35,7 @@ var boardNamespaces = {};
 
 function userInfo(request) {
   if ( request.session && request.session.user_id )
-    return { user_id:request.session.user_id }
+    return { user_id:request.session.user_id };
 
   return undefined;
 }
@@ -56,8 +56,7 @@ app.get( "/boards/:board/info", function(request, response) {
       cards:cards,
       users:boardNamespaces[boardName] || {},
       user_id:request.session.user_id,
-      users:boardNamespaces[boardName] || {},
-      title: boardName,
+      title: boardName
     });
   }));
 });

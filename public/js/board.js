@@ -6,7 +6,7 @@ function adjustTextarea(textarea) {
 }
 
 function analyzeCardContent(textarea) {
-  var content = $(textarea).val();
+  //var content = $(textarea).val();
   var $card = $(textarea).parents('.card');
   $card.removeClass('i-wish i-like');
   var matches = $(textarea).val().match(/^i (like|wish)/i);
@@ -21,10 +21,10 @@ function moveToTop(card) {
     return;
   }
   $(card).css('z-index', ++max_z);
-};
+}
 
 var board = null, domLoaded = false, begun=false, focusNextCreate = false, cardLocks = {};
-$.getJSON( document.location.pathname+'/info', function(data) { board = data; begin(); })
+$.getJSON( document.location.pathname+'/info', function(data) { board = data; begin(); });
 $(function() { domLoaded = true; begin(); });
 
 function begin() {
@@ -42,9 +42,9 @@ function begin() {
   for (var i=0,card; card = board.cards[i]; i++)
     onCreateCard( card );
 
-  var socketURL =  'http://' + document.location.host + '/boardNamespace/' + board.name
+  var socketURL =  'http://' + document.location.host + '/boardNamespace/' + board.name;
   var socket = io.connect(socketURL);
-  socket.on( 'move', onMoveCard )
+  socket.on( 'move', onMoveCard );
   socket.on( 'add', onCreateCard );
   socket.on( 'delete', onDeleteCard );
   socket.on( 'text', onText );
@@ -86,7 +86,7 @@ function begin() {
                             .show();
   }
 
-  function createCard( data ) {
+  function createCard() {
     focusNextCreate = true;
     socket.emit('add', {
       boardName:board.name,
@@ -121,7 +121,7 @@ function begin() {
 
   function onText( data ) {
     var $ta = $('#'+data._id+' textarea');
-    $ta.val(data.text).attr('disabled','disabled');;
+    $ta.val(data.text).attr('disabled','disabled');
     if ( ! cardLocks[data._id] || cardLocks[data._id].user_id != data.author )
       notice( data._id, data.author, data.author + ' is typing...' );
     $('#'+data._id+' .notice').show();
@@ -129,7 +129,7 @@ function begin() {
     addAuthor( data._id, data.author );
     adjustTextarea($ta[0]);
     moveToTop('#'+data._id);
-  };
+  }
 
   $('.card').live('mousedown', function(e) {
     if ($(e.target).is('textarea:focus')) {
