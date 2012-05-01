@@ -1,6 +1,5 @@
 var express = require( 'express' ),
     sockets = require( 'socket.io' ),
-    nko = require('nko')('XeXQ4S+ArH4oslLH'),
     board = require('./lib/board.js'),
     sessions = require('cookie-sessions');
 
