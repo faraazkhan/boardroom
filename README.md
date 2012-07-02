@@ -3,7 +3,6 @@
 Interactive story boarding for distributed teams.
 
 Currently we use Board Room for reflection meetings, but it will soon be useful for:
-
 * Story writing
 * Story mapping
 * General distributed story boarding
@@ -46,6 +45,27 @@ Visit [localhost:7777](http://localhost:7777).
 1. Run Boardroom:  
    `node server.js`
 1. Visit [localhost:7777](http://localhost:7777).
+
+## New to Mongo?
+
+Run through the quick tutorial in the "Try It Out" shell at [mongodb.org](http://www.mongodb.org/).
+
+Then:
+
+    $ mongo
+    MongoDB shell version: 2.0.4
+    connecting to: test
+    > help
+    ⋮
+    > show dbs
+    carbonite
+    ⋮
+    > use carbonite
+    switched to db carbonite
+    > db.boards.find()
+    { "name" : "test", "title" : "test", "_id" : ObjectId("4ff1e6658aa3445a14000001") }
+    > db.cards.find()
+    ⋮
 
 ### Ubuntu / Debian
 Coming soon
