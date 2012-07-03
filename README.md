@@ -46,6 +46,9 @@ Visit [localhost:7777](http://localhost:7777).
    `node server.js`
 1. Visit [localhost:7777](http://localhost:7777).
 
+### Ubuntu / Debian
+Coming soon
+
 ## New to Mongo?
 
 Run through the quick tutorial in the "Try It Out" shell at [mongodb.org](http://www.mongodb.org/).
@@ -67,5 +70,3 @@ Then:
     > db.cards.find()
     ⋮
 
-### Ubuntu / Debian
-Coming soon
