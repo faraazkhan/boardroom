@@ -29,10 +29,12 @@
           - if (board.name)
             li(id=board._id)
               a(href='/boards/' + board.name)
+                h4.title= board.title
                 .note-count
                   span.count= boardCounts[board.name] || 0
                   | &nbsp; notes
-                h4.title= board.title
+              .actions
+                .delete
               .activity
 
 script(src="/js/boards.js")
