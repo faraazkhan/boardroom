@@ -95,6 +95,22 @@ a {
     cursor: pointer;
   }
 
+  .colors {
+    display: none;
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    line-height: 12px;
+    .color {
+      display: inline-block;
+      margin-left: 3px;
+      width: 12px;
+      height: 12px;
+      border: 1px solid rgba(64,64,64,0.67);
+      box-sizing: border-box;
+    }
+  }
+
   .notice {
     position: absolute;
     top: -2.5em;
@@ -132,14 +148,25 @@ a {
 
 .card:hover .authors img { visibility: visible; }
 .card:hover img.delete { display: block; }
+.card:hover .colors { display: block; cursor: pointer;}
+
+.card.i-wish:hover, .card.i-like:hover {
+  .colors { display: none; }
+}
 
 .card.i-wish {
-  .card-background(#fc6);
+  .card-background(#FF7F00);
 }
 
 .card.i-like {
-  .card-background(#89d087);
+  .card-background(green);
 }
+
+.color-0 { .card-background(red); }
+.color-1 { .card-background(#FF7F00); }
+.color-2 { .card-background(yellow); }
+.color-3 { .card-background(green); }
+.color-4 { .card-background(dodgerblue); }
 
 #header {
   padding: 0.75em;
