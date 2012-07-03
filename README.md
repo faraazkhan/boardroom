@@ -1,4 +1,4 @@
-# [Boardroom](http://boardroom.carbonfive.com/)
+# [Board Room](http://boardroom.carbonfive.com/)
 
 Interactive story boarding for distributed teams.
 
@@ -7,7 +7,7 @@ Currently we use Board Room for reflection meetings, but it will soon be useful 
 * Story mapping
 * General distributed story boarding
 
-Board Room is built with [Node.js](http://nodejs.org/) and [MongoDB](http://www.mongodb.org/).
+Board Room is built with [Node.js](http://nodejs.org/), [MongoDB](http://www.mongodb.org/), and [Socket.IO](http://socket.io/).
 
 ## Development
 
