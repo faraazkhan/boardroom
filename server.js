@@ -129,7 +129,7 @@ function createBoardSession( boardName ) {
         socket.on('join', function( user ) {
           boardMembers[user.user_id] = user;
           boardNamespace.emit( 'joined', user );
-          board.findBoard( boardName, function(b) { socket.emit('title_changed', b.title); });
+          board.findOrCreateBoard( boardName, user.user_id, function(b) { socket.emit('title_changed', b.title); });
         });
         socket.on('add', function(data) {
           addCard(boardNamespace,data);
