@@ -4,6 +4,12 @@
   box-shadow: inset @arguments;
 }
 
+.inset-shadow(@x, @y, @blur, @spread, @color) {
+  -webkit-box-shadow: inset @arguments;
+  -moz-box-shadow: inset @arguments;
+  box-shadow: inset @arguments;
+}
+
 .box-shadow(@x, @y, @blur, @color) {
   box-shadow: @arguments;
   -moz-box-shadow: @arguments;
@@ -251,25 +257,35 @@ a {
     ul {
       .border-radius(5px);
       .inset-shadow(2px,2px,2px,rgba(0,0,0,0.75));
-      width: 500px;
+      width: 528px;
       margin: 1em auto;
-      padding: 1em;
+      padding: 0;
       list-style-type: none;
       background-color: rgba(255,255,255,.6);
       overflow-y:auto;
 
       li {
-        border-top: 1px solid #888;
+        border-top: 1px solid rgba(0,0,0,0.33);
         position: relative;
+        &:first-child {
+          border-radius: 5px 5px 0 0;
+        }
+        &:last-child {
+          border-radius: 0 0 5px 5px;
+        }
         &:hover {
+          .inset-shadow(3px,0,2px,-1px,rgba(0,0,0,0.75));
           background-color: rgba(255, 255, 255, 0.6);
+          .actions {
+            display: block;
+          }
         }
 
         a {
-          padding: 0.5em 1em;
+          padding: 1.5em 2em;
           display:block;
           color: #000;
-          width: 433px;
+          width: 425px;
           :active, :hover {
             text-decoration: none;
 
@@ -285,19 +301,25 @@ a {
           }
         }
         .actions {
-          position: absolute;
-          text-align: right;
-          height: 33px;
-          top: 50%;
-          right: 0.5em;
-          margin-top: -16px;
           cursor: pointer;
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100%;
+          text-align: right;
+          border-left: 1px dashed #AAA;
+          display: none;
+
+          > * {
+            height: 100%;
+            padding: 0 0.5em;
+          }
+
           .delete {
             width: 33px;
-            height: 33px;
             background: transparent url("/images/icon-trash-closed-black.png") no-repeat center;
             &:hover {
-              background: transparent url("/images/icon-trash-open-black.png") no-repeat center;
+              background: rgba(0,0,0,0.05) url("/images/icon-trash-open-black.png") no-repeat center;
             }
           }
         }
