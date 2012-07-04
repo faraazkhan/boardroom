@@ -162,6 +162,7 @@ function createBoardSession( boardName ) {
 var boards_channel = io.of("/channel/boards")
   .on('connection', function( socket ) {
     //console.log("Connected to /channel/boards");
+    rebroadcast(socket, ['delete']);
   });
 
 function rebroadcast( socket, events ) {
