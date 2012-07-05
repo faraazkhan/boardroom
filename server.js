@@ -125,7 +125,7 @@ function createBoardSession( boardName ) {
   var boardMembers = {};
   var boardNamespace = io.of("/boardNamespace/" + boardName)
       .on('connection', function( socket ) {
-        rebroadcast(socket, ['move', 'text']);
+        rebroadcast(socket, ['move', 'text', 'color']);
         socket.on('join', function( user ) {
           boardMembers[user.user_id] = user;
           boardNamespace.emit( 'joined', user );
@@ -145,6 +145,7 @@ function createBoardSession( boardName ) {
         });
         socket.on('move_commit', updateCard );
         socket.on('text_commit', updateCard );
+        socket.on('color', updateCard );
 
         socket.on('title_changed', function(data) {
           board.updateBoard(boardName, { title: data.title });

@@ -1,3 +1,12 @@
+(function( $ ) {
+  $.fn.removeClassMatching = function(regexp) {
+    var remove = $(this).attr('class').match(regexp)
+    if (remove) {
+      $(this).removeClass(remove.join(' '));
+    }
+  };
+})( jQuery );
+
 function adjustTextarea(textarea) {
   $(textarea).css('height','auto');
   if ($(textarea).innerHeight() < textarea.scrollHeight)
@@ -51,6 +60,7 @@ function begin() {
   socket.on( 'joined', function( user ) { board.users[user.user_id] = user; } );
   socket.on('connect', function() { socket.emit('join', {user_id:board.user_id}); } );
   socket.on('title_changed', function(title) { $('#title').val(title); });
+  socket.on('color', onColor);
 
   // clear outdated locks
   setInterval(function() {
@@ -103,11 +113,16 @@ function begin() {
 
   function onCreateCard( data ) {
     var $card = $('<div class="card"><img class="delete" src="/images/delete.png"/><div class="notice"></div>'
+                  +'<div class="colors">'
+                  +[0,1,2,3,4].map(function(i) { return '<span class="color color-' + i + '"></span>'; }).join('')
+                  +'</div>'
                   +'<textarea></textarea><div class="authors"></div></div>')
       .attr('id', data._id)
       .css('left', data.x)
       .css('top', data.y);
     $('textarea',$card).val(data.text);
+    $card.removeClassMatching(/color-\d+/g);
+    $card.addClass('color-' + (data.colorIndex || 2));
     $('.board').append($card);
     if ( data.authors )
       $( data.authors ).each(function(i,author) { addAuthor( data._id, author ); });
@@ -117,6 +132,12 @@ function begin() {
       focusNextCreate = false;
     }
     moveToTop($card);
+  }
+
+  function onColor( data ) {
+    var $card = $('#'+data._id);
+    $card.removeClassMatching(/color-\d+/g);
+    $card.addClass('color-' + data.colorIndex);
   }
 
   function onText( data ) {
@@ -159,6 +180,14 @@ function begin() {
     $(window).mousemove(mousemove);
     $(window).mouseup(mouseup);
     moveToTop(this);
+  });
+
+  $('.card .colors .color').live('click', function() {
+    var card = $(this).closest('.card')[0];
+    var colorIndex = $(this).attr('class').match(/color-(\d+)/)[1];
+    var data = { _id:card.id, colorIndex: colorIndex};
+    socket.emit('color', data);
+    onColor(data);
   });
 
   $('.card textarea').live('keyup', function() {
