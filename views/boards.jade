@@ -27,13 +27,18 @@
       ul
         for board in boards
           - if (board.name)
-            li(id=board._id)
+            li(id=board._id, name=board.name)
+              - if (board.creator_id === user.user_id)
+                .actions
+                  .delete
+                    .message Delete
               a(href='/boards/' + board.name)
+                h4.title= board.title
                 .note-count
                   span.count= boardCounts[board.name] || 0
                   | &nbsp; notes
-                h4.title= board.title
-              .activity
+                .activity
+
 
 script(src="/js/boards.js")
 

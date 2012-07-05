@@ -90,12 +90,12 @@ app.get( "/logout", function(request, response) {
   response.redirect("/")
 });
 
-app.get( "/", function(request, response) {
+app.get( "/", requireAuth, function(request, response) {
     response.redirect("/boards")
 });
 
-app.get( "/boards", function(request, response) {
-  board.findBoards( {}, board.arrayReducer( function(boards) {
+app.get( "/boards", requireAuth, function(request, response) {
+  board.findBoards( {deleted:{$ne:true}}, board.arrayReducer( function(boards) {
     board.findBoardCardCounts( function(boardCounts) {
       var boardCountsByName = boardCounts.reduce( function(o,item) { o[item.boardName]=item.count;return o},{} );
       response.render("boards", {
@@ -129,7 +129,7 @@ function createBoardSession( boardName ) {
         socket.on('join', function( user ) {
           boardMembers[user.user_id] = user;
           boardNamespace.emit( 'joined', user );
-          board.findBoard( boardName, function(b) { socket.emit('title_changed', b.title); });
+          board.findOrCreateBoard( boardName, user.user_id, function(b) { socket.emit('title_changed', b.title); });
         });
         socket.on('add', function(data) {
           addCard(boardNamespace,data);
@@ -162,6 +162,11 @@ function createBoardSession( boardName ) {
 var boards_channel = io.of("/channel/boards")
   .on('connection', function( socket ) {
     //console.log("Connected to /channel/boards");
+    rebroadcast(socket, ['delete']);
+    socket.on('delete', function( deleteBoard ) {
+      board.deleteBoard(deleteBoard.board_id);
+      io.of("/boardNamespace/" + deleteBoard.boardName).emit('boardDeleted');
+    });
   });
 
 function rebroadcast( socket, events ) {

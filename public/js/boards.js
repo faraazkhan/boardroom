@@ -14,6 +14,7 @@ $(function() {
   socket.on( 'card_added', onCardAdded );
   socket.on( 'card_deleted', onCardDeleted );
   socket.on( 'user_activity', userActivity );
+  socket.on( 'delete', onDelete );
 
   function onBoardChanged( b ) {
     $('li#' + b._id + ' .title').html(b.title);
@@ -38,5 +39,27 @@ $(function() {
       $activity.fadeOut(1000, function() { $(this).remove(); });
     }, 10000);
   }
+
+  function onDelete ( board ) {
+    $board = $('#' + board.board_id);
+    $board.height($board.height());
+    $board.empty().append($('<p>This board has been deleted.</p>')).delay(2000).slideUp();
+  }
+
+  $('.delete').click(function(e) {
+    this.onselectstart = function () { return false; }
+    if ($(this).hasClass('confirm')) {
+      socket.emit('delete', { board_id: $(this).closest('li').attr('id'), boardName: $(this).closest('li').attr('name') });
+      $(this).find('.message').hide();
+      $(this).closest('li').slideUp();
+    } else {
+      $(this).addClass('confirm');
+    }
+    return false;
+  });
+
+  $('.delete').mouseleave(function(e) {
+    $(this).removeClass('confirm');
+  });
 
 });
