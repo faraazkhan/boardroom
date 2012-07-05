@@ -95,7 +95,7 @@ app.get( "/", function(request, response) {
 });
 
 app.get( "/boards", function(request, response) {
-  board.findBoards( {}, board.arrayReducer( function(boards) {
+  board.findBoards( {deleted:{$ne:true}}, board.arrayReducer( function(boards) {
     board.findBoardCardCounts( function(boardCounts) {
       var boardCountsByName = boardCounts.reduce( function(o,item) { o[item.boardName]=item.count;return o},{} );
       response.render("boards", {
