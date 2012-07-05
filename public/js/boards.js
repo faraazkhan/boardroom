@@ -50,6 +50,7 @@ $(function() {
     this.onselectstart = function () { return false; }
     if ($(this).hasClass('confirm')) {
       socket.emit('delete', { board_id: $(this).closest('li').attr('id') });
+      $(this).find('.message').hide();
       $(this).closest('li').slideUp();
     } else {
       $(this).addClass('confirm');
