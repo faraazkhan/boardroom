@@ -27,7 +27,7 @@
       ul
         for board in boards
           - if (board.name)
-            li(id=board._id)
+            li(id=board._id, name=board.name)
               - if (board.creator_id === user.user_id)
                 .actions
                   .delete

@@ -61,6 +61,7 @@ function begin() {
   socket.on('connect', function() { socket.emit('join', {user_id:board.user_id}); } );
   socket.on('title_changed', function(title) { $('#title').val(title); });
   socket.on('color', onColor);
+  socket.on('boardDeleted', function () { alert('This board has been deleted by its owner.'); window.location = '/boards'; });
 
   // clear outdated locks
   setInterval(function() {

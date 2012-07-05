@@ -49,14 +49,13 @@ $(function() {
   $('.delete').click(function(e) {
     this.onselectstart = function () { return false; }
     if ($(this).hasClass('confirm')) {
-      socket.emit('delete', { board_id: $(this).closest('li').attr('id') });
+      socket.emit('delete', { board_id: $(this).closest('li').attr('id'), boardName: $(this).closest('li').attr('name') });
       $(this).find('.message').hide();
       $(this).closest('li').slideUp();
     } else {
       $(this).addClass('confirm');
     }
     return false;
-    // $(this).closest('li').empty().append('<a style="padding-top: 0.5em; padding-bottom: 0.5em">Deleted.</a><div class="actions" style="display:block;"><div>Undo</div></div>');
   });
 
   $('.delete').mouseleave(function(e) {
