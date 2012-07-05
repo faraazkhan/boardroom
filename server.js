@@ -163,6 +163,9 @@ var boards_channel = io.of("/channel/boards")
   .on('connection', function( socket ) {
     //console.log("Connected to /channel/boards");
     rebroadcast(socket, ['delete']);
+    socket.on('delete', function( delete_board ) {
+      board.deleteBoard(delete_board.board_id);
+    });
   });
 
 function rebroadcast( socket, events ) {
