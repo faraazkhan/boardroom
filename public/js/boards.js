@@ -41,7 +41,9 @@ $(function() {
   }
 
   function onDelete ( board ) {
-    alert('deleted board ' + board);
+    $board = $('#' + board.board_id);
+    $board.height($board.height());
+    $board.empty().append($('<p>This board has been deleted.</p>')).delay(2000).slideUp();
   }
 
   $('.delete').click(function(e) {
