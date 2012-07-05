@@ -90,11 +90,11 @@ app.get( "/logout", function(request, response) {
   response.redirect("/")
 });
 
-app.get( "/", function(request, response) {
+app.get( "/", requireAuth, function(request, response) {
     response.redirect("/boards")
 });
 
-app.get( "/boards", function(request, response) {
+app.get( "/boards", requireAuth, function(request, response) {
   board.findBoards( {deleted:{$ne:true}}, board.arrayReducer( function(boards) {
     board.findBoardCardCounts( function(boardCounts) {
       var boardCountsByName = boardCounts.reduce( function(o,item) { o[item.boardName]=item.count;return o},{} );
