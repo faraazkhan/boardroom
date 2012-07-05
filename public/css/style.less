@@ -261,52 +261,6 @@ a {
       }
     }
 
-    // Original CSS Flexible Box Layout Module standard, which is being replaced by a new standard
-    // See https://developer.mozilla.org/en/CSS/Flexbox
-    // and http://caniuse.com/#feat=flexbox
-    ul {
-      li {
-        display: -webkit-box;
-        display: -moz-box;
-        -webkit-box-pack: center;
-        -moz-box-pack: center;
-        width: 100%; // for moz
-        a {
-          -webkit-box-flex: 1;
-          -moz-box-flex: 1;
-          display: block;
-          -webkit-box-ordinal-group: 1;
-          -moz-box-ordinal-group: 1;
-        }
-        .actions {
-          -webkit-box-flex: 0;
-          -moz-box-flex: 0;
-          display: -webkit-box;
-          display: -moz-box;
-          -webkit-box-ordinal-group: 2;
-          -moz-box-ordinal-group: 2;
-        }
-      }
-    }
-    // New standard
-    // Google Chrome Canary (21) only, at time of writing
-    ul {
-      li {
-        display: -webkit-flex;
-        -webkit-flex-pack: center;
-        a {
-          -webkit-flex: 1 1 auto;
-          display: block;
-          -webkit-order: 1;
-        }
-        .actions {
-          -webkit-flex: 0 0 auto;
-          display: -webkit-flex;
-          -webkit-order: 2;
-        }
-      }
-    }
-
     ul {
       .border-radius(5px);
       .inset-shadow(2px,2px,2px,rgba(0,0,0,0.75));
@@ -336,7 +290,9 @@ a {
           padding: 2.5em 2em;
           text-align: center;
         }
+
         a {
+          display: block;
           padding: 1.5em 2em;
           color: #000;
           :active, :hover {
@@ -350,17 +306,21 @@ a {
         }
 
         .actions {
+          float: right;
           cursor: pointer;
-          border-left: 1px dashed rgba(0,0,0,0.2);
+          padding-left: 2em;
 
           > * {
             min-height: 33px;
-            padding: 0.5em;
+            padding: 0.25em;
+            margin: 0.5em 0.5em 0 0;
+            border-radius: 5px;
           }
 
           .delete {
             .transition(width,0.5s);
             width: 33px;
+            height: 33px;
             background: transparent url("/images/icon-trash-closed-black.png") no-repeat center;
             &:hover {
               background: rgba(0,0,0,0.05) url("/images/icon-trash-open-black.png") no-repeat center;
@@ -369,13 +329,15 @@ a {
               display: none;
             }
             &.confirm {
-              background-color: red;
+              background-color: firebrick;
+              background-image: none;
               width: 6em;
               .message {
+                color: white;
                 display: block;
                 text-align: center;
                 white-space: nowrap;
-                line-height: 1.5em;
+                line-height: 33px;
               }
             }
           }
