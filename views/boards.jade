@@ -28,15 +28,16 @@
         for board in boards
           - if (board.name)
             li(id=board._id)
+              - if (board.creator_id === user.user_id)
+                .actions
+                  .delete
+                    .message You sure?
               a(href='/boards/' + board.name)
                 h4.title= board.title
                 .note-count
                   span.count= boardCounts[board.name] || 0
                   | &nbsp; notes
                 .activity
-              .actions
-                - if (board.creator_id === user.user_id)
-                  .delete
 
 
 script(src="/js/boards.js")
