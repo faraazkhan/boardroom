@@ -11,7 +11,18 @@ Board Room is built with [Node.js](http://nodejs.org/), [MongoDB](http://www.mon
 
 ## Development
 
+Product Owners:
+- Mike Wynholds
+- Christian Nelson (if Mike's unavailable)
+
 [Project (Pivotal Tracker)](https://www.pivotaltracker.com/projects/540409)
+
+### Git Branching Strategy
+
+#### Overview
+- Develop on feature branches (named like `features/32195787-delete-a-board`)
+- `merge --no-ff` into `development`, and deliver in Tracker
+- Once accepted, merge into `master`
 
 ## Install
 
