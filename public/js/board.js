@@ -7,6 +7,26 @@
   };
 })( jQuery );
 
+(function( $ ) {
+  $.fn.trackMousePause = function(enable, duration) {
+    var $this = $(this);
+    console.log(enable, $this);
+    if (enable) {
+      var timeout;
+      $this.on('mousemove.trackmousepause', function (e) {
+        clearTimeout(timeout);
+        timeout = setTimeout(function () {
+          e.type = 'mousepause';
+          e.originalEvent.type = 'mousepause';
+          $this.trigger(e);
+        }, duration || 1000);
+      });
+    } else {
+      $this.off('.trackmousepause');
+    }
+  };
+})( jQuery );
+
 function adjustTextarea(textarea) {
   $(textarea).css('height','auto');
   if ($(textarea).innerHeight() < textarea.scrollHeight)
