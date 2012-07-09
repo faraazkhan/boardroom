@@ -24,6 +24,21 @@ Product Owners:
 - `merge --no-ff` into `development`, and deliver in Tracker
 - Once accepted, merge into `master`
 
+### Environment Hosting
+- [Acceptance](http://boardroom.carbonfive.com:81/)
+- [Production](http://boardroom.carbonfive.com/)
+
+### Deploying
+
+    ssh root@boardroom
+    stop-acceptance.sh
+    cd acceptance/boardroom/
+    git pull
+    ../../start-acceptance.sh
+
+The same for production, except the scripts are `stop-production.sh` and `start-production.sh`.
+
+
 ## Install
 
 ### OS X
