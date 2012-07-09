@@ -14,5 +14,10 @@
     "cookie-sessions": "0",
     "less": "1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "mocha": "1.3",
+    "chai": "1.1",
+    "coffee-script": "1.3",
+    "jquery": "1.7"
+  }
 }

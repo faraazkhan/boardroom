@@ -1,15 +1,4 @@
 (function( $ ) {
-  $.fn.removeClassMatching = function(regexp) {
-    this.each(function() {
-      var remove = $(this).attr('class').match(regexp)
-      if (remove) {
-        $(this).removeClass(remove.join(' '));
-      }
-    });
-  };
-})( jQuery );
-
-(function( $ ) {
   $.fn.trackMousePause = function(enable, duration) {
     var $this = $(this);
     if (enable) {
