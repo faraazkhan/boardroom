@@ -187,12 +187,43 @@ function begin() {
     moveToTop('#'+data._id);
   }
 
+  $('.card').on('mousepause', function(e) {
+    var $this = $(this);
+    var sorted = $('.card').not($this).toArray().sort(function (first,second) {
+      return $(second).css('z-index') - $(first).css('z-index');
+    });
+    sorted.some(function(other) {
+      var $other = $(other);
+      if ($other.containsPoint(e.pageX, e.pageY)) {
+        $this.addClass('group-intent-source');
+        $other.addClass('group-intent-target');
+        $this.add($other).addClass('group-intent');
+
+        $this.off('.group');
+        $this.on('mouseup.group', function() {
+          $this.offset({left: $other.offset().left + 15, top: $other.offset().top + 36});
+          $this.add($other).removeClassMatching(/group-intent.*/g);
+          $this.off('.group');
+        });
+        $this.on('mousemove.group', function(e) {
+          if (!$other.containsPoint(e.pageX, e.pageY)) {
+            $this.add($other).removeClassMatching(/group-intent.*/g);
+            $this.off('.group');
+          }
+        });
+        return true; // break out of loop
+      }
+    });
+  });
+
   $('.card').live('mousedown', function(e) {
     if ($(e.target).is('textarea:focus')) {
       return true;
     }
     var deltaX = e.clientX-this.offsetLeft, deltaY = e.clientY-this.offsetTop;
     var dragged = this.id, hasMoved = false;
+    $card = $(this);
+    $card.trackMousePause(true, 400);
 
     function location() {
       var card = $('#'+dragged)[0];
@@ -207,6 +238,7 @@ function begin() {
     }
 
     function mouseup(e) {
+      $card.trackMousePause(false);
       $(window).unbind('mousemove', mousemove);
       $(window).unbind('mouseup', mouseup);
       socket.emit('move_commit', location() );
