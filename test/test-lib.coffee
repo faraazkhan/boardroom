@@ -28,3 +28,30 @@ describe 'removeClassMatching', () ->
     divs.removeClassMatching(/\w+efish/)
     expect(divs.eq(0).attr('class')).to.equal('twofish')
     expect(divs.eq(1).attr('class')).to.equal('redfish')
+
+describe 'containsPoint', () ->
+  div = $('<div style="position:absolute; width: 100px; height: 200px;">')
+  # mock offset(), since there's no CSS renderer etc.
+  div.offset = () ->
+     {left: 50, top: 150}
+
+  it 'is false when above left', () ->
+    expect(div.containsPoint(49, 149)).to.equal(false)
+
+  it 'is false when left', () ->
+    expect(div.containsPoint(49, 200)).to.equal(false)
+
+  it 'is false when above', () ->
+    expect(div.containsPoint(125, 149)).to.equal(false)
+
+  it 'is true when contained', () ->
+    expect(div.containsPoint(125, 200)).to.equal(true)
+
+  it 'is false when exceeding bottom boundaries', () ->
+    expect(div.containsPoint(125, 351)).to.equal(false)
+
+  it 'is false when exceeding right boundaries', () ->
+    expect(div.containsPoint(151, 200)).to.equal(false)
+
+  it 'is false when exceeding bottom right boundaries', () ->
+    expect(div.containsPoint(151, 351)).to.equal(false)
