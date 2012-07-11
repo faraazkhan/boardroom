@@ -16,3 +16,23 @@
     return (dx > 0 && dy > 0 && dx < this.outerWidth() && dy < this.outerHeight());
   };
 })( jQuery );
+
+(function( $ ) {
+  $.fn.onMousePause = function(callback, duration) {
+    var $this = this;
+    var timeout;
+    $this.on('mousemove.onMousePause', function(e) {
+      clearTimeout(timeout);
+      timeout = setTimeout(function() {
+        callback.call($this, e);
+      }, duration || 400);
+    });
+
+    return {
+      off: function () {
+        clearTimeout(timeout);
+        $this.off('.onMousePause')
+      }
+    }
+  };
+})( jQuery );

@@ -1,27 +1,3 @@
-(function( $ ) {
-  $.fn.trackMousePause = function(enable, duration) {
-    var $this = $(this);
-    if (enable) {
-      var timeout;
-      $this.on('mousemove.trackmousepause', function (e) {
-        clearTimeout(timeout);
-        timeout = setTimeout(function () {
-          e.type = 'triggermousepause';
-          e.originalEvent.type = 'triggermousepause';
-          $this.trigger(e);
-        }, duration || 400);
-      });
-      $this.on('triggermousepause.trackmousepause', function (e) {
-        e.type = 'mousepause';
-        e.originalEvent.type = 'mousepause';
-        $this.trigger(e);
-      });
-    } else {
-      $this.off('.trackmousepause');
-    }
-  };
-})( jQuery );
-
 function adjustTextarea(textarea) {
   $(textarea).css('height','auto');
   if ($(textarea).innerHeight() < textarea.scrollHeight)
@@ -168,35 +144,6 @@ function begin() {
     moveToTop('#'+data._id);
   }
 
-  $('.card').on('mousepause', function(e) {
-    var $this = $(this);
-    var sorted = $('.card').not($this).toArray().sort(function (first,second) {
-      return $(second).css('z-index') - $(first).css('z-index');
-    });
-    sorted.some(function(other) {
-      var $other = $(other);
-      if ($other.containsPoint(e.pageX, e.pageY)) {
-        $this.addClass('group-intent-source');
-        $other.addClass('group-intent-target');
-        $this.add($other).addClass('group-intent');
-
-        $this.off('.group');
-        $this.on('mouseup.group', function() {
-          $this.offset({left: $other.offset().left + 15, top: $other.offset().top + 36});
-          $this.add($other).removeClassMatching(/group-intent.*/g);
-          $this.off('.group');
-        });
-        $this.on('mousemove.group', function(e) {
-          if (!$other.containsPoint(e.pageX, e.pageY)) {
-            $this.add($other).removeClassMatching(/group-intent.*/g);
-            $this.off('.group');
-          }
-        });
-        return true; // break out of loop
-      }
-    });
-  });
-
   $('.card').live('mousedown', function(e) {
     if ($(e.target).is('textarea:focus')) {
       return true;
@@ -204,12 +151,40 @@ function begin() {
     var deltaX = e.clientX-this.offsetLeft, deltaY = e.clientY-this.offsetTop;
     var dragged = this.id, hasMoved = false;
     $card = $(this);
-    $card.trackMousePause(true, 400);
 
     function location() {
       var card = $('#'+dragged)[0];
       return {_id:dragged, x:card.offsetLeft, y:card.offsetTop, board_name:board.name, author:board.user_id, moved_by:board.user_id};
     }
+
+    var onMousePause = $('.card').onMousePause(function(e) {
+      var $this = $(e.target);
+      var sorted = $('.card').not($this).toArray().sort(function (first,second) {
+        return $(second).css('z-index') - $(first).css('z-index');
+      });
+      sorted.some(function(other) {
+        var $other = $(other);
+        if ($other.containsPoint(e.pageX, e.pageY)) {
+          $this.addClass('group-intent-source');
+          $other.addClass('group-intent-target');
+          $this.add($other).addClass('group-intent');
+
+          $this.off('.group');
+          $this.on('mouseup.group', function() {
+            $this.offset({left: $other.offset().left + 15, top: $other.offset().top + 36});
+            $this.add($other).removeClassMatching(/group-intent.*/g);
+            $this.off('.group');
+          });
+          $this.on('mousemove.group', function(e) {
+            if (!$other.containsPoint(e.pageX, e.pageY)) {
+              $this.add($other).removeClassMatching(/group-intent.*/g);
+              $this.off('.group');
+            }
+          });
+          return true; // break out of loop
+        }
+      });
+    }, 400);
 
     function mousemove(e) {
       hasMoved = true;
@@ -219,7 +194,7 @@ function begin() {
     }
 
     function mouseup(e) {
-      $card.trackMousePause(false);
+      onMousePause.off();
       $(window).unbind('mousemove', mousemove);
       $(window).unbind('mouseup', mouseup);
       socket.emit('move_commit', location() );

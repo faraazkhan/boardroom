@@ -1,4 +1,5 @@
 global.jQuery = global.$ = require('jquery')
+sinon = require('sinon')
 require('../public/js/lib.js')
 
 describe 'removeClassMatching', () ->
@@ -55,3 +56,67 @@ describe 'containsPoint', () ->
 
   it 'is false when exceeding bottom right boundaries', () ->
     expect(div.containsPoint(151, 351)).to.equal(false)
+
+# Note: useFakeTimers seems to mess up the scheduling of asynchronous tests
+# (tests that take a done argument). If you need async, try moving them to a
+# separate file.
+describe 'onMousePause', ->
+  mousepause = undefined
+  div = undefined
+  onMousePause = undefined
+
+  beforeEach ->
+    this.clock = sinon.useFakeTimers()
+
+    mousepause = sinon.spy()
+    div = $('<div>')
+    onMousePause = div.onMousePause(mousepause, 10)
+    div.trigger('mousemove')
+
+  afterEach ->
+    this.clock.restore()
+
+  it 'fires after the specified wait', ->
+    this.clock.tick(9)
+    expect(mousepause.called).to.equal(false)
+
+    this.clock.tick(2)
+    expect(mousepause.called).to.equal(true)
+
+  it 'fires after the specified wait since the last mousemove', ->
+    interval = setInterval ->
+      div.trigger 'mousemove'
+    , 5
+
+    setTimeout ->
+      clearInterval interval
+    , 50
+
+    this.clock.tick(11)
+    expect(mousepause.called).to.equal(false)
+
+    this.clock.tick(30)
+    expect(mousepause.called).to.equal(false)
+
+    this.clock.tick(30)
+    expect(mousepause.called).to.equal(true)
+
+  it 'passes the last mousemove event through to the callback', ->
+    mousemove = $.Event("mousemove")
+    div.trigger(mousemove)
+    this.clock.tick(11)
+    expect(mousepause.calledWith(mousemove)).to.equal(true)
+
+
+  describe 'off', ->
+    it 'cancels any pending callback', ->
+      this.clock.tick(9)
+      onMousePause.off()
+      this.clock.tick(2)
+      expect(mousepause.called).to.equal(false)
+
+    it 'cancels the listener', ->
+      onMousePause.off()
+      div.trigger('mousemove')
+      this.clock.tick(11)
+
