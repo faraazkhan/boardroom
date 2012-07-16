@@ -51,12 +51,15 @@ app.get( "/boards/:board", requireAuth, function(request, response) {
 app.get( "/boards/:board/info", function(request, response) {
   var boardName = request.params.board;
   board.findCards( { boardName:boardName, deleted:{$ne:true} }, board.arrayReducer(function(cards) {
-    response.send({
-      name:boardName,
-      cards:cards,
-      users:boardNamespaces[boardName] || {},
-      user_id:request.session.user_id,
-      title: boardName
+    board.findBoardAllowEmpty(boardName, function(board) {
+      response.send({
+        name:boardName,
+        cards:cards,
+        groups:board && board.groups || [],
+        users:boardNamespaces[boardName] || {},
+        user_id:request.session.user_id,
+        title: boardName
+      });
     });
   }));
 });
@@ -147,10 +150,10 @@ function createBoardSession( boardName ) {
         socket.on('text_commit', updateCard );
         socket.on('color', updateCard );
         socket.on('updateGroup', function (data) {
-          board.updateGroup(data._id, data.cardIds);
+          board.updateGroup(data.boardName, data._id, data.cardIds);
         });
         socket.on('createGroup', function (data) {
-          board.createGroup(data.name, data.cardIds, function (group) {
+          board.createGroup(data.boardName, data.groupName, data.cardIds, function (group) {
             socket.emit('createdGroup', group);
           });
         });

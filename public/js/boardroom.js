@@ -1,7 +1,5 @@
 boardroomFactory = function(socket, boardInfo) {
   boardroom = {
-    groups: {},
-
     group: {
       addTo: function($card, $targetCard) {
         var cardId = $card.attr('id');
@@ -10,37 +8,37 @@ boardroomFactory = function(socket, boardInfo) {
         if (targetGroupId) {
           if (cardGroupId) {
             console.log('removed ' + cardId + ' from ' + cardGroupId);
-            boardroom.groups[cardGroupId].splice(boardroom.groups[cardGroupId].indexOf(cardId), 1);
-            socket.emit('updateGroup', {_id: cardGroupId, cardIds: boardroom.groups[cardGroupId]});
+            boardInfo.groups[cardGroupId].cardIds.splice(boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1);
+            socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
           }
 
-          boardroom.groups[targetGroupId].push(cardId);
+          boardInfo.groups[targetGroupId].cardIds.push(cardId);
           $card.data('group-id', targetGroupId);
-          socket.emit('updateGroup', {_id: targetGroupId, cardIds: boardroom.groups[targetGroupId]});
+          socket.emit('updateGroup', {boardName: boardInfo.name, _id: targetGroupId, cardIds: boardInfo.groups[targetGroupId].cardIds});
           console.log('added ' + targetGroupId);
 
           boardroom.group.layOut(targetGroupId);
         } else {
           if (cardGroupId) {
-            boardroom.groups[cardGroupId].splice(boardroom.groups[cardGroupId].indexOf(cardId), 1);
-            socket.emit('updateGroup', {_id: cardGroupId, cardIds: boardroom.groups[cardGroupId]});
+            boardInfo.groups[cardGroupId].cardIds.splice(boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1);
+            socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
           }
 
-          socket.emit('createGroup', {cardIds: [$targetCard.attr('id'), cardId]});
+          socket.emit('createGroup', {boardName: boardInfo.name, cardIds: [$targetCard.attr('id'), cardId]});
           console.log('create');
         }
       },
       onCreated: function(data) {
         console.log('created ' + data._id);
 
-        boardroom.groups[data._id] = data.cardIds;
+        boardInfo.groups[data._id] = {cardIds: data.cardIds};
         data.cardIds.forEach(function(cardId) {
           $('#' + cardId).data('group-id', data._id);
         })
         boardroom.group.layOut(data._id);
       },
       layOut: function(id) {
-        var cardIds = boardroom.groups[id];
+        var cardIds = boardInfo.groups[id].cardIds;
         var origin = $('#' + cardIds[0]).offset();
 
         cardIds.slice(1).forEach(function(cardId) {

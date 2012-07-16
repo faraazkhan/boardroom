@@ -42,6 +42,14 @@ function begin() {
   for (var i=0,card; card = board.cards[i]; i++)
     onCreateCard( card );
 
+  for (var groupId in board.groups) {
+    if (board.groups.hasOwnProperty(groupId)) {
+      board.groups[groupId].cardIds.forEach(function(cardId) {
+        $('#' + cardId).data('group-id', groupId);
+      });
+    }
+  }
+
   var socketURL =  'http://' + document.location.host + '/boardNamespace/' + board.name;
   var socket = io.connect(socketURL);
   boardroom = boardroomFactory(socket, board);
