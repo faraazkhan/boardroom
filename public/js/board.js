@@ -44,6 +44,7 @@ function begin() {
 
   var socketURL =  'http://' + document.location.host + '/boardNamespace/' + board.name;
   var socket = io.connect(socketURL);
+  boardroom = boardroom(socket);
   socket.on( 'move', onMoveCard );
   socket.on( 'add', onCreateCard );
   socket.on( 'delete', onDeleteCard );
@@ -53,6 +54,8 @@ function begin() {
   socket.on('title_changed', function(title) { $('#title').val(title); });
   socket.on('color', onColor);
   socket.on('boardDeleted', function () { alert('This board has been deleted by its owner.'); window.location = '/boards'; });
+  socket.on('group', boardroom.onGroup);
+  socket.on('createdGroup', boardroom.group.onCreated);
 
   // clear outdated locks
   setInterval(function() {
@@ -110,6 +113,7 @@ function begin() {
                   +'</div>'
                   +'<textarea></textarea><div class="authors"></div></div>')
       .attr('id', data._id)
+      .data('test', 'hello')
       .css('left', data.x)
       .css('top', data.y);
     $('textarea',$card).val(data.text);
@@ -118,6 +122,8 @@ function begin() {
     $('.board').append($card);
     if ( data.authors )
       $( data.authors ).each(function(i,author) { addAuthor( data._id, author ); });
+    if ( data.groupId )
+      $card.attr('data-group-id', data.groupId);
     adjustTextarea( $('textarea',$card)[0] );
     if ( focusNextCreate ) {
       $('textarea', $card).focus();
@@ -144,11 +150,34 @@ function begin() {
     moveToTop('#'+data._id);
   }
 
+  // $('.card').on('blur', function () {console.log('blur')});
+  // $('.card').on('focusout', function () {console.log('focusout')});
+  $('.card').on('mouseleave', function () {
+    var groupId = $(this).attr('data-group-id')
+    if (groupId) {
+      $group = $('.card[data-group-id="' + groupId + '"]');
+      var sorted = $group.toArray().sort(function (first,second) {
+        return $(first).offset().top - $(second).offset().top;
+      });
+      var origin = $(sorted.shift()).offset();
+      $(sorted).each(function () {
+        $(this).offset({
+          left: origin.left + 15,
+          top:  origin.top  + 36
+        });
+        moveToTop($(this));
+        origin = $(this).offset();
+      });
+    }
+  });
+
   $('.card').live('mousedown', function(e) {
     if ($(e.target).is('textarea:focus')) {
       return true;
     }
     var deltaX = e.clientX-this.offsetLeft, deltaY = e.clientY-this.offsetTop;
+    var lastX = e.clientX;
+    var lastY = e.clientY;
     var dragged = this.id, hasMoved = false;
     $card = $(this);
 
@@ -158,7 +187,7 @@ function begin() {
     }
 
     var onMousePause = $('.card').onMousePause(function(e) {
-      var $this = $(e.target);
+      var $this = $(e.target).closest('.card');
       var sorted = $('.card').not($this).toArray().sort(function (first,second) {
         return $(second).css('z-index') - $(first).css('z-index');
       });
@@ -171,9 +200,9 @@ function begin() {
 
           $this.off('.group');
           $this.on('mouseup.group', function() {
-            $this.offset({left: $other.offset().left + 15, top: $other.offset().top + 36});
             $this.add($other).removeClassMatching(/group-intent.*/g);
             $this.off('.group');
+            boardroom.group.addTo($this, $other);
           });
           $this.on('mousemove.group', function(e) {
             if (!$other.containsPoint(e.pageX, e.pageY)) {

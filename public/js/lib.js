@@ -36,3 +36,39 @@
     }
   };
 })( jQuery );
+
+(function( $ ) {
+  $.fn.followDrag = function(otherFollowers) {
+    var $this = this;
+
+    $this.on('mousedown.followDrag', function (e) {
+      var lastX = e.pageX;
+      var lastY = e.pageY;
+      $('body').on('mousemove.followDrag', function (e) {
+        var deltaX = e.pageX - lastX;
+        var deltaY = e.pageY - lastY;
+
+        $this.add(otherFollowers).each(function() {
+          $(this).offset({
+            left: $(this).offset().left + deltaX,
+            top:  $(this).offset().top  + deltaY
+          });
+        });
+
+        lastX = e.pageX;
+        lastY = e.pageY;
+      });
+
+      $('body').on('mouseup.followDrag', function (e) {
+        console.log('mouseup');
+        $('body').off('mousemove.followDrag');
+      });
+    });
+
+    return {
+      off: function () {
+        $this.off('.followDrag');
+      }
+    }
+  };
+})( jQuery );

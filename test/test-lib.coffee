@@ -1,5 +1,4 @@
 global.jQuery = global.$ = require('jquery')
-sinon = require('sinon')
 require('../public/js/lib.js')
 
 describe 'removeClassMatching', () ->
