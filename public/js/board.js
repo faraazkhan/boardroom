@@ -44,7 +44,7 @@ function begin() {
 
   var socketURL =  'http://' + document.location.host + '/boardNamespace/' + board.name;
   var socket = io.connect(socketURL);
-  boardroom = boardroom(socket);
+  boardroom = boardroomFactory(socket);
   socket.on( 'move', onMoveCard );
   socket.on( 'add', onCreateCard );
   socket.on( 'delete', onDeleteCard );
@@ -113,7 +113,6 @@ function begin() {
                   +'</div>'
                   +'<textarea></textarea><div class="authors"></div></div>')
       .attr('id', data._id)
-      .data('test', 'hello')
       .css('left', data.x)
       .css('top', data.y);
     $('textarea',$card).val(data.text);
@@ -150,34 +149,11 @@ function begin() {
     moveToTop('#'+data._id);
   }
 
-  // $('.card').on('blur', function () {console.log('blur')});
-  // $('.card').on('focusout', function () {console.log('focusout')});
-  $('.card').on('mouseleave', function () {
-    var groupId = $(this).attr('data-group-id')
-    if (groupId) {
-      $group = $('.card[data-group-id="' + groupId + '"]');
-      var sorted = $group.toArray().sort(function (first,second) {
-        return $(first).offset().top - $(second).offset().top;
-      });
-      var origin = $(sorted.shift()).offset();
-      $(sorted).each(function () {
-        $(this).offset({
-          left: origin.left + 15,
-          top:  origin.top  + 36
-        });
-        moveToTop($(this));
-        origin = $(this).offset();
-      });
-    }
-  });
-
   $('.card').live('mousedown', function(e) {
     if ($(e.target).is('textarea:focus')) {
       return true;
     }
     var deltaX = e.clientX-this.offsetLeft, deltaY = e.clientY-this.offsetTop;
-    var lastX = e.clientX;
-    var lastY = e.clientY;
     var dragged = this.id, hasMoved = false;
     $card = $(this);
 

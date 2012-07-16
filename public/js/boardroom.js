@@ -1,5 +1,5 @@
-boardroom = function(socket) {
-  self = {
+boardroomFactory = function(socket) {
+  boardroom = {
     groups: {},
 
     group: {
@@ -10,24 +10,22 @@ boardroom = function(socket) {
         if (targetGroupId) {
           if (cardGroupId) {
             console.log('removed ' + cardId + ' from ' + cardGroupId);
-            self.groups[cardGroupId].splice(self.groups[cardGroupId].indexOf(cardId), 1);
-            socket.emit('updateGroup', {_id: cardGroupId, cardIds: self.groups[cardGroupId]});
+            boardroom.groups[cardGroupId].splice(boardroom.groups[cardGroupId].indexOf(cardId), 1);
+            socket.emit('updateGroup', {_id: cardGroupId, cardIds: boardroom.groups[cardGroupId]});
           }
 
-          self.groups[targetGroupId].push(cardId);
+          boardroom.groups[targetGroupId].push(cardId);
           $card.data('group-id', targetGroupId);
-          // socket.emit('addToGroup', {_id: targetGroupId, cardId: cardId});
-          socket.emit('updateGroup', {_id: targetGroupId, cardIds: self.groups[targetGroupId]});
+          socket.emit('updateGroup', {_id: targetGroupId, cardIds: boardroom.groups[targetGroupId]});
           console.log('added ' + targetGroupId);
 
-          self.group.layOut(targetGroupId);
+          boardroom.group.layOut(targetGroupId);
         } else {
           if (cardGroupId) {
-            self.groups[cardGroupId].splice(self.groups[cardGroupId].indexOf(cardId), 1);
-            // socket.emit('removeFromGroup', {_id: cardGroupId, cardId: cardId});
-            socket.emit('updateGroup', {_id: cardGroupId, cardIds: self.groups[cardGroupId]});
+            boardroom.groups[cardGroupId].splice(boardroom.groups[cardGroupId].indexOf(cardId), 1);
+            socket.emit('updateGroup', {_id: cardGroupId, cardIds: boardroom.groups[cardGroupId]});
           }
-          
+
           socket.emit('createGroup', {cardIds: [$targetCard.attr('id'), cardId]});
           console.log('create');
         }
@@ -35,14 +33,14 @@ boardroom = function(socket) {
       onCreated: function(data) {
         console.log('created ' + data._id);
 
-        self.groups[data._id] = data.cardIds;
+        boardroom.groups[data._id] = data.cardIds;
         data.cardIds.forEach(function(cardId) {
           $('#' + cardId).data('group-id', data._id);
         })
-        self.group.layOut(data._id);
+        boardroom.group.layOut(data._id);
       },
       layOut: function(id) {
-        var cardIds = self.groups[id];
+        var cardIds = boardroom.groups[id];
         var origin = $('#' + cardIds[0]).offset();
 
         cardIds.slice(1).forEach(function(cardId) {
@@ -57,37 +55,7 @@ boardroom = function(socket) {
         });
       }
     }
-
-
-    // group: function($note, $target) {
-    //   if ($target.parent().hasClass('group')) {
-    //     $note.appendTo($target.parent());
-    //   } else {
-    //     $('<div class="group"')
-    //   }
-    //   var origin = $target.offset()
-    //   $note.offset({left: origin.left + 15, top: origin.top + 36});
-    //   socket.emit('group', {noteId: $note.attr('id'), targetId: $target.attr('id')})
-
-
-
-    //   if ($target.attr('data-group-id')) {
-    //     groups[$target.attr('data-group-id')].push($note.attr('id'))
-    //     socket.emit('addToGroup', {_id: $target.attr('data-group-id'), cardId: $note.attr('id')})
-    //   } else {
-    //     socket.emit('createGroup', {cardId: , targetId: });
-    //   }
-    // },
-    // onGroupCreated: function(data) {
-    //   groups[data._id] = [data.targetId, data.cardId]
-    // },
-    // onGroup: function(data) {
-    //   var $note = $('#' + data.noteId);
-    //   var $target = $('#' + data.targetId);
-    //   var origin = $target.offset()
-    //   $note.offset({left: origin.left + 15, top: origin.top + 36});
-    // }
   }
 
-  return self;
+  return boardroom;
 }
