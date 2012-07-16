@@ -44,7 +44,7 @@ function begin() {
 
   var socketURL =  'http://' + document.location.host + '/boardNamespace/' + board.name;
   var socket = io.connect(socketURL);
-  boardroom = boardroomFactory(socket);
+  boardroom = boardroomFactory(socket, board);
   socket.on( 'move', onMoveCard );
   socket.on( 'add', onCreateCard );
   socket.on( 'delete', onDeleteCard );

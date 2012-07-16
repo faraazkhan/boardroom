@@ -1,4 +1,4 @@
-boardroomFactory = function(socket) {
+boardroomFactory = function(socket, boardInfo) {
   boardroom = {
     groups: {},
 
@@ -50,7 +50,8 @@ boardroomFactory = function(socket) {
           };
           $card = $('#' + cardId);
           $card.offset(origin);
-          socket.emit('move_commit', {_id:cardId, x:$card[0].offsetLeft, y:$card[0].offsetTop});
+          socket.emit('move', {_id:cardId, x:$card[0].offsetLeft, y:$card[0].offsetTop, board_name:boardInfo.name, author:boardInfo.user_id});
+          socket.emit('move_commit', {_id:cardId, x:$card[0].offsetLeft, y:$card[0].offsetTop, board_name:boardInfo.name, author:boardInfo.user_id,});
           // moveToTop($(this));
         });
       }
