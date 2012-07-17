@@ -1,5 +1,14 @@
 boardroomFactory = function(socket, boardInfo) {
   boardroom = {
+    max_z: 1,
+
+    moveToTop: function(card) {
+      if (parseInt($(card).css('z-index')) === boardroom.max_z) {
+        return;
+      }
+      $(card).css('z-index', ++boardroom.max_z);
+    },
+
     group: {
       addTo: function($card, $targetCard) {
         var cardId = $card.attr('id');
@@ -40,6 +49,7 @@ boardroomFactory = function(socket, boardInfo) {
       layOut: function(id) {
         var cardIds = boardInfo.groups[id].cardIds;
         var origin = $('#' + cardIds[0]).offset();
+        boardroom.moveToTop($('#' + cardIds[0]));
 
         cardIds.slice(1).forEach(function(cardId) {
           origin = {
@@ -50,7 +60,7 @@ boardroomFactory = function(socket, boardInfo) {
           $card.offset(origin);
           socket.emit('move', {_id:cardId, x:$card[0].offsetLeft, y:$card[0].offsetTop, board_name:boardInfo.name, author:boardInfo.user_id});
           socket.emit('move_commit', {_id:cardId, x:$card[0].offsetLeft, y:$card[0].offsetTop, board_name:boardInfo.name, author:boardInfo.user_id,});
-          // moveToTop($(this));
+          boardroom.moveToTop($card);
         });
       }
     }

@@ -15,15 +15,7 @@ function analyzeCardContent(textarea) {
   }
 }
 
-var max_z = 1;
-function moveToTop(card) {
-  if (parseInt($(card).css('z-index')) === max_z) {
-    return;
-  }
-  $(card).css('z-index', ++max_z);
-}
-
-var board = null, domLoaded = false, begun=false, focusNextCreate = false, cardLocks = {};
+var board = null, boardroom = null, domLoaded = false, begun=false, focusNextCreate = false, cardLocks = {};
 $.getJSON( document.location.pathname+'/info', function(data) { board = data; begin(); });
 $(function() { domLoaded = true; begin(); });
 
@@ -37,17 +29,6 @@ function begin() {
 
   function avatar( user ) {
     return '/user/avatar/' + encodeURIComponent( user );
-  }
-
-  for (var i=0,card; card = board.cards[i]; i++)
-    onCreateCard( card );
-
-  for (var groupId in board.groups) {
-    if (board.groups.hasOwnProperty(groupId)) {
-      board.groups[groupId].cardIds.forEach(function(cardId) {
-        $('#' + cardId).data('group-id', groupId);
-      });
-    }
   }
 
   var socketURL =  'http://' + document.location.host + '/boardNamespace/' + board.name;
@@ -64,6 +45,17 @@ function begin() {
   socket.on('boardDeleted', function () { alert('This board has been deleted by its owner.'); window.location = '/boards'; });
   socket.on('group', boardroom.onGroup);
   socket.on('createdGroup', boardroom.group.onCreated);
+
+  for (var i=0,card; card = board.cards[i]; i++)
+    onCreateCard( card );
+
+  for (var groupId in board.groups) {
+    if (board.groups.hasOwnProperty(groupId)) {
+      board.groups[groupId].cardIds.forEach(function(cardId) {
+        $('#' + cardId).data('group-id', groupId);
+      });
+    }
+  }
 
   // clear outdated locks
   setInterval(function() {
@@ -87,7 +79,7 @@ function begin() {
       notice( coords._id, coords.moved_by, coords.moved_by );
       cardLocks[coords._id] = { user_id:coords.moved_by, updated:new Date().getTime(), move:true };
     }
-    moveToTop($card);
+    boardroom.moveToTop($card);
   }
 
   function onDeleteCard( card ) {
@@ -136,7 +128,7 @@ function begin() {
       $('textarea', $card).focus();
       focusNextCreate = false;
     }
-    moveToTop($card);
+    boardroom.moveToTop($card);
   }
 
   function onColor( data ) {
@@ -154,7 +146,7 @@ function begin() {
     cardLocks[data._id] = { user_id:data.author, updated:new Date().getTime() };
     addAuthor( data._id, data.author );
     adjustTextarea($ta[0]);
-    moveToTop('#'+data._id);
+    boardroom.moveToTop('#'+data._id);
   }
 
   $('.card').live('mousedown', function(e) {
@@ -215,7 +207,7 @@ function begin() {
 
     $(window).mousemove(mousemove);
     $(window).mouseup(mouseup);
-    moveToTop(this);
+    boardroom.moveToTop(this);
   });
 
   $('.card .colors .color').live('click', function() {
@@ -237,6 +229,9 @@ function begin() {
   $('.card textarea').live('change', function() {
     var card = $(this).closest('.card')[0];
     socket.emit('text_commit', { _id:card.id, text:$(this).val(), board_name:board.name, author:board.user_id });
+    if (groupId = $(card).data('group-id')) {
+      boardroom.group.layOut(groupId);
+    }
   });
 
   $('.card .delete').live('click', function() {
