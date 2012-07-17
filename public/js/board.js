@@ -52,8 +52,12 @@ function begin() {
   for (var groupId in board.groups) {
     if (board.groups.hasOwnProperty(groupId)) {
       board.groups[groupId].cardIds.forEach(function(cardId) {
-        $('#' + cardId).data('group-id', groupId);
+        var $card = $('#' + cardId)
+        $card.data('group-id', groupId)
+        $card.off('mousedown');
+        $card.followDrag(boardroom.dragOptions($card));
       });
+      boardroom.group.layOut(groupId);
     }
   }
 

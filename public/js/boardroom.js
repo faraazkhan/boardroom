@@ -2,6 +2,28 @@ boardroomFactory = function(socket, boardInfo) {
   boardroom = {
     max_z: 1,
 
+    dragOptions : function($card) { return {
+      onMouseMove: function() {
+        socket.emit('move', {_id:$card.id, x:$card.position().left, y:$card.position().top, board_name:boardInfo.name, author:boardInfo.user_id,});
+      },
+      position: function(dx, dy, x, y, e) {
+        var distance = Math.sqrt(dx*dx + dy*dy);
+        if (distance < 100) {
+          return {left: Math.floor(x - dx*(1-distance/100/5)), top: Math.floor(y - dy*(1-distance/100/5))};
+        } else {
+          boardroom.group.remove($card);
+          $(window).add($card).off('.followDrag');
+          $card.mousedown(boardroom.card.onMouseDown)
+          boardroom.card.onMouseDownHelper.call($card[0], e.clientX, e.clientY);
+          socket.emit('move_commit', {_id:$card.id, x:$card.position().left, y:$card.position().top, board_name:boardInfo.name, author:boardInfo.user_id,});
+          return {left: x, top: y};
+        }
+      },
+      onMouseUp: function () {
+        
+      }
+    }},
+
     moveToTop: function(card) {
       if (parseInt($(card).css('z-index')) === boardroom.max_z) {
         return;
@@ -12,22 +34,7 @@ boardroomFactory = function(socket, boardInfo) {
     group: {
       addTo: function($card, $targetCard) {
         $card.off('mousedown');
-        $card.followDrag({
-          onMouseMove: function() {
-            socket.emit('move', {_id:cardId, x:$card.position().left, y:$card.position().top, board_name:boardInfo.name, author:boardInfo.user_id,});
-          },
-          position: function(dx, dy, x, y) {
-            var distance = Math.sqrt(dx*dx + dy*dy);
-            if (distance < 100) {
-              return {left: Math.floor(x - dx*(1-distance/100/5)), top: Math.floor(y - dy*(1-distance/100/5))};
-            } else {
-              boardroom.group.remove($card);
-              $('body').add($card).off('.followDrag');
-              socket.emit('move_commit', {_id:cardId, x:$card.position().left, y:$card.position().top, board_name:boardInfo.name, author:boardInfo.user_id,});
-              return {left: x, top: y};
-            }
-          }
-        });
+        $card.followDrag(boardroom.dragOptions($card));
 
         var cardId = $card.attr('id');
         var cardGroupId = $card.data('group-id');
@@ -58,6 +65,7 @@ boardroomFactory = function(socket, boardInfo) {
         if (cardGroupId) {
             console.log('removed ' + cardId + ' from ' + cardGroupId);
             boardInfo.groups[cardGroupId].cardIds.splice(boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1);
+            $card.data('group-id', null);
             socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
           }
       },
@@ -89,13 +97,44 @@ boardroomFactory = function(socket, boardInfo) {
       }
     },
 
-    card: {
-      onMouseDown: function(e) {
-        console.log('card onMouseDown ' + e.clientX + ' ' + e.clientY);
-        if ($(e.target).is('textarea:focus')) {
-          return true;
+    grouping : function(e) {
+      var $activeCard = $(e.target).closest('.card');
+      
+      var sorted = $('.card').not($activeCard).toArray().sort(function (first,second) {
+        return $(second).css('z-index') - $(first).css('z-index');
+      });
+
+      sorted.some(function(card) {
+        var $card = $(card);
+        if ($card.containsPoint(e.pageX, e.pageY)) {
+          $activeCard.addClass('group-intent-source');
+          $card.addClass('group-intent-target');
+          $activeCard.add($card).addClass('group-intent');
+
+          $activeCard.off('.group');
+          $activeCard.on('mouseup.group', function() {
+            $activeCard.add($card).removeClassMatching(/group-intent.*/g);
+            $activeCard.off('.group');
+            boardroom.group.addTo($activeCard, $card);
+          });
+
+          $activeCard.on('mousemove.group', function(e) {
+            if (!$card.containsPoint(e.pageX, e.pageY)) {
+              $activeCard.add($card).removeClassMatching(/group-intent.*/g);
+              $activeCard.off('.group');
+            }
+          });
+          
+          return true; // break out of loop
         }
-        var deltaX = e.clientX-this.offsetLeft, deltaY = e.clientY-this.offsetTop;
+      });
+    },
+
+
+
+    card: {
+      onMouseDownHelper: function(x, y) {
+        var deltaX = x-this.offsetLeft, deltaY = y-this.offsetTop;
         var dragged = this.id, hasMoved = false;
         $card = $(this);
 
@@ -104,34 +143,7 @@ boardroomFactory = function(socket, boardInfo) {
           return {_id:dragged, x:card.offsetLeft, y:card.offsetTop, board_name:board.name, author:board.user_id, moved_by:board.user_id};
         }
 
-        var onMousePause = $('.card').onMousePause(function(e) {
-          var $this = $(e.target).closest('.card');
-          var sorted = $('.card').not($this).toArray().sort(function (first,second) {
-            return $(second).css('z-index') - $(first).css('z-index');
-          });
-          sorted.some(function(other) {
-            var $other = $(other);
-            if ($other.containsPoint(e.pageX, e.pageY)) {
-              $this.addClass('group-intent-source');
-              $other.addClass('group-intent-target');
-              $this.add($other).addClass('group-intent');
-
-              $this.off('.group');
-              $this.on('mouseup.group', function() {
-                $this.add($other).removeClassMatching(/group-intent.*/g);
-                $this.off('.group');
-                boardroom.group.addTo($this, $other);
-              });
-              $this.on('mousemove.group', function(e) {
-                if (!$other.containsPoint(e.pageX, e.pageY)) {
-                  $this.add($other).removeClassMatching(/group-intent.*/g);
-                  $this.off('.group');
-                }
-              });
-              return true; // break out of loop
-            }
-          });
-        }, 400);
+        var onMousePause = $('.card').onMousePause(boardroom.grouping, 400);
 
         function mousemove(e) {
           console.log('card mousemove ' + deltaX + " " + deltaY);
@@ -151,6 +163,12 @@ boardroomFactory = function(socket, boardInfo) {
         $(window).mousemove(mousemove);
         $(window).mouseup(mouseup);
         boardroom.moveToTop(this);
+      },
+      onMouseDown: function(e) {
+        if ($(e.target).is('textarea:focus')) {
+          return true;
+        }
+        boardroom.card.onMouseDownHelper.call(e.target, e.clientX, e.clientY);
       }
     }
   }

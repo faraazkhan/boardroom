@@ -61,7 +61,7 @@
         var offsetX = origLeft + deltaX;
         var offsetY = origTop  + deltaY;
 
-        var offset = settings.position(deltaX, deltaY, offsetX, offsetY);
+        var offset = settings.position(deltaX, deltaY, offsetX, offsetY, e);
 
         $this.add(settings.otherFollowers).each(function() {
           $(this).offset({
