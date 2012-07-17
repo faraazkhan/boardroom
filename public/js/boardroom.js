@@ -15,11 +15,7 @@ boardroomFactory = function(socket, boardInfo) {
         var cardGroupId = $card.data('group-id');
         var targetGroupId = $targetCard.data('group-id');
         if (targetGroupId) {
-          if (cardGroupId) {
-            console.log('removed ' + cardId + ' from ' + cardGroupId);
-            boardInfo.groups[cardGroupId].cardIds.splice(boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1);
-            socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
-          }
+          boardroom.group.remove($card);
 
           boardInfo.groups[targetGroupId].cardIds.push(cardId);
           $card.data('group-id', targetGroupId);
@@ -36,6 +32,15 @@ boardroomFactory = function(socket, boardInfo) {
           socket.emit('createGroup', {boardName: boardInfo.name, cardIds: [$targetCard.attr('id'), cardId]});
           console.log('create');
         }
+      },
+      remove: function($card) {
+        var cardId = $card.attr('id');
+        var cardGroupId = $card.data('group-id');
+        if (cardGroupId) {
+            console.log('removed ' + cardId + ' from ' + cardGroupId);
+            boardInfo.groups[cardGroupId].cardIds.splice(boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1);
+            socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
+          }
       },
       onCreated: function(data) {
         console.log('created ' + data._id);
