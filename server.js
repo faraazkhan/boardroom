@@ -55,7 +55,7 @@ app.get( "/boards/:board/info", function(request, response) {
       response.send({
         name:boardName,
         cards:cards,
-        groups:board && board.groups || [],
+        groups:board && board.groups || {},
         users:boardNamespaces[boardName] || {},
         user_id:request.session.user_id,
         title: boardName

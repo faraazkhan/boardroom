@@ -38,37 +38,50 @@
 })( jQuery );
 
 (function( $ ) {
-  $.fn.followDrag = function(otherFollowers) {
+  $.fn.followDrag = function(opts) {
     var $this = this;
 
-    $this.on('mousedown.followDrag', function (e) {
-      var lastX = e.pageX;
-      var lastY = e.pageY;
-      $('body').on('mousemove.followDrag', function (e) {
-        var deltaX = e.pageX - lastX;
-        var deltaY = e.pageY - lastY;
+    var settings = $.extend(true, {
+      otherFollowers : [],
+      onMouseMove : function() {},
+      onMouseUp : function() {},
+      position : function(dx, dy, x, y) { return {left: x, top: y}; }
+    }, opts)
 
-        $this.add(otherFollowers).each(function() {
+    $this.on('mousedown.followDrag', function (e) {
+      var origX = lastX = e.pageX;
+      var origY = lastY = e.pageY;
+      var origLeft = $this.offset().left;
+      var origTop = $this.offset().top;
+
+      $(window).on('mousemove.followDrag', function (e) {
+        var deltaX = e.pageX - origX;
+        var deltaY = e.pageY - origY;
+
+        var offsetX = origLeft + deltaX;
+        var offsetY = origTop  + deltaY;
+
+        var offset = settings.position(deltaX, deltaY, offsetX, offsetY);
+
+        $this.add(settings.otherFollowers).each(function() {
           $(this).offset({
-            left: $(this).offset().left + deltaX,
-            top:  $(this).offset().top  + deltaY
+            left: offset.left,
+            top:  offset.top
           });
         });
 
         lastX = e.pageX;
         lastY = e.pageY;
+
+        settings.onMouseMove();
       });
 
-      $('body').on('mouseup.followDrag', function (e) {
+      $(window).on('mouseup.followDrag', function (e) {
         console.log('mouseup');
-        $('body').off('mousemove.followDrag');
+        $(window).off('mousemove.followDrag');
+        settings.onMouseUp();
       });
     });
-
-    return {
-      off: function () {
-        $this.off('.followDrag');
-      }
-    }
+    return $this
   };
 })( jQuery );
