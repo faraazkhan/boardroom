@@ -11,11 +11,14 @@ boardroomFactory = function(socket, boardInfo) {
         if (distance < 100) {
           return {left: Math.floor(x - dx*(1-distance/100/5)), top: Math.floor(y - dy*(1-distance/100/5))};
         } else {
-          boardroom.group.remove($card);
+          boardroom.group.remove($card, function(cardGroupId, cardId) {
+            socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
+          });
           $(window).add($card).off('.followDrag');
           $card.mousedown(boardroom.card.onMouseDown)
-          boardroom.card.onMouseDownHelper.call($card[0], e.clientX, e.clientY);
           socket.emit('move_commit', {_id:$card.id, x:$card.position().left, y:$card.position().top, board_name:boardInfo.name, author:boardInfo.user_id,});
+          $card.offset({left: x, top: y});
+          boardroom.card.onMouseDownHelper.call($card[0], e.pageX, e.pageY);
           return {left: x, top: y};
         }
       },
@@ -40,9 +43,10 @@ boardroomFactory = function(socket, boardInfo) {
         var cardGroupId = $card.data('group-id');
         var targetGroupId = $targetCard.data('group-id');
 
+        boardroom.group.remove($card, function(cardGroupId, cardId) {
+          socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
+        });
         if (targetGroupId) {
-          boardroom.group.remove($card);
-
           boardInfo.groups[targetGroupId].cardIds.push(cardId);
           $card.data('group-id', targetGroupId);
           socket.emit('updateGroup', {boardName: boardInfo.name, _id: targetGroupId, cardIds: boardInfo.groups[targetGroupId].cardIds});
@@ -50,24 +54,20 @@ boardroomFactory = function(socket, boardInfo) {
 
           boardroom.group.layOut(targetGroupId);
         } else {
-          if (cardGroupId) {
-            boardInfo.groups[cardGroupId].cardIds.splice(boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1);
-            socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
-          }
-
           socket.emit('createGroup', {boardName: boardInfo.name, cardIds: [$targetCard.attr('id'), cardId]});
           console.log('create');
         }
       },
-      remove: function($card) {
+      remove: function($card, callback) {
         var cardId = $card.attr('id');
         var cardGroupId = $card.data('group-id');
         if (cardGroupId) {
-            console.log('removed ' + cardId + ' from ' + cardGroupId);
-            boardInfo.groups[cardGroupId].cardIds.splice(boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1);
-            $card.data('group-id', null);
-            socket.emit('updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds});
-          }
+          console.log('removed ' + cardId + ' from ' + cardGroupId);
+          boardInfo.groups[cardGroupId].cardIds.splice(boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1);
+          $card.data('group-id', null);
+          if (callback)
+            callback(cardGroupId, cardId);
+        }
       },
       onCreated: function(data) {
         console.log('created ' + data._id);

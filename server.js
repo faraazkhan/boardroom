@@ -151,9 +151,11 @@ function createBoardSession( boardName ) {
         socket.on('color', updateCard );
         socket.on('updateGroup', function (data) {
           board.updateGroup(data.boardName, data._id, data.cardIds);
+          socket.broadcast.emit('createdGroup', data);
         });
         socket.on('createGroup', function (data) {
           board.createGroup(data.boardName, data.groupName, data.cardIds, function (group) {
+            socket.broadcast.emit('createdGroup', group);
             socket.emit('createdGroup', group);
           });
         });
