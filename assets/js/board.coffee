@@ -48,9 +48,9 @@ begin = () ->
 
   setInterval () ->
     currentTime = new Date().getTime()
-    for cardId in cardLocks
-      timeout = if cardLocks[cardId].move then 500 else 5000
-      if currentTime - cardLocks[cardId].updated > timeout
+    for own cardId, cardLock of cardLocks
+      timeout = if cardLock.move then 500 else 5000
+      if currentTime - cardLock.updated > timeout
         $("\##{cardId} .notice").fadeOut 100
         $("\##{cardId} textarea").removeAttr 'disabled'
         delete cardLocks[cardId];
@@ -62,7 +62,10 @@ begin = () ->
       .css('top', coords.y)
     unless $('.notice', $card).is ':visible'
       notice coords._id, coords.moved_by, coords.moved_by
-      cardLocks[coords._id] = user_id : coords.moved_by, updated : new Date().getTime(), move : true
+      cardLocks[coords._id] =
+        user_id : coords.moved_by,
+        updated : new Date().getTime(),
+        move : true
     boardroom.moveToTop $card
 
   onDeleteCard = (card) -> $('#'+card._id).remove()
@@ -121,7 +124,9 @@ begin = () ->
     if ! cardLocks[data._id] || cardLocks[data._id].user_id != data.author
       notice data._id, data.author, data.author + ' is typing...'
     $("\##{data._id} .notice").show();
-    cardLocks[data._id] = user_id : data.author, updated : new Date().getTime()
+    cardLocks[data._id] =
+      user_id : data.author,
+      updated : new Date().getTime()
     addAuthor data._id, data.author
     adjustTextarea $ta[0]
     boardroom.moveToTop "\##{data._id}"

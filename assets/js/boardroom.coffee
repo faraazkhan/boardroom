@@ -55,7 +55,6 @@ window.boardroomFactory = (socket, boardInfo) ->
           if (callback) then callback(cardGroupId, cardId)
 
       onCreated: (data) ->
-        console.log 'created ' + data._id
         boardInfo.groups[data._id] = {cardIds: data.cardIds}
         data.cardIds.forEach (cardId) ->
           $('#' + cardId).data 'group-id', data._id
