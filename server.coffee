@@ -129,16 +129,19 @@ createBoardSession = (boardName) ->
 
       socket.on 'updateGroup', (data) ->
         board.updateGroup data.boardName, data._id, data.cardIds
-        socket.broadcast.emit 'createdGroup', data
+        socket.broadcast.emit 'createdOrUpdatedGroup', data
 
-      socket.on 'removeGroup', (data) ->
-        board.removeGroup data.boardName, data._id
-        socket.broadcast.emit 'removedGroup', data
+      socket.on 'removeCard', (data) ->
+        if data.cardIds.length == 0
+          board.removeGroup data.boardName, data._id
+        else
+          board.updateGroup data.boardName, data._id, data.cardIds
+        socket.broadcast.emit 'removedCard', data
 
       socket.on 'createGroup', (data) ->
         board.createGroup data.boardName, data.groupName, data.cardIds, (group) ->
-          socket.broadcast.emit 'createdGroup', group
-          socket.emit 'createdGroup', group
+          socket.broadcast.emit 'createdOrUpdatedGroup', group
+          socket.emit 'createdOrUpdatedGroup', group
 
       socket.on 'title_changed', (data) ->
         board.updateBoard boardName, { title: data.title }

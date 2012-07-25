@@ -44,8 +44,8 @@ begin = () ->
   socket.on 'color', (data) -> onColor(data)
   socket.on 'boardDeleted', () -> alert('This board has been deleted by its owner.'); window.location = '/boards'
   socket.on 'group', (data) -> boardroom.onGroup(data)
-  socket.on 'createdGroup', (data) -> boardroom.group.onCreated(data)
-  socket.on 'removedGroup', (data) -> boardroom.group.onRemoved(data)
+  socket.on 'createdOrUpdatedGroup', (data) -> boardroom.group.onCreatedOrUpdated(data)
+  socket.on 'removedCard', (data) -> boardroom.group.remove($('#' + data.cardId))
 
   setInterval () ->
     currentTime = new Date().getTime()

@@ -54,10 +54,7 @@ window.boardroomFactory = (socket, boardInfo) ->
           $card.data('group-id', null)
           if (callback) then callback(cardGroupId, cardId)
 
-      onRemoved: (data) ->
-        delete boardInfo.groups[data._id]
-
-      onCreated: (data) ->
+      onCreatedOrUpdated: (data) ->
         boardInfo.groups[data._id] = {cardIds: data.cardIds}
         data.cardIds.forEach (cardId) ->
           $('#' + cardId).data 'group-id', data._id
@@ -80,10 +77,11 @@ window.boardroomFactory = (socket, boardInfo) ->
           boardroom.moveToTop $card
 
       emitRemoval: (cardGroupId, cardId) ->
-        if !boardInfo.groups[cardGroupId]
-          socket.emit 'removeGroup', {boardName: boardInfo.name, _id: cardGroupId}
-        else
-          socket.emit 'updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds}
+        socket.emit 'removeCard',
+          boardName: boardInfo.name,
+          _id: cardGroupId,
+          cardId: cardId,
+          cardIds: boardInfo.groups[cardGroupId] && boardInfo.groups[cardGroupId].cardIds || []
 
     grouping : (e) ->
       $activeCard = $(e.target).closest '.card'
