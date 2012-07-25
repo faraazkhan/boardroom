@@ -14,14 +14,18 @@ mongo.connect mongoUrl, errorWrapper (_database) -> database = _database
 
 withCollection = (name, callback) -> database.collection name, errorWrapper callback
 
-safe = (callback) -> if callback then {safe:true} else {}
+safe = (callback) ->
+  if callback
+    safe: true
+  else
+    {}
 
 exports.saveCard = (card, callback) ->
   withCollection 'cards', (cards) ->
     card.authors = [];
-    cards.save card, safe callback, errorWrapper callback
+    cards.save card, safe(callback), errorWrapper callback
 
-exports.updateCard = function(card, callback) ->
+exports.updateCard = (card, callback) ->
   withCollection 'cards', (cards) ->
     cards.find {_id:new BSON.ObjectID(card._id) }, errorWrapper ( cursor ) ->
       cursor.each errorWrapper ( existingCard ) ->
@@ -33,7 +37,7 @@ exports.updateCard = function(card, callback) ->
         if card.deleted != null then existingCard.deleted = card.deleted
         if card.author && (! existingCard.authors || ! (existingCard.authors.indexOf(card.author)>-1))
           (existingCard.authors=existingCard.authors||[]).push( card.author );
-        cards.save existingCard, safe callback, errorWrapper callback
+        cards.save existingCard, safe(callback), errorWrapper callback
 
 exports.removeCard = (card, callback) ->
   withCollection 'cards', (cards) -> cards.remove { _id: new BSON.ObjectID(card._id) }, errorWrapper callback
@@ -55,13 +59,13 @@ exports.findBoards = (criteria, reducer) ->
 
 exports.findBoardCardCounts = (callback) ->
   withCollection 'cards', (cards) ->
-    cards.group {boardName:true}, {}, { count:0 }, (item,stats) -> stats.count++ , errorWrapper callback
+    cards.group({boardName:true}, {}, { count:0 }, ((item,stats) -> stats.count++), errorWrapper(callback))
 
 exports.findOrCreateBoard = (boardName, creator_id, callback) ->
   withCollection 'boards', (collection) ->
     collection.find({ name: boardName }, { limit: 1 }).toArray (err, objs) ->
       if objs.length == 0
-        var b = { name: boardName, title: boardName, creator_id: creator_id }
+        b = { name: boardName, title: boardName, creator_id: creator_id }
         collection.insert b
         callback b
       else
@@ -78,7 +82,7 @@ exports.findBoardAllowEmpty = (boardName, callback) ->
 
 exports.updateBoard = (boardName, attrs, callback) ->
   withCollection 'boards', (collection) ->
-    collection.update { name: boardName }, { $set: attrs }, safe callback, errorWrapper callback
+    collection.update { name: boardName }, { $set: attrs }, safe(callback), errorWrapper callback
 
 exports.deleteBoard = (boardId, callback) ->
   withCollection 'boards', (collection) ->
@@ -92,11 +96,17 @@ exports.createGroup = (boardName, name, cardIds, callback) ->
   update['$set']['groups.' + groupId] = group
 
   withCollection 'boards', (boards) ->
-    boards.update {name: boardName}, update, safe callback, errorWrapper () -> callback groupWithId
+    boards.update {name: boardName}, update, safe(callback), errorWrapper () -> callback groupWithId
 
 exports.updateGroup = (boardName, _id, cardIds, callback) ->
-  update = {$set: {}}
-  update['$set']['groups.' + _id] = {cardIds: cardIds}
+  if cardIds.length == 0
+    update = {$unset: {}}
+    update['$unset']['groups.' + _id] = 1
+    update
+  else
+    update = {$set: {}}
+    update['$set']['groups.' + _id] = {cardIds: cardIds}
 
   withCollection 'boards', (boards) ->
-    boards.update {name: boardName}, update, safe callback, errorWrapper callback
+    boards.update {name: boardName}, update, safe(callback), errorWrapper(callback)
+
