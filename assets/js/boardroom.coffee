@@ -11,8 +11,7 @@ window.boardroomFactory = (socket, boardInfo) ->
           if distance < 100
             return left: Math.floor(x - dx*(1-distance/100/5)), top: Math.floor(y - dy*(1-distance/100/5))
           else
-            boardroom.group.remove $card, (cardGroupId, cardId) ->
-              socket.emit 'updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds}
+            boardroom.group.remove $card, boardroom.group.emitRemoval
             $(window).add($card).off '.followDrag'
             $card.mousedown(boardroom.card.onMouseDown)
             socket.emit 'move_commit', {_id: $card.id, x: $card.position().left, y:$card.position().top, board_name:boardInfo.name, author:boardInfo.user_id}
@@ -34,8 +33,7 @@ window.boardroomFactory = (socket, boardInfo) ->
         cardGroupId = $card.data('group-id');
         targetGroupId = $targetCard.data('group-id');
 
-        boardroom.group.remove $card, (cardGroupId, cardId) ->
-          socket.emit 'updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds}
+        boardroom.group.remove $card, boardroom.group.emitRemoval
 
         if targetGroupId
           boardInfo.groups[targetGroupId].cardIds.push(cardId);
@@ -51,8 +49,13 @@ window.boardroomFactory = (socket, boardInfo) ->
         if cardGroupId
           console.log 'removed ' + cardId + ' from ' + cardGroupId
           boardInfo.groups[cardGroupId].cardIds.splice boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1
+          if boardInfo.groups[cardGroupId].cardIds.length == 0
+            delete boardInfo.groups[cardGroupId]
           $card.data('group-id', null)
           if (callback) then callback(cardGroupId, cardId)
+
+      onRemoved: (data) ->
+        delete boardInfo.groups[data._id]
 
       onCreated: (data) ->
         boardInfo.groups[data._id] = {cardIds: data.cardIds}
@@ -75,6 +78,12 @@ window.boardroomFactory = (socket, boardInfo) ->
           socket.emit 'move', {_id:cardId, x:$card[0].offsetLeft, y:$card[0].offsetTop, board_name:boardInfo.name, author:boardInfo.user_id}
           socket.emit 'move_commit', {_id:cardId, x:$card[0].offsetLeft, y:$card[0].offsetTop, board_name:boardInfo.name, author:boardInfo.user_id}
           boardroom.moveToTop $card
+
+      emitRemoval: (cardGroupId, cardId) ->
+        if !boardInfo.groups[cardGroupId]
+          socket.emit 'removeGroup', {boardName: boardInfo.name, _id: cardGroupId}
+        else
+          socket.emit 'updateGroup', {boardName: boardInfo.name, _id: cardGroupId, cardIds: boardInfo.groups[cardGroupId].cardIds}
 
     grouping : (e) ->
       $activeCard = $(e.target).closest '.card'

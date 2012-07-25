@@ -45,6 +45,7 @@ begin = () ->
   socket.on 'boardDeleted', () -> alert('This board has been deleted by its owner.'); window.location = '/boards'
   socket.on 'group', (data) -> boardroom.onGroup(data)
   socket.on 'createdGroup', (data) -> boardroom.group.onCreated(data)
+  socket.on 'removedGroup', (data) -> boardroom.group.onRemoved(data)
 
   setInterval () ->
     currentTime = new Date().getTime()

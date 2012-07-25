@@ -98,14 +98,17 @@ exports.createGroup = (boardName, name, cardIds, callback) ->
   withCollection 'boards', (boards) ->
     boards.update {name: boardName}, update, safe(callback), errorWrapper () -> callback groupWithId
 
+exports.removeGroup = (boardName, _id, callback) ->
+  update = {$unset: {}}
+  update['$unset']['groups.' + _id] = 1
+
+  withCollection 'boards', (boards) ->
+    boards.update {name: boardName}, update, safe(callback), errorWrapper(callback)
+
+
 exports.updateGroup = (boardName, _id, cardIds, callback) ->
-  if cardIds.length == 0
-    update = {$unset: {}}
-    update['$unset']['groups.' + _id] = 1
-    update
-  else
-    update = {$set: {}}
-    update['$set']['groups.' + _id] = {cardIds: cardIds}
+  update = {$set: {}}
+  update['$set']['groups.' + _id] = {cardIds: cardIds}
 
   withCollection 'boards', (boards) ->
     boards.update {name: boardName}, update, safe(callback), errorWrapper(callback)
