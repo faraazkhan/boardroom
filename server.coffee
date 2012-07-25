@@ -21,6 +21,7 @@ app.configure ->
   app.set "view engine", "jade"
 
   app.use require('connect-assets')()
+  app.use express.bodyParser()
   app.use express.static __dirname + '/public'
   app.use sessions(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889', session_key: 'carbonite')
   app.error ( error, request, response ) ->
@@ -51,6 +52,7 @@ app.get "/login", (request, response) ->
 app.post "/login", (request, response) ->
   if !request.session
     request.session = {}
+  console.log request.body
   request.session.user_id = request.body.user_id
   response.redirect request.session.post_auth_url || '/'
   delete request.session.post_auth_url
