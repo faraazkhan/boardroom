@@ -51,19 +51,29 @@ window.boardroomFactory = (socket, boardInfo) ->
           boardInfo.groups[cardGroupId].cardIds.splice boardInfo.groups[cardGroupId].cardIds.indexOf(cardId), 1
           if boardInfo.groups[cardGroupId].cardIds.length == 0
             delete boardInfo.groups[cardGroupId]
+            $('#' + cardGroupId + "-name").remove()
           $card.data('group-id', null)
           if (callback) then callback(cardGroupId, cardId)
 
       onCreatedOrUpdated: (data) ->
-        boardInfo.groups[data._id] = {cardIds: data.cardIds}
+        boardInfo.groups[data._id] = {cardIds: data.cardIds, name: data.name}
         data.cardIds.forEach (cardId) ->
           $('#' + cardId).data 'group-id', data._id
+        name_id = data._id + "-name";
+        if $("#" + name_id).length
+          $("#" + name_id).text(data.name)
+        else
+          $("<div id='#{name_id}' class='stack-name'>#{data.name}</div>").appendTo $(".board")
         boardroom.group.layOut data._id
 
       layOut: (id) ->
         cardIds = boardInfo.groups[id].cardIds
         origin = $('#' + cardIds[0]).offset()
         boardroom.moveToTop $('#' + cardIds[0])
+
+        $("#" + id + "-name").offset
+          left: origin.left,
+          top: origin.top - 20
 
         cardIds.slice(1).forEach (cardId) ->
           origin =

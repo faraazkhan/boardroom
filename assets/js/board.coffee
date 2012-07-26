@@ -22,6 +22,7 @@ $(() -> domLoaded = true; begin())
 
 begin = () ->
   if ! window.board || ! domLoaded || begun then return;
+  if ! window.board || ! domLoaded || begun then return;
   begun = true
   board = window.board
 
@@ -140,7 +141,7 @@ begin = () ->
       $card.data 'group-id', groupId
       $card.off 'mousedown'
       $card.followDrag boardroom.dragOptions($card)
-    boardroom.group.layOut(groupId)
+    boardroom.group.onCreatedOrUpdated($.extend(group,{_id: groupId}))
 
   $('.card .colors .color').live 'click', () ->
     card = $(this).closest('.card')[0]
