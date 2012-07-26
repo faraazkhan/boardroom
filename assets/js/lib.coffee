@@ -17,7 +17,7 @@
     timeout = null
     $this.on 'mousemove.onMousePause', (e) ->
       clearTimeout timeout
-      timeout = setTimeout () -> callback.call $this, e, duration
+      timeout = setTimeout (() -> callback.call($this, e)), duration
 
     return off: () ->
       clearTimeout timeout
