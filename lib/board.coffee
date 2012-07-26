@@ -106,9 +106,10 @@ exports.removeGroup = (boardName, _id, callback) ->
     boards.update {name: boardName}, update, safe(callback), errorWrapper(callback)
 
 
-exports.updateGroup = (boardName, _id, cardIds, callback) ->
+exports.updateGroup = (boardName, _id, name, cardIds, callback) ->
   update = {$set: {}}
-  update['$set']['groups.' + _id] = {cardIds: cardIds}
+  if name then update['$set']['groups.' + _id + '.name'] = name
+  if cardIds then update['$set']['groups.' + _id + '.cardIds'] = cardIds
 
   withCollection 'boards', (boards) ->
     boards.update {name: boardName}, update, safe(callback), errorWrapper(callback)

@@ -73,6 +73,27 @@ a {
   }
 }
 
+.stack-name {
+  cursor: pointer;
+}
+
+.stack-name, .stack-name-edit {
+  position: absolute;
+  box-sizing: border-box;
+  width: 286px;
+  height: 16px;
+  color: white;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+.stack-name-edit {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
 .card {
   cursor: move;
   -webkit-user-select: none;
@@ -157,10 +178,6 @@ a {
       border: 1px solid white;
     }
   }
-}
-
-.stack-name {
-  position: absolute;
 }
 
 .card:hover .authors img { visibility: visible; }

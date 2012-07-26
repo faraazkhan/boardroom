@@ -143,6 +143,25 @@ begin = () ->
       $card.followDrag boardroom.dragOptions($card)
     boardroom.group.onCreatedOrUpdated($.extend(group,{_id: groupId}))
 
+  document.onselectstart = (e) ->
+    $(e.target).is('input[type=text], textarea') # only allow selection in text inputs and textareas
+
+  $('.board').on 'click', '.stack-name', () ->
+    $this = $(this)
+    offset = $this.offset()
+    offset.left -= 1
+
+    $input = $('<input type="text" class="stack-name-edit">').val($this.text())
+    $input.appendTo($this.parent()).offset(offset).focus()
+    $this.remove()
+
+    $input.on 'blur change', () ->
+      $this.text($input.val())
+      $this.appendTo($input.parent())
+      $input.remove()
+      targetGroupId = $this.attr('id').split('-')[0]
+      socket.emit 'updateGroup', {boardName: board.name, _id: targetGroupId, name: $input.val()}
+
   $('.card .colors .color').live 'click', () ->
     card = $(this).closest('.card')[0]
     colorIndex = $(this).attr('class').match(/color-(\d+)/)[1]

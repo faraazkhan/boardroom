@@ -128,7 +128,7 @@ createBoardSession = (boardName) ->
       socket.on 'color', updateCard
 
       socket.on 'updateGroup', (data) ->
-        board.updateGroup data.boardName, data._id, data.cardIds
+        board.updateGroup data.boardName, data._id, data.name, data.cardIds
         socket.broadcast.emit 'createdOrUpdatedGroup', data
 
       socket.on 'removeCard', (data) ->

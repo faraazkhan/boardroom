@@ -56,14 +56,18 @@ window.boardroomFactory = (socket, boardInfo) ->
           if (callback) then callback(cardGroupId, cardId)
 
       onCreatedOrUpdated: (data) ->
-        boardInfo.groups[data._id] = {cardIds: data.cardIds, name: data.name}
-        data.cardIds.forEach (cardId) ->
-          $('#' + cardId).data 'group-id', data._id
-        name_id = data._id + "-name";
-        if $("#" + name_id).length
-          $("#" + name_id).text(data.name)
-        else
-          $("<div id='#{name_id}' class='stack-name'>#{data.name}</div>").appendTo $(".board")
+        boardInfo.groups[data._id] ||= {}
+        if data.cardIds
+          boardInfo.groups[data._id].cardIds = data.cardIds
+          data.cardIds.forEach (cardId) ->
+            $('#' + cardId).data 'group-id', data._id
+        if data.name
+          boardInfo.groups[data._id].name = data.name
+          name_id = data._id + "-name";
+          if $("#" + name_id).length
+            $("#" + name_id).text(data.name)
+          else
+            $("<div id='#{name_id}' class='stack-name'>#{data.name}</div>").appendTo $(".board")
         boardroom.group.layOut data._id
 
       layOut: (id) ->
