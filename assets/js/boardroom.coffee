@@ -142,6 +142,7 @@ window.boardroomFactory = (socket, boardInfo) ->
           $('#'+dragged).css 'top', e.clientY - deltaY
           $('#'+dragged).css 'left', e.clientX - deltaX
           socket.emit('move', location())
+          false
 
         mouseup = (e) ->
           onMousePause.off()
@@ -152,6 +153,7 @@ window.boardroomFactory = (socket, boardInfo) ->
         $(window).mousemove mousemove
         $(window).mouseup mouseup
         boardroom.moveToTop this
+        false
 
       onMouseDown: (e) ->
         return true if $(e.target).is('textarea:focus')
