@@ -1,10 +1,13 @@
+#= require './vendor/jquery.min'
+#= require './lib'
+
 adjustTextarea = (textarea) ->
   $(textarea).css 'height', 'auto'
   if $(textarea).innerHeight() < textarea.scrollHeight
     $(textarea).css 'height', textarea.scrollHeight + 14
   analyzeCardContent textarea
 
-analyzeCardContent = (textarea) ->
+window.analyzeCardContent = (textarea) ->
   $card = $(textarea).parents '.card'
   $card.removeClass 'i-wish i-like'
   matches = $(textarea).val().match /^i (like|wish)/i
@@ -13,7 +16,7 @@ analyzeCardContent = (textarea) ->
 window.board = null
 boardroom = null
 domLoaded = false
-begun=false
+begun = false
 focusNextCreate = false
 cardLocks = {}
 

@@ -1,10 +1,10 @@
 express = require 'express'
 sockets = require 'socket.io'
-board = require './lib/board'
+board = require './board'
 sessions = require 'cookie-sessions'
 
 app = express.createServer()
-boardNamespaces = {};
+boardNamespaces = {}
 
 io = sockets.listen app
 io.set 'log level', 1
@@ -17,23 +17,23 @@ process.on "uncaughtException", (error) ->
     console.log error.stack
 
 app.configure ->
-  app.set "views", __dirname + "/views/"
+  # app.set "views", __dirname + "/views/"
   app.set "view engine", "jade"
 
   app.use require('connect-assets')()
   app.use express.bodyParser()
-  app.use express.static __dirname + '/public'
+  app.use express.static __dirname + '/../public'
   app.use sessions(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889', session_key: 'carbonite')
   app.error ( error, request, response ) ->
-    console.error( error.message );
+    console.error( error.message )
     if ( error.stack )
       console.error error.stack.join( "\n" )
-    response.render( "500", { status : 500, error : error } );
+    response.render( "500", { status : 500, error : error } )
 
 userInfo = (request) ->
   if ( request.session && request.session.user_id )
-    return { user_id:request.session.user_id };
-  return undefined;
+    return { user_id:request.session.user_id }
+  return undefined
 
 requireAuth = ( request, response, next ) ->
   if !request.session
@@ -58,7 +58,7 @@ app.post "/login", (request, response) ->
   delete request.session.post_auth_url
 
 app.get "/logout", (request, response) ->
-  request.session = {};
+  request.session = {}
   response.redirect("/")
 
 
@@ -93,17 +93,17 @@ app.get "/boards/:board/info", (request, response) ->
 
 app.get "/user/avatar/:user_id", (request, response) ->
   if m = /^@(.*)/.exec(request.params.user_id)
-    url = "http://api.twitter.com/1/users/profile_image?size=normal&screen_name=" + encodeURIComponent(m[1]);
+    url = "http://api.twitter.com/1/users/profile_image?size=normal&screen_name=" + encodeURIComponent(m[1])
   else
-    md5 = require('crypto').createHash('md5');
-    md5.update(request.params.user_id);
-    url = "http://www.gravatar.com/avatar/" + md5.digest('hex') + "?d=retro";
+    md5 = require('crypto').createHash('md5')
+    md5.update(request.params.user_id)
+    url = "http://www.gravatar.com/avatar/" + md5.digest('hex') + "?d=retro"
   response.redirect url
 
 app.listen parseInt(process.env.PORT) || 7777
 
 createBoardSession = (boardName) ->
-  boardMembers = {};
+  boardMembers = {}
   boardNamespace = io
     .of("/boardNamespace/#{boardName}")
     .on 'connection', (socket) ->
@@ -119,7 +119,7 @@ createBoardSession = (boardName) ->
           boards_channel.emit 'card_added', b, data.author
 
       socket.on 'delete', (data) ->
-        deleteCard(boardNamespace,data);
+        deleteCard(boardNamespace,data)
         board.findBoard boardName, (b) ->
           boards_channel.emit 'card_deleted', b, data.author
 
@@ -149,8 +149,7 @@ createBoardSession = (boardName) ->
         board.findBoard boardName, (b) ->
           boards_channel.emit('board_changed', b)
 
-  boardNamespaces[boardName] = boardMembers;
-
+  boardNamespaces[boardName] = boardMembers
 
 boards_channel = io
   .of("/channel/boards")

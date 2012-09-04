@@ -1,15 +1,11 @@
-$('form#enter-board').submit (e) ->
-  name = $('input#board-name').val()
-  if $.trim(name).length > 0 then document.location = '/boards/' + name
-  return false
-
-socketURL = "http://#{document.location.host}/channel/boards"
-socket = io.connect socketURL
-socket.on 'board_changed', onBoardChanged
-socket.on 'card_added', onCardAdded
-socket.on 'card_deleted', onCardDeleted
-socket.on 'user_activity', userActivity
-socket.on 'delete', onDelete
+window.connectSocket = ->
+  socketURL = "http://#{document.location.host}/channel/boards"
+  socket = io.connect socketURL
+  socket.on 'board_changed', onBoardChanged
+  socket.on 'card_added', onCardAdded
+  socket.on 'card_deleted', onCardDeleted
+  socket.on 'user_activity', userActivity
+  socket.on 'delete', onDelete
 
 onBoardChanged = (b) -> $("li\##{b._id} .title").html(b.title)
 
@@ -34,6 +30,11 @@ onDelete = (board) ->
   $board = $("#\#{board.board_id}")
   $board.height($board.height())
   $board.empty().append($('<p>This board has been deleted.</p>')).delay(2000).slideUp()
+
+$('form#enter-board').submit (e) ->
+  name = $('input#board-name').val()
+  if $.trim(name).length > 0 then document.location = '/boards/' + name
+  return false
 
 $('.delete').click (e) ->
   this.onselectstart = () -> return false

@@ -1,5 +1,7 @@
-node_modules
-npm-debug
-style.css
 .idea
 .jhw-cache
+node_modules
+npm-debug
+public/css/*
+public/js/*
+style.css
