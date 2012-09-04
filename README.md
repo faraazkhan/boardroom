@@ -28,6 +28,12 @@ Product Owners:
 - [Acceptance](http://boardroom.carbonfive.com:81/)
 - [Production](http://boardroom.carbonfive.com/)
 
+### Testing
+
+- Clientside testing uses jasmine-headless-webkit (cake spec:client)
+- Serverside testing uses jasmine-node (cake spec:server)
+- Run all specs with "cake spec"
+
 ### Deploying
 
     ssh root@boardroom
