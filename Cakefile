@@ -1,12 +1,5 @@
-{exec} = require "child_process"
+{ exec } = require 'child_process'
 
-task "test", "run tests", ->
-  exec "NODE_ENV=test 
-    ./node_modules/.bin/mocha 
-    --compilers coffee:coffee-script
-    --require coffee-script 
-    --require test/test-helper.coffee
-    --colors
-  ", (err, output) ->
-    throw err if err
-    console.log output
+task 'spec:server', ->
+  exec 'NODE_ENV=test jasmine-node --coffee spec/', (_, stdout, _) ->
+    console.log stdout

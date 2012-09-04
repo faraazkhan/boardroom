@@ -1,6 +1,6 @@
 var express = require( 'express' ),
     sockets = require( 'socket.io' ),
-    board = require('./lib/board.js'),
+    board = require('./lib/board'),
     sessions = require('cookie-sessions');
 
 var app = express.createServer();
