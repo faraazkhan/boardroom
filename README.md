@@ -37,14 +37,10 @@ Product Owners:
 
 ### Deploying
 
-    ssh root@boardroom
-    stop-acceptance.sh
-    cd acceptance/boardroom/
-    git pull
-    ../../start-acceptance.sh
+Deployment uses Capistrano. Acceptance is the default stage.
 
-The same for production, except the scripts are `stop-production.sh` and `start-production.sh`.
-
+- cap deploy
+- cap production deploy
 
 ## Install
 
