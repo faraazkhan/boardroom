@@ -1,21 +1,17 @@
-express = require 'express'
-connectAssets = require 'connect-assets'
-sockets = require 'socket.io'
-board = require './board'
+express  = require 'express'
+sockets  = require 'socket.io'
 sessions = require 'cookie-sessions'
+db       = require './db'
+group    = require './group'
+board    = require './board'
+card     = require './card'
+crypto   = require 'crypto'
 
 app = express.createServer()
 boardNamespaces = {}
 
 io = sockets.listen app
 io.set 'log level', 1
-
-process.on "uncaughtException", (error) ->
-  console.error("Uncaught exception: " + error.message)
-  if (error.stack)
-    console.log '\nStacktrace:'
-    console.log '===================='
-    console.log error.stack
 
 app.configure ->
   app.set "views", __dirname + "/../views/"
@@ -64,7 +60,7 @@ app.get "/logout", (request, response) ->
 
 
 app.get "/boards", requireAuth, (request, response) ->
-  board.findBoards {deleted:{$ne:true}}, board.arrayReducer (boards) ->
+  board.findBoards {deleted:{$ne:true}}, db.arrayReducer (boards) ->
     board.findBoardCardCounts (boardCounts) ->
       boardCountsByName = boardCounts.reduce((o,item) ->
         o[item.boardName]=item.count
@@ -82,7 +78,7 @@ app.get "/boards/:board", requireAuth, (request, response) ->
 
 app.get "/boards/:board/info", (request, response) ->
   boardName = request.params.board
-  board.findCards { boardName:boardName, deleted:{$ne:true} }, board.arrayReducer (cards) ->
+  card.findCards { boardName:boardName, deleted:{$ne:true} }, db.arrayReducer (cards) ->
     board.findBoardAllowEmpty boardName, (board) ->
       response.send
         name : boardName
@@ -96,7 +92,7 @@ app.get "/user/avatar/:user_id", (request, response) ->
   if m = /^@(.*)/.exec(request.params.user_id)
     url = "http://api.twitter.com/1/users/profile_image?size=normal&screen_name=" + encodeURIComponent(m[1])
   else
-    md5 = require('crypto').createHash('md5')
+    md5 = crypto.createHash('md5')
     md5.update(request.params.user_id)
     url = "http://www.gravatar.com/avatar/" + md5.digest('hex') + "?d=retro"
   response.redirect url
@@ -129,18 +125,18 @@ createBoardSession = (boardName) ->
       socket.on 'color', updateCard
 
       socket.on 'updateGroup', (data) ->
-        board.updateGroup data.boardName, data._id, data.name, data.cardIds
+        group.updateGroup data.boardName, data._id, data.name, data.cardIds
         socket.broadcast.emit 'createdOrUpdatedGroup', data
 
       socket.on 'removeCard', (data) ->
         if data.cardIds.length == 0
-          board.removeGroup data.boardName, data._id
+          group.removeGroup data.boardName, data._id
         else
-          board.updateGroup data.boardName, data._id, data.cardIds
+          group.updateGroup data.boardName, data._id, data.cardIds
         socket.broadcast.emit 'removedCard', data
 
       socket.on 'createGroup', (data) ->
-        board.createGroup data.boardName, "New Stack", data.cardIds, (group) ->
+        group.createGroup data.boardName, "New Stack", data.cardIds, (group) ->
           socket.broadcast.emit 'createdOrUpdatedGroup', group
           socket.emit 'createdOrUpdatedGroup', group
 
@@ -164,15 +160,15 @@ rebroadcast = (socket, events) ->
   events.forEach (event) ->
     socket.on event, (data) -> socket.broadcast.emit( event, data )
 
-deleteCard = (boardNamespace, card) ->
-  board.removeCard { _id:card._id }, ->
+deleteCard = (boardNamespace, existingCard) ->
+  card.removeCard { _id: existingCard._id }, ->
     boardNamespace.emit 'delete', card
 
-addCard = (boardNamespace, card) ->
-  board.saveCard card, ( saved ) ->
+addCard = (boardNamespace, attributes) ->
+  card.saveCard attributes, ( saved ) ->
     boardNamespace.emit 'add', saved
 
-updateCard = (card) ->
-  board.updateCard card
-  board.findBoard card.board_name, (b) ->
-    boards_channel.emit 'user_activity', b, card.author, 'Did something'
+updateCard = (existingCard) ->
+  card.updateCard existingCard
+  board.findBoard existingCard.board_name, (b) ->
+    boards_channel.emit 'user_activity', b, existingCard.author, 'Did something'
