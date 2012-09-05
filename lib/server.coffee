@@ -17,7 +17,7 @@ process.on "uncaughtException", (error) ->
     console.log error.stack
 
 app.configure ->
-  # app.set "views", __dirname + "/views/"
+  app.set "views", __dirname + "/../views/"
   app.set "view engine", "jade"
 
   app.use require('connect-assets')()
