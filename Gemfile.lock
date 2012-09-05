@@ -1,3 +1,11 @@
+GIT
+  remote: git@github.com:carbonfive/capistrano-node-deploy.git
+  revision: 397117582f815585c9e0e4d730bf1677deb8f5fb
+  specs:
+    capistrano-node-deploy (1.0.8)
+      multi_json (~> 1.3.6)
+      railsless-deploy (~> 1.0.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -7,9 +15,6 @@ GEM
       net-sftp (>= 2.0.0)
       net-ssh (>= 2.0.14)
       net-ssh-gateway (>= 1.1.0)
-    capistrano-node-deploy (1.0.8)
-      multi_json (~> 1.3.6)
-      railsless-deploy (~> 1.0.2)
     coffee-script (2.2.0)
       coffee-script-source
       execjs
@@ -48,5 +53,5 @@ PLATFORMS
 
 DEPENDENCIES
   capistrano
-  capistrano-node-deploy
+  capistrano-node-deploy!
   jasmine-headless-webkit
