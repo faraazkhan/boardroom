@@ -156,7 +156,7 @@ window.boardroomFactory = (socket, boardInfo) ->
         false
 
       onMouseDown: (e) ->
-        return true if $(e.target).is('textarea:focus')
+        return true if $(e.target).is('textarea')
         boardroom.card.onMouseDownHelper.call(e.target, e.clientX, e.clientY)
 
   return boardroom
