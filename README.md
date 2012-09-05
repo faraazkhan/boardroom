@@ -30,9 +30,10 @@ Product Owners:
 
 ### Testing
 
-- Clientside testing uses jasmine-headless-webkit (cake spec:client)
-- Serverside testing uses jasmine-node (cake spec:server)
-- Run all specs with "cake spec"
+- [jasmine-headless-webkit](http://johnbintz.github.com/jasmine-headless-webkit/) (clientside testing)
+- [jasmine-node](https://github.com/mhevery/jasmine-node) (serverside testing)
+- [Sinon.JS](http://sinonjs.org/) (spies, faking time)
+- "cake spec:client", "cake spec:server", "cake spec" are available for running tests
 
 ### Deploying
 

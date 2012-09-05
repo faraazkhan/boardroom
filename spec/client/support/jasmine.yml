@@ -13,10 +13,8 @@
 #   - lib/source2.js
 #   - dist/**/*.js
 #
-
 src_files:
-  - public/js/vendor/*.js
-  - public/js/*.js
+  - assets/js/*.coffee
 
 # stylesheets
 #
@@ -30,7 +28,7 @@ src_files:
 #   - stylesheets/*.css
 #
 stylesheets:
-  - public/css/*.css
+  # - assets/css/*.less
 
 # helpers
 #
