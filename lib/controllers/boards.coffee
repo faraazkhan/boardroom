@@ -1,11 +1,11 @@
 db          = require './../db'
-appSockets  = require './../sockets'
+sockets     = require './../sockets'
 board       = require './../board'
 card        = require './../card'
 application = require './application'
 
 class BoardsController extends application.ApplicationController
-  constructor: (@boardNamespaces, @socket) ->
+  constructor: (@socket) ->
 
   index: (request, response) =>
     that = @
@@ -21,7 +21,7 @@ class BoardsController extends application.ApplicationController
           boardCounts: boardCountsByName
 
   show: (request, response) =>
-    if !@boardNamespaces[request.params.board]
+    if !sockets.Server.boardNamespaces[request.params.board]
       @socket.createBoardSession request.params.board
     response.render "board", { user: @userInfo(request) }
 
@@ -34,7 +34,7 @@ class BoardsController extends application.ApplicationController
           name: boardName
           cards: cards
           groups: board && board.groups || {}
-          users: that.boardNamespaces[boardName] || {}
+          users: sockets.Server.boardNamespaces[boardName] || {}
           user_id: request.session.user_id
           title: boardName
 

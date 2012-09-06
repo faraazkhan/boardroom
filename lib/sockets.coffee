@@ -2,10 +2,11 @@ sockets = require 'socket.io'
 board   = require './board'
 card    = require './card'
 
-class SocketServer
-  start: (namespaces, app) ->
+class Server
+  @boardNamespaces: {}
+
+  start: (app) ->
     @boardsChannel = undefined
-    @boardNamespaces = namespaces
     @io = sockets.listen app
     @io.set 'log level', 1
 
@@ -64,7 +65,7 @@ class SocketServer
           board.findBoard boardName, (b) ->
             @boardsChannel.emit('board_changed', b)
 
-    @boardNamespaces[boardName] = @boardMembers
+    Server.boardNamespaces[boardName] = @boardMembers
 
   rebroadcast: (socket, events) ->
     events.forEach (event) ->
@@ -83,4 +84,4 @@ class SocketServer
     board.findBoard existingCard.board_name, (b) =>
       @boardsChannel.emit 'user_activity', b, existingCard.author, 'Did something'
 
-module.exports = { SocketServer }
+module.exports = { Server }
