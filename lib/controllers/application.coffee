@@ -10,6 +10,4 @@ class ApplicationController
     request.session.post_auth_url = request.url
     response.redirect '/login'
 
-module.exports = {
-  ApplicationController
-}
+module.exports = { ApplicationController }

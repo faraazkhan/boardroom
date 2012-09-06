@@ -1,7 +1,7 @@
-db          = require './../db'
 sockets     = require './../sockets'
-board       = require './../board'
-card        = require './../card'
+db          = require './../models/db'
+board       = require './../models/board'
+card        = require './../models/card'
 application = require './application'
 
 class BoardsController extends application.ApplicationController

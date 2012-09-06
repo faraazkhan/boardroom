@@ -1,6 +1,6 @@
 sockets = require 'socket.io'
-board   = require './board'
-card    = require './card'
+board   = require './models/board'
+card    = require './models/card'
 
 class Server
   @boardNamespaces: {}
