@@ -11,8 +11,8 @@ class Router
   constructor: ->
     @app = express.createServer()
     @app.configure =>
-      @app.set "views", "#{__dirname}/../views/"
-      @app.set "view engine", "jade"
+      @app.set 'views', "#{__dirname}/../views/"
+      @app.set 'view engine', 'jade'
       @app.use connectAssets()
       @app.use express.bodyParser()
       @app.use express.static "#{__dirname}/../public"
@@ -21,37 +21,41 @@ class Router
       @app.error @onError
 
     homeController = new home.HomeController
-    @app.get "/", @authenticate, homeController.index
+    @app.get '/', @authenticate, homeController.index
 
     sessionsController = new sessions.SessionsController @app
-    @app.get "/login", sessionsController.new
-    @app.post "/login", sessionsController.create
-    @app.get "/logout", sessionsController.destroy
+    @app.get '/login', sessionsController.new
+    @app.post '/login', sessionsController.create
+    @app.get '/logout', sessionsController.destroy
 
-    @socketServer = new sockets.Server
-    boardsController = new boards.BoardsController @socketServer
-    @app.get "/boards", @authenticate, boardsController.index
-    @app.get "/boards/:board", @authenticate, boardsController.show
-    @app.get "/boards/:board/info", boardsController.info
+    boardsController = new boards.BoardsController
+    @app.get '/boards', @authenticate, boardsController.index
+    @app.get '/boards/:board', @authenticate, @createSocketNamespace, boardsController.show
+    @app.get '/boards/:board/info', boardsController.info
 
     usersController = new users.UsersController
-    @app.get "/user/avatar/:user_id", usersController.avatar
+    @app.get '/user/avatar/:user_id', usersController.avatar
 
   onError: (error, request, response) ->
     console.error(error.message)
     if error.stack
       console.error error.stack.join("\n")
-    response.render "500", { status: 500, error: error }
+    response.render '500', status: 500, error: error
 
   authenticate: (request, response, next) ->
     request.session ?= {}
     if request.session.user_id
-      return next()
-    request.session.post_auth_url = request.url
-    response.redirect '/login'
+      next()
+    else
+      request.session.post_auth_url = request.url
+      response.redirect '/login'
+
+  createSocketNamespace: (request, _, next) ->
+    sockets.Server.findOrCreateByBoardName request.params.board
+    next()
 
   start: ->
     @app.listen parseInt(process.env.PORT) || 7777
-    @socketServer.start @app
+    sockets.Server.start @app
 
 module.exports = { Router }

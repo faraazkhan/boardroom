@@ -1,38 +1,49 @@
-{ withCollection,
-  errorWrapper,
-  safe,
-  BSON } = require './db'
+mongoose = require 'mongoose'
 
-saveCard = (card, callback) ->
-  withCollection 'cards', (cards) ->
-    card.authors = []
-    cards.save card, safe(callback), errorWrapper callback
+connection = mongoose.createConnection 'localhost',
+  "boardroom_#{process.env['NODE_ENV'] || 'development'}"
 
-updateCard = (card, callback) ->
-  withCollection 'cards', (cards) ->
-    cards.find {_id:new BSON.ObjectID(card._id) }, errorWrapper ( cursor ) ->
-      cursor.each errorWrapper ( existingCard ) ->
-        if existingCard == null then return
-        if card.x then existingCard.x = card.x
-        if card.y then existingCard.y = card.y
-        if card.text then existingCard.text = card.text
-        if card.colorIndex then existingCard.colorIndex = card.colorIndex
-        if card.deleted != null then existingCard.deleted = card.deleted
-        if card.author && (! existingCard.authors || ! (existingCard.authors.indexOf(card.author)>-1))
-          (existingCard.authors = existingCard.authors || []).push( card.author )
-        cards.save existingCard, safe(callback), errorWrapper callback
+CardSchema = new mongoose.Schema
+  boardName: String
+  author: String
+  x: Number
+  y: Number
+  text: String
+  deleted: Boolean
+  authors: Array
 
-removeCard = (card, callback) ->
-  withCollection 'cards', (cards) -> cards.remove { _id: new BSON.ObjectID(card._id) }, errorWrapper callback
+CardSchema.statics.countsByBoard = (callback) ->
+  group =
+    $group:
+      _id: '$boardName'
+      count:
+        $sum: 1
+  project =
+    $project:
+      boardName: 1
+      count: 1
+  @aggregate project, group, (error, response) =>
+    fn = (totals, total) ->
+      totals[total._id] = total.count
+      totals
+    results = response.reduce fn, {}
+    callback results
 
-findCards = (criteria, reducer) ->
-  withCollection 'cards', (cards) ->
-    cards.find criteria, errorWrapper (cursor) ->
-      cursor.each errorWrapper reducer
+CardSchema.statics.findByBoardName = (boardName, callback) ->
+  @where('boardName', boardName)
+    .exec (error, cards) ->
+      callback cards
 
-module.exports = {
-  saveCard
-  updateCard
-  removeCard
-  findCards
-}
+CardSchema.methods.updateAttributes = (attributes, callback) ->
+  for attribute in ['x', 'y', 'text', 'colorIndex', 'deleted']
+    @[attribute] = attributes[attribute] if attributes[attribute]?
+  if @author? &&
+    (attributes.authors? &&
+     ! (attributes.authors.indexOf(@author) > -1))
+    (attributes.authors ||= []).push(@author)
+  @save (error) ->
+    callback
+
+Card = connection.model 'Card', CardSchema
+
+module.exports = { Card }

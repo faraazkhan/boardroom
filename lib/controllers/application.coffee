@@ -1,7 +1,7 @@
 class ApplicationController
   userInfo: (request) ->
     if request.session && request.session.user_id
-      user_id:request.session.user_id
+      user_id: request.session.user_id
 
   requireAuth: (request, response, next) ->
     request.session ?= {}

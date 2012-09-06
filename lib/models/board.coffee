@@ -1,50 +1,81 @@
-{ withCollection,
-  errorWrapper,
-  safe,
-  BSON } = require './db'
+mongoose = require 'mongoose'
+util = require 'util'
 
-findBoards = (criteria, reducer) ->
-  withCollection 'boards', (coll) ->
-    coll.find criteria, errorWrapper (cursor) ->
-      cursor.each errorWrapper reducer
+connection = mongoose.createConnection 'localhost',
+  "boardroom_#{process.env['NODE_ENV'] || 'development'}"
 
-findBoardCardCounts = (callback) ->
-  withCollection 'cards', (cards) ->
-    cards.group({boardName:true}, {}, { count:0 }, ((item,stats) -> stats.count++), errorWrapper(callback))
+BoardSchema = new mongoose.Schema
+  name: String
+  title: String
+  creator_id: String
+  deleted: Boolean
+  groups: Array
 
-findOrCreateBoard = (boardName, creator_id, callback) ->
-  withCollection 'boards', (collection) ->
-    collection.find({ name: boardName }, { limit: 1 }).toArray (err, objs) ->
-      if objs.length == 0
-        b = { name: boardName, title: boardName, creator_id: creator_id }
-        collection.insert b
-        callback b
+BoardSchema.statics =
+  findBoards: (callback) ->
+    @where('deleted', false)
+      .exists('deleted', false)
+      .exec (error, boards) ->
+          callback(boards)
+
+  findBoardAllowEmpty: (boardName, callback) ->
+    @where('name', boardName)
+      .findOne (error, board) ->
+        callback(board)
+
+  findOrCreateByNameAndCreatorId: (name, creatorId, callback) ->
+    criteria =
+      name: name
+      creator_id: creatorId
+    @findOne criteria, (error, board) =>
+      if board?
+        callback board
       else
-        callback objs[0]
+        board = new Board(criteria)
+        board.save (error) ->
+          callback board
 
-findBoard = (boardName, callback) ->
-  withCollection 'boards', (collection) ->
-    collection.find({ name: boardName }, { limit: 1 }).toArray (err, objs) ->
-      if objs.length > 0 then callback objs[0]
+  findByName: (name, callback) ->
+    @findOne name: name, (error, attributes) =>
+      callback new Board(attributes)
 
-findBoardAllowEmpty = (boardName, callback) ->
-  withCollection 'boards', (collection) ->
-    collection.findOne { name: boardName }, errorWrapper (board) -> callback board
+BoardSchema.methods =
+  destroy: (callback) ->
+    @deleted = true
+    @save (error) ->
+      callback()
 
-updateBoard = (boardName, attrs, callback) ->
-  withCollection 'boards', (collection) ->
-    collection.update { name: boardName }, { $set: attrs }, safe(callback), errorWrapper callback
+  addGroup: (attributes, callback) ->
+    @_id = null
+    @groups.push attributes
+    @save (error) ->
+      util.log "error = #{error}"
+      callback attributes
 
-deleteBoard = (boardId, callback) ->
-  withCollection 'boards', (collection) ->
-    collection.update { _id:new BSON.ObjectID(boardId) }, { $set: {'deleted':true} }, safe(callback), errorWrapper callback
+#createGroup = 
+  #groupId = new BSON.ObjectID()
+  #groupWithId = {_id: groupId, name: name, cardIds: cardIds}
+  #update = {$set: {}}
+  #update['$set']['groups.' + groupId] = attributes
 
-module.exports = {
-  findBoards
-  findBoardCardCounts
-  findOrCreateBoard
-  findBoard
-  findBoardAllowEmpty
-  updateBoard
-  deleteBoard
-}
+  #withCollection 'boards', (boards) ->
+    #boards.update {name: boardName}, update, safe(callback), errorWrapper () -> callback groupWithId
+
+#removeGroup = (boardName, _id, callback) ->
+#update = {$unset: {}}
+  #update['$unset']['groups.' + _id] = 1
+
+  #withCollection 'boards', (boards) ->
+    #boards.update {name: boardName}, update, safe(callback), errorWrapper(callback)
+
+#updateGroup = (boardName, _id, name, cardIds, callback) ->
+  #update = {$set: {}}
+  #if name then update['$set']['groups.' + _id + '.name'] = name
+  #if cardIds then update['$set']['groups.' + _id + '.cardIds'] = cardIds
+
+  #withCollection 'boards', (boards) ->
+    #boards.update {name: boardName}, update, safe(callback), errorWrapper(callback)
+
+Board = connection.model 'Board', BoardSchema
+
+module.exports = { Board }

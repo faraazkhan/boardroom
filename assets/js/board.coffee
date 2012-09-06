@@ -24,8 +24,8 @@ $.getJSON "#{document.location.pathname}/info", (data) -> window.board = data; b
 $(() -> domLoaded = true; begin())
 
 begin = () ->
-  if ! window.board || ! domLoaded || begun then return;
-  if ! window.board || ! domLoaded || begun then return;
+  if ! window.board || ! domLoaded || begun then return
+  if ! window.board || ! domLoaded || begun then return
   begun = true
   board = window.board
 
@@ -36,7 +36,7 @@ begin = () ->
 
   socketURL = "http://#{document.location.host}/boardNamespace/#{board.name}"
   socket = io.connect(socketURL)
-  boardroom = boardroomFactory(socket, board);
+  boardroom = boardroomFactory(socket, board)
 
   socket.on 'move', (data) -> onMoveCard(data)
   socket.on 'add', (data) -> onCreateCard(data)
@@ -58,7 +58,7 @@ begin = () ->
       if currentTime - cardLock.updated > timeout
         $("\##{cardId} .notice").fadeOut 100
         $("\##{cardId} textarea").removeAttr 'disabled'
-        delete cardLocks[cardId];
+        delete cardLocks[cardId]
   , 100
 
   onMoveCard = (coords) ->
@@ -79,7 +79,7 @@ begin = () ->
     $("\##{cardId} .notice").html("<img src='#{avatar(userId)}'/><span>#{cleanHTML( message )}</span>").show()
 
   createCard = () ->
-    focusNextCreate = true;
+    focusNextCreate = true
     socket.emit 'add',
       boardName : board.name
       author : board.user_id
@@ -112,10 +112,10 @@ begin = () ->
 
     adjustTextarea $('textarea',$card)[0]
     if focusNextCreate
-      $('textarea', $card).focus();
-      focusNextCreate = false;
+      $('textarea', $card).focus()
+      focusNextCreate = false
 
-    boardroom.moveToTop($card);
+    boardroom.moveToTop($card)
     $card.on 'mousedown', boardroom.card.onMouseDown
 
   onColor = (data) ->
@@ -128,7 +128,7 @@ begin = () ->
     $ta.val(data.text).attr 'disabled','disabled'
     if ! cardLocks[data._id] || cardLocks[data._id].user_id != data.author
       notice data._id, data.author, data.author + ' is typing...'
-    $("\##{data._id} .notice").show();
+    $("\##{data._id} .notice").show()
     cardLocks[data._id] =
       user_id : data.author,
       updated : new Date().getTime()
@@ -173,20 +173,20 @@ begin = () ->
     onColor data
 
   $('.card textarea').live 'keyup', () ->
-    card = $(this).closest('.card')[0];
+    card = $(this).closest('.card')[0]
     socket.emit 'text', _id : card.id, text : $(this).val(), author : board.user_id
     addAuthor card.id, board.user_id
     adjustTextarea this
     return false
 
   $('.card textarea').live 'change', () ->
-    card = $(this).closest('.card')[0];
+    card = $(this).closest('.card')[0]
     socket.emit 'text_commit', _id : card.id, text : $(this).val(), board_name : board.name, author : board.user_id
     if groupId = $(card).data('group-id')
-      boardroom.group.layOut(groupId);
+      boardroom.group.layOut(groupId)
 
   $('.card .delete').live 'click', () ->
-    card = $(this).closest('.card')[0];
+    card = $(this).closest('.card')[0]
     socket.emit 'delete', _id : card.id, author : board.user_id
     $(card).remove()
     return false
@@ -202,5 +202,3 @@ begin = () ->
       titleChanged()
 
   $('#title').blur titleChanged
-
-

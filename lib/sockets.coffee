@@ -1,25 +1,32 @@
 sockets = require 'socket.io'
 board   = require './models/board'
 card    = require './models/card'
+util = require 'util'
+
+Board   = board.Board
+Card    = card.Card
 
 class Server
   @boardNamespaces: {}
 
-  start: (app) ->
-    @boardsChannel = undefined
-    @io = sockets.listen app
-    @io.set 'log level', 1
+  @findOrCreateByBoardName: (boardName) ->
+    unless @boardNamespaces[boardName]
+      @createBoardSession boardName
 
-  createBoardSession: (boardName) ->
+  @createBoardSession: (boardName) ->
     @boardsChannel = @io
-      .of("/channel/boards")
+      .of('/channel/boards')
       .on 'connection', (socket) =>
         @rebroadcast socket, ['delete']
-        socket.on 'delete', (deleteBoard) ->
-          board.deleteBoard deleteBoard.board_id
-          io.of("/boardNamespace/#{deleteBoard.boardName}").emit 'boardDeleted'
+        socket.on 'delete', (data) ->
+          Board.findByName data.boardName, (board) ->
+            board.destroy (error) ->
+              io
+                .of("/boardNamespace/#{data.boardName}")
+                .emit 'boardDeleted'
 
     @boardMembers = {}
+
     boardNamespace = @io
       .of("/boardNamespace/#{boardName}")
       .on 'connection', (socket) =>
@@ -27,61 +34,79 @@ class Server
         socket.on 'join', (user) =>
           @boardMembers[user.user_id] = user
           boardNamespace.emit 'joined', user
-          board.findOrCreateBoard boardName, user.user_id, (b) -> socket.emit('title_changed', b.title)
+          Board.findOrCreateByNameAndCreatorId boardName, user.user_id, (board) ->
+            socket.emit 'title_changed', board.title
 
         socket.on 'add', (data) =>
           @addCard boardNamespace, data
-          board.findBoard boardName, (b) =>
-            @boardsChannel.emit 'card_added', b, data.author
+          Board.findByName boardName, (board) =>
+            @boardsChannel.emit 'card_added', board, data.author
 
         socket.on 'delete', (data) =>
-          @deleteCard(boardNamespace,data)
-          board.findBoard boardName, (b) =>
-            @boardsChannel.emit 'card_deleted', b, data.author
+          @deleteCard boardNamespace, data
+          Board.findByName boardName, (board) =>
+            @boardsChannel.emit 'card_deleted', board, data.author
 
         socket.on 'move_commit', @updateCard
         socket.on 'text_commit', @updateCard
         socket.on 'color', @updateCard
 
-        socket.on 'updateGroup', (data) ->
-          group.updateGroup data.boardName, data._id, data.name, data.cardIds
-          socket.broadcast.emit 'createdOrUpdatedGroup', data
-
         socket.on 'removeCard', (data) ->
-          if data.cardIds.length == 0
+          if data.cardIds.length is 0
             group.removeGroup data.boardName, data._id
           else
             group.updateGroup data.boardName, data._id, data.cardIds
           socket.broadcast.emit 'removedCard', data
 
+        socket.on 'title_changed', (data) =>
+          Board.findByName boardName, (board) =>
+            board.title = attributes.title
+            board.save (error) =>
+              socket.broadcast.emit 'title_changed', board.title
+              @boardsChannel.emit 'board_changed', board
+
         socket.on 'createGroup', (data) ->
-          group.createGroup data.boardName, "New Stack", data.cardIds, (group) ->
-            socket.broadcast.emit 'createdOrUpdatedGroup', group
-            socket.emit 'createdOrUpdatedGroup', group
+          Board.findByName data.boardName, (board) ->
+            util.log util.inspect board
+            attributes =
+              name: 'New Stack'
+              cardIds: data.cardIds
+            board.addGroup attributes, (group) ->
+              socket.broadcast.emit 'createdOrUpdatedGroup', group
+              socket.emit 'createdOrUpdatedGroup', group
 
-        socket.on 'title_changed', (data) ->
-          board.updateBoard boardName, { title: data.title }
-          socket.broadcast.emit 'title_changed', data.title
-          board.findBoard boardName, (b) ->
-            @boardsChannel.emit('board_changed', b)
+        socket.on 'updateGroup', (data) ->
+          util.log 'updateGroup'
+          group.updateGroup data.boardName, data._id, data.name, data.cardIds
+          socket.broadcast.emit 'createdOrUpdatedGroup', data
 
-    Server.boardNamespaces[boardName] = @boardMembers
+    @boardNamespaces[boardName] = @boardMembers
 
-  rebroadcast: (socket, events) ->
+  @rebroadcast: (socket, events) ->
     events.forEach (event) ->
-      socket.on event, (data) -> socket.broadcast.emit( event, data )
+      socket.on event, (data) ->
+        socket.broadcast.emit(event, data)
 
-  deleteCard: (boardNamespace, existingCard) ->
-    card.removeCard { _id: existingCard._id }, ->
-      boardNamespace.emit 'delete', card
+  @addCard: (boardNamespace, attributes) ->
+    card = new Card attributes
+    card.authors = []
+    card.save (error) ->
+      boardNamespace.emit 'add', card
 
-  addCard: (boardNamespace, attributes) ->
-    card.saveCard attributes, ( saved ) ->
-      boardNamespace.emit 'add', saved
+  @updateCard: (attributes) =>
+    Card.findById attributes._id, (error, card) ->
+      card.updateAttributes attributes, ->
+        Board.findByName card.boardName, (board) =>
+          @boardsChannel.emit 'user_activity', board, card.author, 'Did something'
 
-  updateCard: (existingCard) =>
-    card.updateCard existingCard
-    board.findBoard existingCard.board_name, (b) =>
-      @boardsChannel.emit 'user_activity', b, existingCard.author, 'Did something'
+  @deleteCard: (boardNamespace, existingCard) ->
+    Card.findById existingCard._id, (error, card) ->
+      card.remove (error) ->
+        boardNamespace.emit 'delete', card
+
+  @start: (app) ->
+    @boardsChannel = undefined
+    @io = sockets.listen app
+    @io.set 'log level', 1
 
 module.exports = { Server }

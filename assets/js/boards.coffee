@@ -21,7 +21,7 @@ onCardAdded = (board, user_id) ->
 
 userActivity = (board, user_id, activity) ->
   $activity = $('<img title="' + activity + '" src="/user/avatar/' + encodeURIComponent(user_id) + '"/>');
-  $("li\##{board._id} .activity").prepend($activity);
+  $("li\##{board._id} .activity").prepend($activity)
   setTimeout () ->
     $activity.fadeOut 1000, () -> $(this).remove()
   , 10000
@@ -47,4 +47,3 @@ $('.delete').click (e) ->
   return false
 
 $('.delete').mouseleave (e) -> $(this).removeClass('confirm')
-
