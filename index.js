@@ -1,6 +1,5 @@
 require('coffee-script');
-require('./lib/process');
-var routes = require('./lib/routes');
+var routes = require('./lib/routes'),
+  router = new routes.Router;
 
-var router = new routes.Router;
 router.start();
