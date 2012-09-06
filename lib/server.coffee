@@ -24,6 +24,7 @@ class Server
           console.error error.stack.join("\n")
         response.render "500", { status: 500, error: error }
 
+
     requireAuth = (request, response, next) ->
       request.session ?= {}
       if request.session.user_id
@@ -39,7 +40,9 @@ class Server
     @app.post "/login", sessionsController.create
     @app.get "/logout", sessionsController.destroy
 
-    boardsController = new boards.BoardsController @boardNamespaces
+    @socket = new sockets.SocketServer
+    boardsController = new boards.BoardsController @boardNamespaces,
+      @socket
     @app.get "/boards", requireAuth, boardsController.index
     @app.get "/boards/:board", requireAuth, boardsController.show
     @app.get "/boards/:board/info", boardsController.info
@@ -49,6 +52,6 @@ class Server
 
   start: ->
     @app.listen parseInt(process.env.PORT) || 7777
-    sockets.listen @boardNamespaces, @app
+    @socket.start(@boardNamespaces, @app)
 
 module.exports = { Server }

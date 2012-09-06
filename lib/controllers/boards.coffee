@@ -5,7 +5,7 @@ card        = require './../card'
 application = require './application'
 
 class BoardsController extends application.ApplicationController
-  constructor: (@boardNamespaces) ->
+  constructor: (@boardNamespaces, @socket) ->
 
   index: (request, response) =>
     that = @
@@ -22,7 +22,7 @@ class BoardsController extends application.ApplicationController
 
   show: (request, response) =>
     if !@boardNamespaces[request.params.board]
-      appSockets.createBoardSession request.params.board
+      @socket.createBoardSession request.params.board
     response.render "board", { user: @userInfo(request) }
 
   info: (request, response) =>
