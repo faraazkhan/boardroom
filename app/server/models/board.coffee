@@ -13,9 +13,8 @@ BoardSchema = new mongoose.Schema
 BoardSchema.statics =
   findBoards: (callback) ->
     @where('deleted', false)
-      .exists('deleted', false)
       .exec (error, boards) ->
-          callback(boards)
+        callback(boards)
 
   findBoardAllowEmpty: (boardName, callback) ->
     @where('name', boardName)
