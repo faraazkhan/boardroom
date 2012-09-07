@@ -35,7 +35,7 @@
               a(href='/boards/' + board.name)
                 h4.title= board.title
                 .note-count
-                  span.count= boardCounts[board.name] || 0
+                  span.count= countsByBoard[board.name] || 0
                   | &nbsp; notes
                 .activity
 

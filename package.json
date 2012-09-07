@@ -14,7 +14,9 @@
     "mongodb": "0",
     "cookie-sessions": "0",
     "less": "1",
-    "coffee-script": "1.3"
+    "coffee-script": "1.3",
+    "mongoose": "latest",
+    "factory-lady" : "latest"
   },
   "devDependencies": {
     "jasmine-node" : "latest",
