@@ -1,4 +1,5 @@
 express = require 'express'
+connectAssets = require 'connect-assets'
 sockets = require 'socket.io'
 board = require './board'
 sessions = require 'cookie-sessions'
@@ -20,7 +21,7 @@ app.configure ->
   app.set "views", __dirname + "/../views/"
   app.set "view engine", "jade"
 
-  app.use require('connect-assets')()
+  app.use connectAssets(src : __dirname + '/../assets')
   app.use express.bodyParser()
   app.use express.static __dirname + '/../public'
   app.use sessions(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889', session_key: 'carbonite')
