@@ -1,12 +1,11 @@
 sockets = require 'socket.io'
 board   = require './models/board'
 card    = require './models/card'
-util = require 'util'
 
 Board   = board.Board
 Card    = card.Card
 
-class Server
+class Sockets
   @boardNamespaces: {}
 
   @findOrCreateByBoardName: (boardName) ->
@@ -67,7 +66,6 @@ class Server
 
         socket.on 'createGroup', (data) ->
           Board.findByName data.boardName, (board) ->
-            util.log util.inspect board
             attributes =
               name: 'New Stack'
               cardIds: data.cardIds
@@ -76,7 +74,6 @@ class Server
               socket.emit 'createdOrUpdatedGroup', group
 
         socket.on 'updateGroup', (data) ->
-          util.log 'updateGroup'
           group.updateGroup data.boardName, data._id, data.name, data.cardIds
           socket.broadcast.emit 'createdOrUpdatedGroup', data
 
@@ -109,4 +106,4 @@ class Server
     @io = sockets.listen app
     @io.set 'log level', 1
 
-module.exports = { Server }
+module.exports = { Sockets }

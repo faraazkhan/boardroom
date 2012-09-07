@@ -1,5 +1,4 @@
 mongoose = require 'mongoose'
-util = require 'util'
 
 connection = mongoose.createConnection 'localhost',
   "boardroom_#{process.env['NODE_ENV'] || 'development'}"
@@ -49,7 +48,6 @@ BoardSchema.methods =
     @_id = null
     @groups.push attributes
     @save (error) ->
-      util.log "error = #{error}"
       callback attributes
 
 #createGroup = 

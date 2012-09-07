@@ -1,13 +1,12 @@
-sockets     = require './../sockets'
-db          = require './../models/db'
-board       = require './../models/board'
-card        = require './../models/card'
-application = require './application'
+{ Sockets }               = require './../sockets'
+{ ApplicationController } = require './application'
+{ Board }                 = require './../models/board'
+{ Card }                  = require './../models/card'
 
-class BoardsController extends application.ApplicationController
+class BoardsController extends ApplicationController
   index: (request, response) =>
-    board.Board.findBoards (boards) =>
-      card.Card.countsByBoard (countsByBoard) =>
+    Board.findBoards (boards) =>
+      Card.countsByBoard (countsByBoard) =>
         response.render 'boards',
           user: @userInfo(request)
           boards: boards
@@ -18,13 +17,13 @@ class BoardsController extends application.ApplicationController
 
   info: (request, response) =>
     boardName = request.params.board
-    card.Card.findByBoardName boardName, (cards) ->
-      board.Board.findBoardAllowEmpty boardName, (board) ->
+    Card.findByBoardName boardName, (cards) ->
+      Board.findBoardAllowEmpty boardName, (board) ->
         response.send
           name: boardName
           cards: cards
           groups: board && board.groups || {}
-          users: sockets.Server.boardNamespaces[boardName] || {}
+          users: Sockets.boardNamespaces[boardName] || {}
           title: boardName
           user_id: request.session.user_id
 

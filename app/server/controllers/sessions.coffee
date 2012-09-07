@@ -1,8 +1,8 @@
-application = require './application'
+{ ApplicationController } = require './application'
 
-class SessionsController extends application.ApplicationController
+class SessionsController extends ApplicationController
   new: (request, response) ->
-    response.render "login"
+    response.render 'login'
 
   create: (request, response) ->
     request.session ?= {}
@@ -12,6 +12,6 @@ class SessionsController extends application.ApplicationController
 
   destroy: (request, response) ->
     request.session = {}
-    response.redirect("/")
+    response.redirect '/'
 
 module.exports = { SessionsController }
