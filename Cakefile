@@ -6,7 +6,7 @@ task 'spec:client', 'Run all specs in spec/client', ->
     throw error if error
 
 task 'spec:server', 'Run all specs in spec/server', ->
-  exec 'NODE_ENV=test jasmine-node --coffee spec/server', (error, stdout) ->
+  exec 'NODE_ENV=test ./node_modules/.bin/jasmine-node --coffee spec/server', (error, stdout) ->
     console.log stdout
     throw error if error
 
