@@ -1,7 +1,6 @@
 { Board } = require "#{__dirname}/../../../app/server/models/board"
 { Card } = require "#{__dirname}/../../../app/server/models/card"
 Factory = require 'factory-lady'
-_ = require 'underscore'
 
 Factory.define 'board', Board,
   name: 'name-1'
