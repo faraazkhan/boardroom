@@ -21,6 +21,7 @@
     "jasmine-node" : "latest",
     "sinon": "1.4",
     "factory-lady" : "latest",
-    "supertest" : "latest"
+    "supertest" : "latest",
+    "jsdom" : "latest"
   }
 }

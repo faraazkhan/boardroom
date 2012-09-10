@@ -1,24 +1,11 @@
+{ Factory } = require './../support/factories'
 { Board } = require "#{__dirname}/../../../app/server/models/board"
 { Card } = require "#{__dirname}/../../../app/server/models/card"
-Factory = require 'factory-lady'
-
-Factory.define 'board', Board,
-  name: 'name-1'
-  creator_id: 'creator-1'
-  deleted: false
-
-Factory.define 'card', Card,
-  boardName: 'name-1'
-  author: 'author-1'
-  x: 100
-  y: 100
-  text: 'text'
-  deleted: false
-  authors: ['author-2']
 
 describe 'card.Card', ->
   beforeEach (done) ->
-    Card.remove done
+    Board.remove ->
+      Card.remove done
 
   describe '.findByBoardName', ->
     board = null

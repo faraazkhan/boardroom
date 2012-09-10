@@ -1,16 +1,5 @@
+{ Factory } = require './../support/factories'
 { Board } = require "#{__dirname}/../../../app/server/models/board"
-Factory = require 'factory-lady'
-_ = require 'underscore'
-
-Factory.define 'board', Board,
-  name: 'name-1'
-  creator_id: 'creator-1'
-  deleted: false
-
-Factory.define 'deletedBoard', Board,
-  name: 'name-2'
-  creator_id: 'creator-2'
-  deleted: true
 
 describe 'board.Board', ->
   beforeEach (done) ->
@@ -26,7 +15,7 @@ describe 'board.Board', ->
       it 'finds all non-deleted boards', (done) ->
         Board.findBoards (boards) ->
           expect(boards.length).toEqual 1
-          _.each boards, (board) ->
+          for board in boards
             expect(board.deleted).toBeFalsy()
           done()
 
