@@ -14,7 +14,8 @@
 #   - dist/**/*.js
 #
 src_files:
-  - assets/js/*.coffee
+  - app/client/js/vendor/*.js
+  - app/client/js/*.coffee
 
 # stylesheets
 #

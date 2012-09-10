@@ -18,7 +18,7 @@ class BoardsController extends ApplicationController
   info: (request, response) =>
     boardName = request.params.board
     Card.findByBoardName boardName, (cards) ->
-      Board.findBoardAllowEmpty boardName, (board) ->
+      Board.findByName boardName, (board) ->
         response.send
           name: boardName
           cards: cards
