@@ -26,7 +26,7 @@ class boardroom.views.Boards extends Backbone.View
     @userActivity board, user_id, "Added a card"
 
   userActivity: (board, user_id, activity) ->
-    $activity = $ "<img title='#{activity}' src='/user/avatar/#{encodeURIComponent user_id}'/>"
+    $activity = $ "<img title='#{activity}' src='#{boardroom.models.User.avatar user_id}'/>"
     $("li##{board._id} .activity").prepend($activity)
     setTimeout ->
       $activity.fadeOut 1000, -> $activity.remove()

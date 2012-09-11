@@ -13,10 +13,9 @@ class boardroom.views.Header extends Backbone.View
     if isEnter
       @$('#title').blur()
     else
-      @socket 'title_changed', @$('#title').val()
+      @socket.emit 'title_changed', @$('#title').val()
 
   createCard: ->
-    #@focusNextCreate = true
     @socket.emit 'add',
       boardName: @model.name
       author: @model.user_id

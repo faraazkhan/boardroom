@@ -3,7 +3,6 @@ class boardroom.views.Board extends Backbone.View
 
   initialize: (attributes) ->
     { @socket } = attributes
-    @boardroom = null
     @focusNextCreate = false
     @cardLocks = {}
 
@@ -41,10 +40,6 @@ class boardroom.views.Board extends Backbone.View
 
     @onCreateCard card for card in @model.get 'cards'
 
-    $('.card .colors .color').live 'click', @changeColor
-    $('.card textarea').live 'keyup', @textChange
-    $('.card textarea').live 'change', @textCommit
-    $('.card .delete').live 'click', @cardDeleted
     $('.board').on 'click', '.stack-name', @changeStackName
 
     for own groupId, group of board.groups
@@ -56,35 +51,8 @@ class boardroom.views.Board extends Backbone.View
 
       @boardroom.group.onCreatedOrUpdated $.extend(group, { _id: groupId })
 
-  changeColor: (event) =>
-    $colorElement = $ event.element
-    card = $colorElement.closest('.card')[0]
-    colorIndex = $colorElement.attr('class').match(/color-(\d+)/)[1]
-    data =  _id : card.id, colorIndex : colorIndex
-    @socket.emit 'color', data
-    @onColor data
-
-  textCommit: (event) =>
-    $cardElement = $ event.element
-    card = $cardElement.closest('.card')[0]
-    @socket.emit 'text_commit', _id: card.id, text: $cardElement.val(), board_name: board.name, author: board.user_id
-    if groupId = $(card).data('group-id')
-      boardroom.group.layOut(groupId)
-
-  textChange: (event) =>
-    $cardElement = $ event.element
-    card = $cardElement.closest('.card')[0]
-    @socket.emit 'text', _id: card.id, text: $cardElement.val(), author: @model.user_id
-    @addAuthor card.id, board.user_id
-    @adjustTextarea $cardElement
-
-  cardDeleted: (event) =>
-    card = $(event.element).closest('.card')[0]
-    @socket.emit 'delete', _id : card.id, author : board.user_id
-    $(card).remove()
-
   changeStackName: (event) =>
-    $stackElement = $ event.element
+    $stackElement = $ event.target
     offset = $stackElement.offset()
     offset.left -= 1
 
@@ -111,12 +79,6 @@ class boardroom.views.Board extends Backbone.View
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
 
-  cleanHTML: (str = '') ->
-    str.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g,'&amp;')
-
-  avatar: (user) ->
-    "/user/avatar/#{encodeURIComponent user}"
-
   onMoveCard: (move) =>
     $card = $("##{move._id}")
       .css
@@ -135,52 +97,29 @@ class boardroom.views.Board extends Backbone.View
 
   notice: (cardId, userId, message) =>
     $("##{cardId} .notice")
-      .html("<img src='#{@avatar userId}'/>
-             <span>#{@cleanHTML message}</span>")
+      .html("<img src='#{boardroom.models.User.avatar userId}'/>
+             <span>#{_.escape message}</span>")
       .show()
 
   addAuthor: (cardId, author) =>
     if $("##{cardId} .authors img[title='#{author}']").length is 0
       $("##{cardId} .authors")
-        .append("<img src='#{@avatar author}' title='#{@cleanHTML author}'/>")
+        .append("<img src='#{boardroom.models.User.avatar author}' title='#{_.escape author}'/>")
 
   onCreateCard: (data) =>
-    $card = $("<div class='card'>
-                 <img class='delete' src='/images/delete.png'/>
-                 <div class='notice'></div>
-                 <div class='colors'>
-                   <span class='color color-0'></span>
-                   <span class='color color-1'></span>
-                   <span class='color color-2'></span>
-                   <span class='color color-3'></span>
-                   <span class='color color-4'></span>
-                 </div>
-                 <textarea></textarea>
-                 <div class='authors'></div>
-               </div>")
-      .attr('id', data._id)
-      .css
-        left: data.x
-        top: data.y
+    card = new boardroom.models.Card data
+    card.set 'board', @model
+    cardView = new boardroom.views.Card
+      model: card
+      boardroom: @boardroom
+      socket: @socket
+    $('.board').append cardView.render().el
 
-    $('textarea', $card).val data.text
-    $card.removeClassMatching /color-\d+/g
-    $card.addClass "color-#{data.colorIndex || 2}"
-    $('.board').append $card
-
-    if data.authors
-      $(data.authors).each (i, author) ->
-        @addAuthor data._id, author
-    if data.groupId
-      $card.attr 'data-group-id', data.groupId
-
-    @adjustTextarea $ 'textarea', $card
     if @focusNextCreate
-      $('textarea', $card).focus()
+      $('textarea', cardView.$el).focus()
       @focusNextCreate = false
 
-    @boardroom.moveToTop $card
-    $card.on 'mousedown', @boardroom.card.onMouseDown
+    @boardroom.moveToTop cardView.$el
 
   onColor: (data) ->
     $card = $("##{data._id}")

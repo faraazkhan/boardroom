@@ -1,6 +1,7 @@
 sockets = require 'socket.io'
 board   = require './models/board'
 card    = require './models/card'
+util = require 'util'
 
 Board   = board.Board
 Card    = card.Card
@@ -59,7 +60,7 @@ class Sockets
 
         socket.on 'title_changed', (data) =>
           Board.findByName boardName, (board) =>
-            board.title = attributes.title
+            board.title = data.title
             board.save (error) =>
               socket.broadcast.emit 'title_changed', board.title
               @boardsChannel.emit 'board_changed', board
@@ -90,8 +91,11 @@ class Sockets
     card.save (error) ->
       boardNamespace.emit 'add', card
 
+
   @updateCard: (attributes) =>
+    util.log util.inspect attributes
     Card.findById attributes._id, (error, card) =>
+      throw error if error
       card.updateAttributes attributes, =>
         Board.findByName card.boardName, (board) =>
           @boardsChannel.emit 'user_activity', board, card.author, 'Did something'
