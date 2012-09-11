@@ -7,12 +7,9 @@
 
 .board
 
-!= js("lib")
-!= js("boardroom")
-!= js("views/app")
+!= js('app')
 
 script(type="text/javascript")
   var board = !{boardAsJson};
   var appView = new boardroom.views.App({ board: board });
   appView.render();
-

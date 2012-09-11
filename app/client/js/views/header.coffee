@@ -1,5 +1,3 @@
-#= require './namespace'
-
 class boardroom.views.Header extends Backbone.View
   el: '#header'
 

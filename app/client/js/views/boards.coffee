@@ -1,5 +1,3 @@
-#= require './boardroom'
-
 class boardroom.views.Boards extends Backbone.View
   initialize: ->
     socket = io.connect "http://#{document.location.host}/channel/boards"

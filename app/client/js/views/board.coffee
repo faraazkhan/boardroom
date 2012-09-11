@@ -1,5 +1,3 @@
-#= require './namespace'
-
 class boardroom.views.Board extends Backbone.View
   el: '.board'
 
@@ -51,12 +49,12 @@ class boardroom.views.Board extends Backbone.View
 
     for own groupId, group of board.groups
       for cardId in group.cardIds
-        $card = $"##{cardId}"
+        $card = $ "##{cardId}"
         $card.data 'group-id', groupId
         $card.off 'mousedown'
         $card.followDrag @boardroom.dragOptions($card)
 
-      @boardroom.group.onCreatedOrUpdated $.extend(group, {_id: groupId})
+      @boardroom.group.onCreatedOrUpdated $.extend(group, { _id: groupId })
 
   changeColor: (event) =>
     $colorElement = $ event.element
@@ -171,7 +169,7 @@ class boardroom.views.Board extends Backbone.View
     $('.board').append $card
 
     if data.authors
-      $(data.authors).each (i,author) ->
+      $(data.authors).each (i, author) ->
         @addAuthor data._id, author
     if data.groupId
       $card.attr 'data-group-id', data.groupId

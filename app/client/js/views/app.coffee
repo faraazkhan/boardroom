@@ -1,9 +1,3 @@
-#= require './namespace'
-#= require './../models/socket'
-#= require './header'
-#= require './board'
-#= require './../models/board'
-
 class boardroom.views.App extends Backbone.View
   initialize: (attributes) ->
     @board = new boardroom.models.Board attributes.board
