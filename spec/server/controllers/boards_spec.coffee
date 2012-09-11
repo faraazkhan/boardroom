@@ -50,12 +50,11 @@ describe 'BoardsController', ->
   describe '#info', ->
     router = null
     board = null
-
     beforeEach (done) ->
       Board.remove ->
         Card.remove ->
-          Factory.create 'board', (defaultBoarc) ->
-            board = defaultBoarc
+          Factory.create 'board', (defaultBoard) ->
+            board = defaultBoard
             Factory.create 'card', boardName: board.name, ->
               done()
 

@@ -40,6 +40,7 @@
                 .activity
 
 != js('boards')
+!= js('views/boards')
 script(type="text/javascript")
-  connectSocket();
-
+  var boardsView = new boardroom.views.Boards();
+  boardsView.render();

@@ -17,10 +17,10 @@ class Sockets
       .of('/channel/boards')
       .on 'connection', (socket) =>
         @rebroadcast socket, ['delete']
-        socket.on 'delete', (data) ->
-          Board.findByName data.boardName, (board) ->
-            board.destroy (error) ->
-              io
+        socket.on 'delete', (data) =>
+          Board.findByName data.boardName, (board) =>
+            board.destroy (error) =>
+              @io
                 .of("/boardNamespace/#{data.boardName}")
                 .emit 'boardDeleted'
 
@@ -91,8 +91,8 @@ class Sockets
       boardNamespace.emit 'add', card
 
   @updateCard: (attributes) =>
-    Card.findById attributes._id, (error, card) ->
-      card.updateAttributes attributes, ->
+    Card.findById attributes._id, (error, card) =>
+      card.updateAttributes attributes, =>
         Board.findByName card.boardName, (board) =>
           @boardsChannel.emit 'user_activity', board, card.author, 'Did something'
 

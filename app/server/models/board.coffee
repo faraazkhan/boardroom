@@ -9,9 +9,10 @@ BoardSchema = new mongoose.Schema
 
 BoardSchema.statics =
   findBoards: (callback) ->
-    @where('deleted', false)
+    @find()
+      .or([{ deleted: false }, { deleted: { $exists: false } }])
       .exec (error, boards) ->
-        callback(boards)
+        callback boards
 
   findByName: (name, callback) ->
     @findOne name: name, (error, attributes) ->

@@ -9,12 +9,13 @@ describe 'board.Board', ->
     describe 'given deleted and non-deleted boards', ->
       beforeEach (done) ->
         Factory.create 'board', ->
-          Factory.create 'deletedBoard', ->
-            done()
+          Factory.create 'board', deleted: undefined, ->
+            Factory.create 'deletedBoard', ->
+              done()
 
       it 'finds all non-deleted boards', (done) ->
         Board.findBoards (boards) ->
-          expect(boards.length).toEqual 1
+          expect(boards.length).toEqual 2
           for board in boards
             expect(board.deleted).toBeFalsy()
           done()

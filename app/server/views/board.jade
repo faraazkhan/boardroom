@@ -6,6 +6,14 @@
   include includes/user_info
 
 .board
+
 != js("lib")
 != js("boardroom")
 != js("board")
+!= js("views/board")
+
+script(type="text/javascript")
+  var headerView = new boardroom.views.Header();
+  headerView.render();
+  var boardView = new boardroom.views.Board(headerView);
+  boardView.render();
