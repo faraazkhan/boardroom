@@ -2,4 +2,5 @@
 #= require './../vendor/backbone.js'
 
 window.boardroom =
+  models: {}
   views: {}

@@ -13,18 +13,18 @@ class BoardsController extends ApplicationController
           countsByBoard: countsByBoard
 
   show: (request, response) =>
-    response.render 'board', user: @userInfo(request)
-
-  info: (request, response) =>
     boardName = request.params.board
-    Card.findByBoardName boardName, (cards) ->
-      Board.findByName boardName, (board) ->
-        response.send
+    Card.findByBoardName boardName, (cards) =>
+      Board.findByName boardName, (board) =>
+        board =
           name: boardName
           cards: cards
-          groups: board && board.groups || {}
+          groups: (board && board.groups) || {}
           users: Sockets.boardNamespaces[boardName] || {}
           title: boardName
           user_id: request.session.user_id
+        response.render 'board',
+          user: @userInfo(request)
+          boardAsJson: JSON.stringify(board)
 
 module.exports = { BoardsController }

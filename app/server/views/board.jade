@@ -9,11 +9,10 @@
 
 != js("lib")
 != js("boardroom")
-!= js("board")
-!= js("views/board")
+!= js("views/app")
 
 script(type="text/javascript")
-  var headerView = new boardroom.views.Header();
-  headerView.render();
-  var boardView = new boardroom.views.Board(headerView);
-  boardView.render();
+  var board = !{boardAsJson};
+  var appView = new boardroom.views.App({ board: board });
+  appView.render();
+
