@@ -3,25 +3,16 @@ window.boardroomFactory = (socket, boardInfo) ->
     max_z: 1
 
     dragOptions: ($card) ->
-      opts =
-        onMouseMove: () ->
-          socket.emit 'move', {_id: $card.id, x: $card.position().left, y: $card.position().top, board_name: boardInfo.name, author:boardInfo.user_id}
-        position : (dx, dy, x, y, e) ->
-          distance = Math.sqrt dx*dx + dy*dy
-          if distance < 100
-            return left: Math.floor(x - dx*(1-distance/100/5)), top: Math.floor(y - dy*(1-distance/100/5))
-          else
-            boardroom.group.remove $card, boardroom.group.emitRemoval
-            $(window).add($card).off '.followDrag'
-            $card.mousedown(boardroom.card.onMouseDown)
-            socket.emit 'move_commit', {_id: $card.id, x: $card.position().left, y:$card.position().top, board_name:boardInfo.name, author:boardInfo.user_id}
-            $card.offset({left: x, top: y})
-            boardroom.card.onMouseDownHelper.call $card[0], e.pageX, e.pageY
-            return left: x, top: y
-      return opts
+      onMouseMove: ->
+        socket.emit 'move',
+          _id: $card.id
+          x: $card.position().left
+          y: $card.position().top
+          board_name: boardInfo.name
+          author: boardInfo.user_id
 
     moveToTop: (card) ->
-      if parseInt($(card).css('z-index')) == boardroom.max_z then return
+      return if parseInt($(card).css('z-index')) == boardroom.max_z
       $(card).css('z-index', ++boardroom.max_z)
 
     group:

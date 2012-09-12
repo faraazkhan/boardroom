@@ -1,48 +1,37 @@
 class boardroom.views.Board extends Backbone.View
   el: '.board'
 
+  events:
+    'click .stack-name': 'changeStackName'
+
   initialize: (attributes) ->
     { @socket } = attributes
-    @focusNextCreate = false
-    @cardLocks = {}
 
-    board = @model
-    @boardroom = boardroomFactory(@socket, board)
+    @boardroom = boardroomFactory @socket, @model
 
-    @socket.on 'move', @onMoveCard
-    @socket.on 'add', @onCreateCard
-    @socket.on 'delete', @onDeleteCard
-    @socket.on 'text', @onText
-    @socket.on 'joined', (user) =>
-      board.users[user.user_id] = user
-    @socket.on 'connect', ->
-      @socket.emit 'join', user_id: board.user_id
-    @socket.on 'title_changed', (title) ->
-      $('#title').val title
-    @socket.on 'color', @onColor
-    @socket.on 'boardDeleted', ->
-      alert 'This board has been deleted by its owner.'
-      window.location = '/boards'
+    @initializeSocketEventHandlers()
+    @initializeCards()
+    @initializeGroups()
+    @initializeCardLockPoller()
+
+  initializeSocketEventHandlers: ->
+    @socket.on 'joined', @model.addUser
+    @socket.on 'connect', @publishUserJoinedEvent
+    @socket.on 'boardDeleted', @redirectToBoardsList
+    @socket.on 'add', @displayNewCard
+    @socket.on 'move', @updateCardPosition
+    @socket.on 'text', @updateCardText
+    @socket.on 'removedCard', @removeCardFromGroup
     @socket.on 'group', @boardroom.onGroup
     @socket.on 'createdOrUpdatedGroup', @boardroom.group.onCreatedOrUpdated
-    @socket.on 'removedCard', (data) =>
-      @boardroom.group.remove $("##{data.cardId}")
 
-    setInterval ->
-      currentTime = new Date().getTime()
-      for own cardId, cardLock of @cardLocks
-        timeout = if cardLock.move then 500 else 5000
-        if currentTime - cardLock.updated > timeout
-          $("##{cardId} .notice").fadeOut 100
-          $("##{cardId} textarea").removeAttr 'disabled'
-          delete @cardLocks[cardId]
-    , 100
+  initializeCards: ->
+    @cardViews = []
+    for card in @model.get('cards')
+      @displayNewCard card
 
-    @onCreateCard card for card in @model.get 'cards'
-
-    $('.board').on 'click', '.stack-name', @changeStackName
-
-    for own groupId, group of board.groups
+  initializeGroups: ->
+    for groupId, group of @model.get('groups')
       for cardId in group.cardIds
         $card = $ "##{cardId}"
         $card.data 'group-id', groupId
@@ -51,13 +40,72 @@ class boardroom.views.Board extends Backbone.View
 
       @boardroom.group.onCreatedOrUpdated $.extend(group, { _id: groupId })
 
-  changeStackName: (event) =>
+  initializeCardLockPoller: ->
+    @cardLock = new boardroom.models.CardLock
+    @cardLock.poll (cardId) =>
+      cardView = @findCardView cardId
+      cardView.hideNotice()
+      cardView.enableEditing()
+
+  publishUserJoinedEvent: =>
+    @socket.emit 'join', user_id: @model.get('user_id')
+
+  redirectToBoardsList: ->
+    alert 'This board has been deleted by its owner.'
+    window.location = '/boards'
+
+  updateCardPosition: (data) =>
+    cardView = @findCardView data._id
+    cardView.moveTo x: data.x, y: data.y
+    cardView.showNotice user: data.moved_by, message: data.moved_by
+    @cardLock.lock data._id,
+      user_id: data.moved_by
+      updated: new Date().getTime()
+      move: true
+    cardView.bringForward()
+
+  displayNewCard: (data) =>
+    card = new boardroom.models.Card _.extend(data, board: @model)
+    cardView = new boardroom.views.Card
+      model: card
+      boardroom: @boardroom
+      socket: @socket
+    @$el.append cardView.render().el
+    cardView.bringForward()
+    @cardViews.push cardView
+
+  updateCardText: (data) =>
+    cardView = @findCardView data._id
+    cardView.disableEditing data.text
+    cardView.showNotice user: data.author, message: "#{data.author} is typing..."
+    @cardLock.lock data._id,
+      user_id: data.author
+      updated: new Date().getTime()
+    cardView.addAuthor data.author
+    cardView.adjustTextarea()
+    cardView.bringForward()
+
+  findCardView: (id) ->
+    _.detect @cardViews, (cardView) ->
+      cardView.model.id is id
+
+
+
+  # GROUPS
+  removeCardFromGroup: (data) =>
+    @boardroom.group.remove $("##{data.cardId}")
+
+  changeStackName: (event) ->
     $stackElement = $ event.target
     offset = $stackElement.offset()
     offset.left -= 1
 
-    $input = $('<input type="text" class="stack-name-edit">').val($stackElement.text())
-    $input.appendTo($stackElement.parent()).offset(offset).focus()
+    $input = $('<input type="text" class="stack-name-edit">')
+      .val($stackElement.text())
+    $input
+      .appendTo($stackElement.parent())
+      .offset(offset)
+      .focus()
     $stackElement.remove()
 
     $input.on 'blur change', =>
@@ -65,76 +113,7 @@ class boardroom.views.Board extends Backbone.View
       $stackElement.appendTo($input.parent())
       $input.remove()
       targetGroupId = $stackElement.attr('id').split('-')[0]
-      @socket.emit 'updateGroup', {boardName: board.name, _id: targetGroupId, name: $input.val()}
-
-  adjustTextarea: ($textarea) ->
-    $textarea.css 'height', 'auto'
-    if $textarea.innerHeight() < $textarea[0].scrollHeight
-      $textarea.css 'height', $textarea[0].textarea.scrollHeight + 14
-    @analyzeCardContent $textarea
-
-  analyzeCardContent: ($textarea) ->
-    $card = $textarea.parents '.card'
-    $card.removeClass 'i-wish i-like'
-    if matches = $textarea.val().match /^i (like|wish)/i
-      $card.addClass("i-#{matches[1]}")
-
-  onMoveCard: (move) =>
-    $card = $("##{move._id}")
-      .css
-        left: move.x
-        top: move.y
-    unless $('.notice', $card).is ':visible'
-      @notice move._id, move.moved_by, move.moved_by
-      @cardLocks[move._id] =
-        user_id: move.moved_by,
-        updated: new Date().getTime(),
-        move: true
-    @boardroom.moveToTop $card
-
-  onDeleteCard: (card) ->
-    $("##{card._id}").remove()
-
-  notice: (cardId, userId, message) =>
-    $("##{cardId} .notice")
-      .html("<img src='#{boardroom.models.User.avatar userId}'/>
-             <span>#{_.escape message}</span>")
-      .show()
-
-  addAuthor: (cardId, author) =>
-    if $("##{cardId} .authors img[title='#{author}']").length is 0
-      $("##{cardId} .authors")
-        .append("<img src='#{boardroom.models.User.avatar author}' title='#{_.escape author}'/>")
-
-  onCreateCard: (data) =>
-    card = new boardroom.models.Card data
-    card.set 'board', @model
-    cardView = new boardroom.views.Card
-      model: card
-      boardroom: @boardroom
-      socket: @socket
-    $('.board').append cardView.render().el
-
-    if @focusNextCreate
-      $('textarea', cardView.$el).focus()
-      @focusNextCreate = false
-
-    @boardroom.moveToTop cardView.$el
-
-  onColor: (data) ->
-    $card = $("##{data._id}")
-    $card.removeClassMatching /color-\d+/g
-    $card.addClass "color-#{data.colorIndex}"
-
-  onText: (data) =>
-    $textarea = $("##{data._id} textarea")
-    $textarea.val(data.text).attr 'disabled', 'disabled'
-    if ! @cardLocks[data._id] || @cardLocks[data._id].user_id != data.author
-      @notice data._id, data.author, "#{data.author} is typing..."
-    $("##{data._id} .notice").show()
-    @cardLocks[data._id] =
-      user_id: data.author
-      updated: new Date().getTime()
-    @addAuthor data._id, data.author
-    @adjustTextarea $textarea
-    @boardroom.moveToTop "##{data._id}"
+      @socket.emit 'updateGroup',
+        boardName: board.name
+        _id: targetGroupId
+        name: $input.val()

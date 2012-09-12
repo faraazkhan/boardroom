@@ -32,20 +32,33 @@ class Sockets
       .on 'connection', (socket) =>
         @rebroadcast socket, ['move', 'text', 'color']
         socket.on 'join', (user) =>
+          util.log 'join'
+          util.log util.inspect user
           @boardMembers[user.user_id] = user
           boardNamespace.emit 'joined', user
           Board.findOrCreateByNameAndCreatorId boardName, user.user_id, (board) ->
             socket.emit 'title_changed', board.title
 
         socket.on 'add', (data) =>
-          @addCard boardNamespace, data
-          Board.findByName boardName, (board) =>
-            @boardsChannel.emit 'card_added', board, data.author
+          util.log util.inspect data
+          card = new Card data
+          card.authors = []
+          card.save (error) =>
+            throw error if error
+            boardNamespace.emit 'add', card
+            # /boards functionality
+            Board.findByName boardName, (board) =>
+              @boardsChannel.emit 'card_added', board, data.author
 
         socket.on 'delete', (data) =>
-          @deleteCard boardNamespace, data
-          Board.findByName boardName, (board) =>
-            @boardsChannel.emit 'card_deleted', board, data.author
+          Card.findById data._id, (error, card) =>
+            throw error if error
+            card.remove (error) =>
+              throw error if error
+              boardNamespace.emit 'delete', card
+              # /boards functionality
+              Board.findByName boardName, (board) =>
+                @boardsChannel.emit 'card_deleted', board, data.author
 
         socket.on 'move_commit', @updateCard
         socket.on 'text_commit', @updateCard
@@ -63,6 +76,7 @@ class Sockets
             board.title = data.title
             board.save (error) =>
               socket.broadcast.emit 'title_changed', board.title
+              # /boards functionality
               @boardsChannel.emit 'board_changed', board
 
         socket.on 'createGroup', (data) ->
@@ -85,25 +99,14 @@ class Sockets
       socket.on event, (data) ->
         socket.broadcast.emit(event, data)
 
-  @addCard: (boardNamespace, attributes) ->
-    card = new Card attributes
-    card.authors = []
-    card.save (error) ->
-      boardNamespace.emit 'add', card
-
-
   @updateCard: (attributes) =>
     util.log util.inspect attributes
     Card.findById attributes._id, (error, card) =>
       throw error if error
       card.updateAttributes attributes, =>
         Board.findByName card.boardName, (board) =>
+          # /boards functionality
           @boardsChannel.emit 'user_activity', board, card.author, 'Did something'
-
-  @deleteCard: (boardNamespace, existingCard) ->
-    Card.findById existingCard._id, (error, card) ->
-      card.remove (error) ->
-        boardNamespace.emit 'delete', card
 
   @start: (app) ->
     @boardsChannel = undefined

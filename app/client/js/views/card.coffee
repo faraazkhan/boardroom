@@ -12,93 +12,138 @@ class boardroom.views.Card extends Backbone.View
                         </div>
                         <textarea><%= text %></textarea>
                         <div class='authors'></div>")
+
   attributes: ->
     id: @model.id
 
   events:
-    'mousedown': 'updateCardPosition'
-    'click .color': 'updateColor'
-    'keyup textarea': 'textChange'
-    'change textarea': 'textCommit'
-    'click .delete': 'cardDeleted'
+    'mousedown': 'updatePosition'
+    'click .color': 'changeColor'
+    'keyup textarea': 'changeText'
+    'change textarea': 'commitText'
+    'click .delete': 'delete'
 
   initialize: (attributes) ->
     { @boardroom, @socket } = attributes
+    @socket.on 'color', @updateColor
+    @socket.on 'delete', @removeIfDeleted
 
-  updateCardPosition: (event) ->
-    unless $(event.target).is('span')
+  updatePosition: (event) ->
+    isColorSelection = $(event.target).is 'span'
+    isDeletion = $(event.target).is 'img'
+    unless isColorSelection or isDeletion
       @boardroom.card.onMouseDown event
 
-  updateColor: (event) ->
-    $colorElement = $ event.target
-    card = $colorElement.closest('.card')[0]
-    colorIndex = $colorElement.attr('class').match(/color-(\d+)/)[1]
+  changeColor: (event) ->
+    color = $(event.target)
+      .attr('class')
+      .match(/color-(\d+)/)[1]
     data =
       _id: @model.id
-      colorIndex: colorIndex
+      colorIndex: color
     @socket.emit 'color', data
-    @toggleColorClass data
+    @updateColor data
 
-  toggleColorClass: (data) ->
+  setColor: (color) ->
+    @$el.addClass "color-#{color}"
+
+  uncolor: ->
     @$el.removeClassMatching /color-\d+/g
-    @$el.addClass "color-#{data.colorIndex}"
 
-  textChange: (event) =>
+  updateColor: (data) =>
+    if data._id is @model.id
+      @uncolor()
+      @setColor data.colorIndex
+
+  changeText: (event) ->
     $cardElement = $ event.target
-    card = $cardElement.closest('.card')[0]
     @socket.emit 'text'
-      _id: card.id
+      _id: @model.id
       text: $cardElement.val()
-      author: @model.user_id
+      author: @model.get('board').get('user_id')
     @addAuthor @model.get('board').get('user_id')
-    @adjustTextarea $cardElement
+    @adjustTextarea()
 
-  addAuthor: (author) =>
+  addAuthor: (author) ->
     avatar = boardroom.models.User.avatar author
     if @$(".authors img[title='#{author}']").length is 0
       @$('.authors').append("<img src='#{avatar}' title='#{_.escape author}'/>")
 
-  adjustTextarea: ($textarea) ->
+  adjustTextarea: ->
+    $textarea = @$ 'textarea'
     $textarea.css 'height', 'auto'
     if $textarea.innerHeight() < $textarea[0].scrollHeight
       $textarea.css 'height', $textarea[0].textarea.scrollHeight + 14
-    @analyzeCardContent $textarea
+    @analyzeText $textarea
 
-  analyzeCardContent: ($textarea) ->
+  analyzeText: ($textarea) ->
     $card = $textarea.parents '.card'
     $card.removeClass 'i-wish i-like'
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
 
-  textCommit: (event) =>
+  commitText: (event) ->
     $cardElement = $ event.target
-    card = $cardElement.closest('.card')[0]
     @socket.emit 'text_commit',
-      _id: card.id
+      _id: @model.id
       text: $cardElement.val()
       board_name: @model.get('board').get('name')
       author: @model.get('board').get('user_id')
-    if groupId = $(card).data('group-id')
-      @boardroom.group.layOut(groupId)
+    if groupId = @$el.data('group-id')
+      @boardroom.group.layOut groupId
 
-  cardDeleted: (event) =>
-    card = $(event.target).closest('.card')[0]
+  delete: (event) ->
     @socket.emit 'delete'
-      _id: card.id
+      _id: @model.id
       author: @model.get('board').get('user_id')
-    $(card).remove()
+    @remove()
+
+  removeIfDeleted: (data) =>
+    if data._id is @model.id
+      @remove()
+
+  showNotice: ({ user, message }) =>
+    if user?
+      @$('.notice')
+        .html("<img src='#{boardroom.models.User.avatar user}'/>
+               <span>#{_.escape message}</span>")
+        .show()
+    else
+      @$('.notice').show()
+
+  disableEditing: (text) ->
+    @$('textarea')
+      .val(text)
+      .attr 'disabled', 'disabled'
+
+  moveTo: ({x, y}) ->
+    @$el.css
+      left: x
+      top: y
+
+  hideNotice: ->
+    @$('.notice').fadeOut 100
+
+  enableEditing: ->
+    @$('textarea').removeAttr 'disabled'
+
+  bringForward: ->
+    @boardroom.moveToTop @$el
 
   render: ->
     @$el
-      .html(@template @model.toJSON())
-      .css(left: @model.get('x'),
-           top: @model.get('y'))
-      .removeClassMatching(/color-\d+/g)
-      .addClass "color-#{@model.get('colorIndex') || 2}"
-    @adjustTextarea $('textarea', @$el)
+      .html(@template(@model.toJSON()))
+      .css
+        left: @model.get('x')
+        top: @model.get('y')
+    @uncolor()
+    @setColor @model.get('colorIndex') || 2
+    @adjustTextarea()
     if @model.has('authors')
       for author in @model.get('authors')
         @addAuthor author
-    if @model.has 'groupId'
+    if @model.has('groupId')
       @$el.data 'group-id', @model.get('groupId')
+    if @model.get('focus')
+      @$('textarea').focus()
     @

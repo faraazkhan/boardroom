@@ -8,6 +8,7 @@ CardSchema = new mongoose.Schema
   text: String
   deleted: Boolean
   authors: Array
+  focus: Boolean
 
 CardSchema.statics =
   findByBoardName: (boardName, callback) ->

@@ -1,4 +1,6 @@
 class boardroom.views.Boards extends Backbone.View
+  el: '#boards'
+
   initialize: ->
     socket = io.connect "http://#{document.location.host}/channel/boards"
     socket.on 'board_changed', @onBoardChanged
@@ -41,8 +43,9 @@ class boardroom.views.Boards extends Backbone.View
       .delay(2000)
       .slideUp()
 
-  createBoard: ->
+  createBoard: (event) ->
     name = $('input#board-name').val()
+    console.log name
     if $.trim(name).length > 0
       document.location = "/boards/#{name}"
     false
@@ -51,10 +54,9 @@ class boardroom.views.Boards extends Backbone.View
     $element = $ event.element
     $element.onselectstart = -> return false
     if $element.hasClass 'confirm'
-      socket.emit 'delete', {
+      socket.emit 'delete',
         board_id: $element.closest('li').attr('id'),
         boardName: $element.closest('li').attr('name')
-      }
       $element.find('.message').hide()
       $element.closest('li').slideUp()
     else
