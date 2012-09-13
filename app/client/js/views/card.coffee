@@ -95,7 +95,7 @@ class boardroom.views.Card extends Backbone.View
     if groupId = @$el.data('group-id')
       @group.layOut groupId
 
-  delete: (event) ->
+  delete: ->
     @socket.emit 'delete'
       _id: @model.id
       author: @model.get('board').get('user_id')

@@ -24,7 +24,7 @@ describe 'boardroom.views.Board', ->
 
     describe 'connect', ->
       beforeEach ->
-        @publishUserJoinedEvent = sinon.spy boardroom.views.Board.prototype,'publishUserJoinedEvent'
+        @publishUserJoinedEvent = sinon.spy boardroom.views.Board.prototype, 'publishUserJoinedEvent'
         @boardView = new boardroom.views.Board
           model: @board
           socket: @socket
