@@ -6,6 +6,10 @@
   "repository": {
     "url": "git@github.com:carbonfive/boardroom.git"
   },
+  "scripts": {
+    "test" : "cake spec",
+    "start" : "node index.js"
+  },
   "dependencies": {
     "jquery": "1.7",
     "express": "2",
