@@ -1,4 +1,4 @@
-window.boardroomFactory = (socket, boardInfo) ->
+window.boardUtils = (socket, boardInfo) ->
   boardroom =
     max_z: 1
 

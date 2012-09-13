@@ -24,7 +24,10 @@ class boardroom.views.Card extends Backbone.View
     'click .delete': 'delete'
 
   initialize: (attributes) ->
-    { @boardroom, @socket } = attributes
+    { @socket } = attributes
+
+    _.extend @, boardUtils @socket, @model
+
     @socket.on 'color', @updateColor
     @socket.on 'delete', @removeIfDeleted
 
@@ -32,7 +35,7 @@ class boardroom.views.Card extends Backbone.View
     isColorSelection = $(event.target).is 'span'
     isDeletion = $(event.target).is 'img'
     unless isColorSelection or isDeletion
-      @boardroom.card.onMouseDown event
+      @card.onMouseDown event
 
   changeColor: (event) ->
     color = $(event.target)
@@ -90,7 +93,7 @@ class boardroom.views.Card extends Backbone.View
       board_name: @model.get('board').get('name')
       author: @model.get('board').get('user_id')
     if groupId = @$el.data('group-id')
-      @boardroom.group.layOut groupId
+      @group.layOut groupId
 
   delete: (event) ->
     @socket.emit 'delete'
@@ -128,7 +131,7 @@ class boardroom.views.Card extends Backbone.View
     @$('textarea').removeAttr 'disabled'
 
   bringForward: ->
-    @boardroom.moveToTop @$el
+    @moveToTop @$el
 
   followDrag: ->
     @$el.followDrag

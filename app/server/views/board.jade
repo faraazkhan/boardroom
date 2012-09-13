@@ -8,6 +8,7 @@
 .board
 
 script(type="text/javascript")
-  var board = !{boardAsJson};
-  var appView = new boardroom.views.App({ board: board });
-  appView.render();
+  var attributes = !{boardAsJson};
+  var board = new boardroom.models.Board(attributes);
+  var roomView = new boardroom.views.Room({ model: board });
+  roomView.render();

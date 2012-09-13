@@ -1,4 +1,4 @@
-class boardroom.views.Boards extends Backbone.View
+class boardroom.views.BoardList extends Backbone.View
   el: '#boards'
 
   render: ->

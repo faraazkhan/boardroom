@@ -7,7 +7,7 @@ class boardroom.views.Board extends Backbone.View
   initialize: (attributes) ->
     { @socket } = attributes
 
-    @boardroom = boardroomFactory @socket, @model
+    _.extend @, boardUtils(@socket, @model)
 
     @initializeSocketEventHandlers()
     @initializeCards()
@@ -22,8 +22,8 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'move', @updateCardPosition
     @socket.on 'text', @updateCardText
     @socket.on 'removedCard', @removeCardFromGroup
-    @socket.on 'group', @boardroom.onGroup
-    @socket.on 'createdOrUpdatedGroup', @boardroom.group.onCreatedOrUpdated
+    @socket.on 'group', @onGroup
+    @socket.on 'createdOrUpdatedGroup', @group.onCreatedOrUpdated
 
   initializeCards: ->
     @cardViews = []
@@ -38,7 +38,7 @@ class boardroom.views.Board extends Backbone.View
         cardView.$el.off 'mousedown'
         cardView.followDrag()
 
-      @boardroom.group.onCreatedOrUpdated $.extend(group, { _id: groupId })
+      @group.onCreatedOrUpdated $.extend(group, { _id: groupId })
 
   initializeCardLockPoller: ->
     @cardLock = new boardroom.models.CardLock
@@ -68,7 +68,6 @@ class boardroom.views.Board extends Backbone.View
     card = new boardroom.models.Card _.extend(data, board: @model)
     cardView = new boardroom.views.Card
       model: card
-      boardroom: @boardroom
       socket: @socket
     @$el.append cardView.render().el
     cardView.bringForward()
@@ -93,7 +92,7 @@ class boardroom.views.Board extends Backbone.View
 
   # GROUPS
   removeCardFromGroup: (data) =>
-    @boardroom.group.remove $("##{data.cardId}")
+    @group.remove $("##{data.cardId}")
 
   changeStackName: (event) ->
     $stackElement = $ event.target
