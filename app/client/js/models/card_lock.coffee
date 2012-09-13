@@ -1,18 +1,18 @@
 class boardroom.models.CardLock
   constructor: ->
-    @cardLocks = {}
+    @locks = {}
 
   poll: (expirationCallback) ->
     checkForExpiredLocks = =>
       currentTime = new Date().getTime()
-      for cardId, cardLock of @cardLocks
+      for cardId, cardLock of @locks
         timeout = if cardLock.move then 500 else 5000
         lockExpired = currentTime - cardLock.updated > timeout
         if lockExpired
           expirationCallback cardId
-          delete @cardLocks[cardId]
+          delete @locks[cardId]
 
     setInterval checkForExpiredLocks, 100
 
   lock: (id, data) ->
-    @cardLocks[id] = data
+    @locks[id] = data
