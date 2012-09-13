@@ -22,8 +22,8 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'move', @updateCardPosition
     @socket.on 'text', @updateCardText
     @socket.on 'removedCard', @removeCardFromGroup
-    @socket.on 'group', @onGroup
     @socket.on 'createdOrUpdatedGroup', @group.onCreatedOrUpdated
+    @socket.on 'group', @onGroup
 
   initializeCards: ->
     @cardViews = []
