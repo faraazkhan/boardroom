@@ -1,10 +1,12 @@
 $.fn.onMousePause = (callback, duration = 400) ->
-  $this = @
   timeout = null
-  $this.on 'mousemove.onMousePause', (e) ->
-    clearTimeout timeout
-    timeout = setTimeout (-> callback.call($this, e)), duration
 
-  off: ->
+  @on 'mousemove.onMousePause', (event) =>
     clearTimeout timeout
-    $this.off '.onMousePause'
+    executeCallback = =>
+      callback.call @, event
+    timeout = setTimeout executeCallback, duration
+
+  off: =>
+    clearTimeout timeout
+    @off '.onMousePause'
