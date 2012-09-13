@@ -1,0 +1,7 @@
+//= require './vendor/jquery.min.js'
+//= require './vendor/underscore.min.js'
+//= require './vendor/backbone.min.js'
+//= require './boardroom'
+//= require_tree './lib'
+//= require_tree './models'
+//= require_tree './views'

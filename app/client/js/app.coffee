@@ -1,6 +1,0 @@
-#= require './vendor/underscore.js'
-#= require './vendor/backbone.js'
-#= require './boardroom'
-#= require_tree './lib'
-#= require_tree './models'
-#= require_tree './views'
