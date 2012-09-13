@@ -26,4 +26,3 @@ class boardroom.views.Header extends Backbone.View
       x: parseInt Math.random() * 700
       y: parseInt Math.random() * 400
       focus: true
-
