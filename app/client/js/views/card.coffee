@@ -130,6 +130,16 @@ class boardroom.views.Card extends Backbone.View
   bringForward: ->
     @boardroom.moveToTop @$el
 
+  followDrag: ->
+    @$el.followDrag
+      onMouseMove: =>
+        @socket.emit 'move',
+          _id: @model.id
+          x: @$el.position().left
+          y: @$el.position().top
+          board_name: @model.get('board').get('name')
+          author: @model.get('board').get('user_id')
+
   render: ->
     @$el
       .html(@template(@model.toJSON()))

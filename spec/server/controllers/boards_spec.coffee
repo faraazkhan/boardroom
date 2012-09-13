@@ -7,6 +7,35 @@ $ = require 'jquery'
 { LoggedInRouter } = require './../support/authentication'
 
 describe 'BoardsController', ->
+  describe '#create', ->
+    router = null
+    count = null
+
+    beforeEach (done) ->
+      Board.remove ->
+        Board.count (error, currentCount) ->
+          done(error) if error
+          router = new LoggedInRouter
+          count = currentCount
+          done()
+
+    it 'creates a new board', (done) ->
+      title = 'title-1'
+      request(router.app)
+        .post('/boards')
+        .send(title: title)
+        .end (error, response) ->
+          throw error if error
+          Board.count (error, count) ->
+            done(error) if error
+            expect(count).toEqual 1
+            Board.findOne {}, (error, board) ->
+              done(error) if error
+              expect(board.title).toEqual title
+              expect(board.name).toEqual title
+              expect(board.creator_id).toEqual '1'
+              done()
+
   describe '#index', ->
     router = null
     boards = []
@@ -45,32 +74,4 @@ describe 'BoardsController', ->
         .get('/boards/1')
         .end (error, response) ->
           expect(response.ok).toBeTruthy()
-          done()
-
-  describe '#info', ->
-    router = null
-    board = null
-    beforeEach (done) ->
-      Board.remove ->
-        Card.remove ->
-          Factory.create 'board', (defaultBoard) ->
-            board = defaultBoard
-            Factory.create 'card', boardName: board.name, ->
-              done()
-
-      router = new LoggedInRouter
-
-    it 'returns board data as json', (done) ->
-      request(router.app)
-        .get("/boards/#{board.name}/info")
-        .end (error, response) ->
-          expect(response.ok).toBeTruthy()
-
-          body = response.body
-          expect(body.name).toEqual board.name
-          expect(body.cards.length).toEqual 1
-          expect(body.groups).toEqual []
-          expect(body.users).toEqual {}
-          expect(body.title).toEqual board.name
-          expect(body.user_id).toEqual 1
           done()

@@ -2,15 +2,6 @@ window.boardroomFactory = (socket, boardInfo) ->
   boardroom =
     max_z: 1
 
-    dragOptions: ($card) ->
-      onMouseMove: ->
-        socket.emit 'move',
-          _id: $card.id
-          x: $card.position().left
-          y: $card.position().top
-          board_name: boardInfo.name
-          author: boardInfo.user_id
-
     moveToTop: (card) ->
       return if parseInt($(card).css('z-index')) == boardroom.max_z
       $(card).css('z-index', ++boardroom.max_z)

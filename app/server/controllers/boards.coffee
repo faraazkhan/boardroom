@@ -4,8 +4,15 @@
 { Card }                  = require './../models/card'
 
 class BoardsController extends ApplicationController
+  create: (request, response) =>
+    board = new Board request.body
+    board.name = board.title
+    board.creator_id = request.session.user_id
+    board.save (error) ->
+      response.redirect "/boards/#{board.name}"
+
   index: (request, response) =>
-    Board.findBoards (boards) =>
+    Board.all (boards) =>
       Card.countsByBoard (countsByBoard) =>
         response.render 'boards',
           user: @userInfo(request)

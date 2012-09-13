@@ -5,7 +5,7 @@ describe 'board.Board', ->
   beforeEach (done) ->
     Board.remove done
 
-  describe '.findBoards', ->
+  describe '.all', ->
     describe 'given deleted and non-deleted boards', ->
       beforeEach (done) ->
         Factory.create 'board', ->
@@ -14,7 +14,7 @@ describe 'board.Board', ->
               done()
 
       it 'finds all non-deleted boards', (done) ->
-        Board.findBoards (boards) ->
+        Board.all (boards) ->
           expect(boards.length).toEqual 2
           for board in boards
             expect(board.deleted).toBeFalsy()
@@ -31,36 +31,6 @@ describe 'board.Board', ->
       Board.findByName name, (board) ->
         expect(board.name).toEqual(name)
         done()
-
-  describe '.findOrCreateByNameAndCreatorId', ->
-    describe 'given an existing board', ->
-      board = null
-      beforeEach (done) ->
-        Factory.create 'board', (existingBoard) ->
-          board = existingBoard
-          done()
-
-      it 'finds the existing board', (done) ->
-        Board.findOrCreateByNameAndCreatorId board.name,
-          board.creator_id,
-          (existingBoard) ->
-            expect(existingBoard.name).toEqual(board.name)
-            expect(existingBoard.creator_id).toEqual(board.creator_id)
-            done()
-
-    describe 'given no matching board', ->
-      attributes =
-        name: 'name-1'
-        creator_id: 'creator-1'
-
-      it 'creates a new board', (done) ->
-        Board.findOrCreateByNameAndCreatorId attributes.name,
-          attributes.creator_id,
-          (board) ->
-            expect(board).not.toBeUndefined()
-            expect(board.name).toEqual(attributes.name)
-            expect(board.creator_id).toEqual(attributes.creator_id)
-            done()
 
   describe '#addGroup', ->
     board = null

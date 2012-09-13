@@ -8,7 +8,7 @@ BoardSchema = new mongoose.Schema
   groups: Array
 
 BoardSchema.statics =
-  findBoards: (callback) ->
+  all: (callback) ->
     @find()
       .or([{ deleted: false }, { deleted: { $exists: false } }])
       .exec (error, boards) ->
@@ -17,15 +17,6 @@ BoardSchema.statics =
   findByName: (name, callback) ->
     @findOne name: name, (error, attributes) ->
       callback new Board(attributes)
-
-  findOrCreateByNameAndCreatorId: (name, creator_id, callback) ->
-    @findOne { name, creator_id }, (error, attributes) ->
-      if board?
-        callback board
-      else
-        board = new Board { name, creator_id }
-        board.save (error) ->
-          callback board
 
 BoardSchema.methods =
   addGroup: (attributes, callback) ->

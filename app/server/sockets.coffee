@@ -17,10 +17,14 @@ class Sockets
     @boardsChannel = @io
       .of('/channel/boards')
       .on 'connection', (socket) =>
+        console.log 'connect'
         @rebroadcast socket, ['delete']
         socket.on 'delete', (data) =>
+          console.log 'delete bitch'
           Board.findByName data.boardName, (board) =>
+            console.log board
             board.destroy (error) =>
+              console.log error
               @io
                 .of("/boardNamespace/#{data.boardName}")
                 .emit 'boardDeleted'
@@ -32,15 +36,12 @@ class Sockets
       .on 'connection', (socket) =>
         @rebroadcast socket, ['move', 'text', 'color']
         socket.on 'join', (user) =>
-          util.log 'join'
-          util.log util.inspect user
           @boardMembers[user.user_id] = user
           boardNamespace.emit 'joined', user
-          Board.findOrCreateByNameAndCreatorId boardName, user.user_id, (board) ->
+          Board.findByName boardName, (board) ->
             socket.emit 'title_changed', board.title
 
         socket.on 'add', (data) =>
-          util.log util.inspect data
           card = new Card data
           card.authors = []
           card.save (error) =>
@@ -100,7 +101,6 @@ class Sockets
         socket.broadcast.emit(event, data)
 
   @updateCard: (attributes) =>
-    util.log util.inspect attributes
     Card.findById attributes._id, (error, card) =>
       throw error if error
       card.updateAttributes attributes, =>
@@ -111,6 +111,6 @@ class Sockets
   @start: (app) ->
     @boardsChannel = undefined
     @io = sockets.listen app
-    @io.set 'log level', 1
+    #@io.set 'log level', 1
 
 module.exports = { Sockets }

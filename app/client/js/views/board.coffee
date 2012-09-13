@@ -33,10 +33,10 @@ class boardroom.views.Board extends Backbone.View
   initializeGroups: ->
     for groupId, group of @model.get('groups')
       for cardId in group.cardIds
-        $card = $ "##{cardId}"
-        $card.data 'group-id', groupId
-        $card.off 'mousedown'
-        $card.followDrag @boardroom.dragOptions($card)
+        cardView = @findCardView cardId
+        cardView.$el.data 'group-id', groupId
+        cardView.$el.off 'mousedown'
+        cardView.followDrag()
 
       @boardroom.group.onCreatedOrUpdated $.extend(group, { _id: groupId })
 
