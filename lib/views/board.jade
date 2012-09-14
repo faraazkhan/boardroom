@@ -1,0 +1,14 @@
+#header
+  a.title(href="/")
+    span.logo Bo
+  button.create Add a Thought
+  input#title(type="text")
+  include includes/user_info
+
+.board
+
+script(type="text/javascript")
+  var attributes = !{boardAsJson};
+  var board = new boardroom.models.Board(attributes);
+  var roomView = new boardroom.views.Room({ model: board });
+  roomView.render();
