@@ -14,7 +14,7 @@
 #   - dist/**/*.js
 #
 src_files:
-  - app/client/js/application.js
+  - assets/js/application.js
 
 # stylesheets
 #
@@ -65,4 +65,4 @@ spec_files:
 #
 # spec_dir: spec/javascripts
 #
-spec_dir: spec/client
+spec_dir: spec/assets

@@ -1,5 +1,5 @@
 request = require 'supertest'
-Router = require "#{__dirname}/../../../app/server/routes"
+Router = require "#{__dirname}/../../../lib/routes"
 
 describe 'UsersController', ->
   describe '#avatar', ->

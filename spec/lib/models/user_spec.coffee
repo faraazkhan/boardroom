@@ -1,4 +1,4 @@
-User = require "#{__dirname}/../../../app/server/models/user"
+User = require "#{__dirname}/../../../lib/models/user"
 
 describe 'User', ->
   describe '.avatar_for', ->

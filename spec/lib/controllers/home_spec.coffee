@@ -1,6 +1,6 @@
 request = require 'supertest'
 url = require 'url'
-Router = require "#{__dirname}/../../../app/server/routes"
+Router = require "#{__dirname}/../../../lib/routes"
 LoggedInRouter = require './../support/authentication'
 
 describe 'HomeController', ->

@@ -1,5 +1,5 @@
-Board = require "#{__dirname}/../../../app/server/models/board"
-Card = require "#{__dirname}/../../../app/server/models/card"
+Board = require "#{__dirname}/../../../lib/models/board"
+Card = require "#{__dirname}/../../../lib/models/card"
 Factory = require 'factory-lady'
 
 Factory.define 'board', Board,

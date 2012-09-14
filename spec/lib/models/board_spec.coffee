@@ -1,5 +1,5 @@
 Factory = require './../support/factories'
-Board = require "#{__dirname}/../../../app/server/models/board"
+Board = require "#{__dirname}/../../../lib/models/board"
 
 describe 'board.Board', ->
   beforeEach (done) ->

@@ -1,4 +1,4 @@
-Router = require "#{__dirname}/../../../app/server/routes"
+Router = require "#{__dirname}/../../../lib/routes"
 
 class LoggedInRouter extends Router
   authenticate: (request, response, next) ->
