@@ -31,9 +31,11 @@ Product Owners:
 ### Testing
 
 - [jasmine-headless-webkit](http://johnbintz.github.com/jasmine-headless-webkit/) (clientside testing)
-- [jasmine-node](https://github.com/mhevery/jasmine-node) (serverside testing)
+- [jasmine-node](https://github.com/mhevery/jasmine-node) (serverside
+testing) use "--coffee" to enable CoffeeScript support
 - [Sinon.JS](http://sinonjs.org/) (spies, faking time)
-- "cake spec:client", "cake spec:server", "cake spec" are available for running tests
+- Cakefile: "cake spec:client", "cake spec:server", "cake spec"
+- npm: "npm test" is also available for running all tests
 
 ### Deploying
 
@@ -54,7 +56,7 @@ Deployment uses Capistrano. Acceptance is the default stage.
     curl http://npmjs.org/install.sh | sh
     npm install
     # start mongo. for instructions: brew info mongodb
-    node server.js
+    npm start
 
 Visit [localhost:7777](http://localhost:7777).
 
@@ -62,18 +64,18 @@ Visit [localhost:7777](http://localhost:7777).
 
 1. Make sure you have the latest [Homebrew](http://mxcl.github.com/homebrew/) and formulae:  
    `brew update`
-1. Install [MongoDB](http://www.mongodb.org/) with Homebrew:  
+2. Install [MongoDB](http://www.mongodb.org/) with Homebrew:  
    `brew install mongodb`
-1. Follow homebrew's instructions to run Mongo. They're printed after installation; view them again with `brew info mongodb`.
-1. Install [Node.js](http://nodejs.org/) with Homebrew:  
+3. Follow homebrew's instructions to run Mongo. They're printed after installation; view them again with `brew info mongodb`.
+4. Install [Node.js](http://nodejs.org/) with Homebrew:  
    `brew install node`
-1. Install the Node package manager [npm](http://npmjs.org/):  
+5. Install the Node package manager [npm](http://npmjs.org/):  
    `curl http://npmjs.org/install.sh | sh`
-1. Install project dependencies using npm:  
+6. Install project dependencies using npm:  
    `npm install`
-1. Run Boardroom:  
+7. Run Boardroom:  
    `node server.js`
-1. Visit [localhost:7777](http://localhost:7777).
+8. Visit [localhost:7777](http://localhost:7777).
 
 ### Ubuntu / Debian
 Coming soon
@@ -98,4 +100,3 @@ Then:
     { "name" : "test", "title" : "test", "_id" : ObjectId("4ff1e6658aa3445a14000001") }
     > db.cards.find()
     ⋮
-
