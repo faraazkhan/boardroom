@@ -35,4 +35,4 @@ BoardSchema.methods =
 
 Board = db.model 'Board', BoardSchema
 
-module.exports = { Board }
+module.exports = Board

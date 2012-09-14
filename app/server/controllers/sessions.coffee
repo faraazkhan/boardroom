@@ -1,4 +1,4 @@
-{ ApplicationController } = require './application'
+ApplicationController = require './application'
 
 class SessionsController extends ApplicationController
   new: (request, response) ->
@@ -13,4 +13,4 @@ class SessionsController extends ApplicationController
     request.session = {}
     response.redirect '/'
 
-module.exports = { SessionsController }
+module.exports = SessionsController

@@ -45,4 +45,4 @@ CardSchema.methods =
 
 Card = db.model 'Card', CardSchema
 
-module.exports = { Card }
+module.exports = Card

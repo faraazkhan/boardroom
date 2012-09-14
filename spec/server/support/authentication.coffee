@@ -1,4 +1,4 @@
-{ Router } = require "#{__dirname}/../../../app/server/routes"
+Router = require "#{__dirname}/../../../app/server/routes"
 
 class LoggedInRouter extends Router
   authenticate: (request, response, next) ->
@@ -8,4 +8,4 @@ class LoggedInRouter extends Router
   createSocketNamespace: (request, response, next) ->
     next()
 
-module.exports = { LoggedInRouter }
+module.exports = LoggedInRouter

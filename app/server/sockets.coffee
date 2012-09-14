@@ -1,6 +1,6 @@
 sockets = require 'socket.io'
-{ Board } = require './models/board'
-{ Card } = require './models/card'
+Board = require './models/board'
+Card = require './models/card'
 
 class Sockets
   @boardNamespaces: {}
@@ -105,4 +105,4 @@ class Sockets
     @io = sockets.listen app
     @io.set 'log level', 1
 
-module.exports = { Sockets }
+module.exports = Sockets

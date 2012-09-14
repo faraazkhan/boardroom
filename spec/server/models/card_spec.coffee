@@ -1,6 +1,6 @@
-{ Factory } = require './../support/factories'
-{ Board } = require "#{__dirname}/../../../app/server/models/board"
-{ Card } = require "#{__dirname}/../../../app/server/models/card"
+Factory = require './../support/factories'
+Board = require "#{__dirname}/../../../app/server/models/board"
+Card = require "#{__dirname}/../../../app/server/models/card"
 
 describe 'card.Card', ->
   beforeEach (done) ->

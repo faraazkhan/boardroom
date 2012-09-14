@@ -1,7 +1,7 @@
-{ Sockets }               = require './../sockets'
-{ ApplicationController } = require './application'
-{ Board }                 = require './../models/board'
-{ Card }                  = require './../models/card'
+Sockets = require './../sockets'
+ApplicationController = require './application'
+Board = require './../models/board'
+Card = require './../models/card'
 
 class BoardsController extends ApplicationController
   create: (request, response) =>
@@ -15,7 +15,7 @@ class BoardsController extends ApplicationController
     Board.all (boards) =>
       Card.countsByBoard (countsByBoard) =>
         response.render 'boards',
-          user: @userInfo(request)
+          user: request.session
           boards: boards
           countsByBoard: countsByBoard
 
@@ -31,7 +31,7 @@ class BoardsController extends ApplicationController
           title: boardName
           user_id: request.session.user_id
         response.render 'board',
-          user: @userInfo(request)
+          user: request.session
           boardAsJson: JSON.stringify(board)
 
-module.exports = { BoardsController }
+module.exports = BoardsController

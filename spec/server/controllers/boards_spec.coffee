@@ -1,10 +1,10 @@
 request = require 'supertest'
 jsdom = require 'jsdom'
 $ = require 'jquery'
-{ Factory } = require './../support/factories'
-{ Board } = require "#{__dirname}/../../../app/server/models/board"
-{ Card } = require "#{__dirname}/../../../app/server/models/card"
-{ LoggedInRouter } = require './../support/authentication'
+Factory = require './../support/factories'
+Board = require "#{__dirname}/../../../app/server/models/board"
+Card = require "#{__dirname}/../../../app/server/models/card"
+LoggedInRouter = require './../support/authentication'
 
 describe 'BoardsController', ->
   describe '#create', ->

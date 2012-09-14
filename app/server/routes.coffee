@@ -1,11 +1,11 @@
-express                = require 'express'
-cookies                = require 'cookie-sessions'
-connectAssets          = require 'connect-assets'
-{ Sockets }            = require './sockets'
-{ HomeController }     = require './controllers/home'
-{ SessionsController } = require './controllers/sessions'
-{ BoardsController }   = require './controllers/boards'
-{ UsersController }    = require './controllers/users'
+express = require 'express'
+cookies = require 'cookie-sessions'
+connectAssets = require 'connect-assets'
+Sockets = require './sockets'
+HomeController = require './controllers/home'
+SessionsController = require './controllers/sessions'
+BoardsController = require './controllers/boards'
+UsersController = require './controllers/users'
 
 class Router
   constructor: ->
@@ -17,13 +17,13 @@ class Router
       @app.use express.bodyParser()
       @app.use express.static "#{__dirname}/../../public"
       @app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889',
-                       session_key: 'carbonite')
+                       session_key: 'boardroom')
       @app.error @render500Page
 
     homeController = new HomeController
     @app.get '/', @authenticate, homeController.index
 
-    sessionsController = new SessionsController @app
+    sessionsController = new SessionsController
     @app.get '/login', sessionsController.new
     @app.post '/login', sessionsController.create
     @app.get '/logout', sessionsController.destroy
@@ -59,4 +59,4 @@ class Router
     @app.listen parseInt(process.env.PORT) || 7777
     Sockets.start @app
 
-module.exports = { Router }
+module.exports = Router

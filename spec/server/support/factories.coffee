@@ -1,5 +1,5 @@
-{ Board } = require "#{__dirname}/../../../app/server/models/board"
-{ Card } = require "#{__dirname}/../../../app/server/models/card"
+Board = require "#{__dirname}/../../../app/server/models/board"
+Card = require "#{__dirname}/../../../app/server/models/card"
 Factory = require 'factory-lady'
 
 Factory.define 'board', Board,
@@ -21,4 +21,4 @@ Factory.define 'card', Card,
   deleted: false
   authors: ['author-2']
 
-module.exports = { Factory }
+module.exports = Factory
