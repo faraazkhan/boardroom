@@ -6,6 +6,7 @@ CardSchema = new mongoose.Schema
   x: Number
   y: Number
   text: String
+  colorIndex: Number
   deleted: Boolean
   authors: Array
   focus: Boolean
@@ -35,13 +36,13 @@ CardSchema.statics =
 
 CardSchema.methods =
   updateAttributes: (attributes, callback) ->
-    for attribute in ['x', 'y', 'text', 'colorIndex', 'deleted']
-      @[attribute] = attributes[attribute] if attributes[attribute]?
+    for attribute in ['x', 'y', 'text', 'colorIndex', 'deleted'] when attributes[attribute]?
+      @[attribute] = attributes[attribute]
     if attributes.authors?
       for author in attributes.authors
         @authors.push author if author not in @authors
-    @save (error) ->
-      callback()
+    @save (error, card) ->
+      callback card
 
 Card = db.model 'Card', CardSchema
 

@@ -37,7 +37,6 @@ describe 'card.Card', ->
   describe '#updateAttributes', ->
     card = null
 
-
     describe 'by default', ->
       beforeEach (done) ->
         Factory.create 'card', (defaultCard) ->
@@ -49,15 +48,17 @@ describe 'card.Card', ->
           x: card.x + 1
           y: card.y + 1
           text: "#{card.text}-updated"
-          colorIndex: "#{card.colorIndex}-updated"
+          colorIndex: card.colorIndex + 1
           deleted: ! card.deleted
         card.updateAttributes attributes, ->
-          expect(card.x).toEqual attributes.x
-          expect(card.y).toEqual attributes.y
-          expect(card.text).toEqual attributes.text
-          expect(card.colorIndex).toEqual attributes.colorIndex
-          expect(card.deleted).toEqual attributes.deleted
-          done()
+          Card.findById card.id, (error, card) ->
+            done error if error?
+            expect(card.x).toEqual attributes.x
+            expect(card.y).toEqual attributes.y
+            expect(card.text).toEqual attributes.text
+            expect(card.colorIndex).toEqual attributes.colorIndex
+            expect(card.deleted).toEqual attributes.deleted
+            done()
 
     describe 'given a new contributor to the card', ->
       beforeEach (done) ->

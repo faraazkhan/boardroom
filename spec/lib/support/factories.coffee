@@ -18,6 +18,7 @@ Factory.define 'card', Card,
   x: 100
   y: 100
   text: 'text'
+  colorIndex: 2
   deleted: false
   authors: ['author-2']
 
