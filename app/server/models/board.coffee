@@ -15,8 +15,11 @@ BoardSchema.statics =
         callback boards
 
   findByName: (name, callback) ->
-    @findOne name: name, (error, attributes) ->
-      callback new Board(attributes)
+    @findOne name: name, (error, board) ->
+      if board?
+        callback undefined, board
+      else
+        callback message: 'board not found'
 
 BoardSchema.methods =
   addGroup: (attributes, callback) ->

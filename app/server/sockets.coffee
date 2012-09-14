@@ -1,10 +1,6 @@
 sockets = require 'socket.io'
-board   = require './models/board'
-card    = require './models/card'
-util = require 'util'
-
-Board   = board.Board
-Card    = card.Card
+{ Board } = require './models/board'
+{ Card } = require './models/card'
 
 class Sockets
   @boardNamespaces: {}
@@ -17,14 +13,10 @@ class Sockets
     @boardsChannel = @io
       .of('/channel/boards')
       .on 'connection', (socket) =>
-        console.log 'connect'
         @rebroadcast socket, ['delete']
         socket.on 'delete', (data) =>
-          console.log 'delete bitch'
-          Board.findByName data.boardName, (board) =>
-            console.log board
+          Board.findById data._id, (error, board) =>
             board.destroy (error) =>
-              console.log error
               @io
                 .of("/boardNamespace/#{data.boardName}")
                 .emit 'boardDeleted'
@@ -38,7 +30,7 @@ class Sockets
         socket.on 'join', (user) =>
           @boardMembers[user.user_id] = user
           boardNamespace.emit 'joined', user
-          Board.findByName boardName, (board) ->
+          Board.findByName boardName, (error, board) ->
             socket.emit 'title_changed', board.title
 
         socket.on 'add', (data) =>
@@ -48,7 +40,7 @@ class Sockets
             throw error if error
             boardNamespace.emit 'add', card
             # /boards functionality
-            Board.findByName boardName, (board) =>
+            Board.findByName boardName, (error, board) =>
               @boardsChannel.emit 'card_added', board, data.author
 
         socket.on 'delete', (data) =>
@@ -58,7 +50,7 @@ class Sockets
               throw error if error
               boardNamespace.emit 'delete', card
               # /boards functionality
-              Board.findByName boardName, (board) =>
+              Board.findByName boardName, (error, board) =>
                 @boardsChannel.emit 'card_deleted', board, data.author
 
         socket.on 'move_commit', @updateCard
@@ -73,7 +65,7 @@ class Sockets
           socket.broadcast.emit 'removedCard', data
 
         socket.on 'title_changed', (data) =>
-          Board.findByName boardName, (board) =>
+          Board.findByName boardName, (error, board) =>
             board.title = data.title
             board.save (error) =>
               socket.broadcast.emit 'title_changed', board.title
@@ -81,7 +73,7 @@ class Sockets
               @boardsChannel.emit 'board_changed', board
 
         socket.on 'createGroup', (data) ->
-          Board.findByName data.boardName, (board) ->
+          Board.findByName data.boardName, (error, board) ->
             attributes =
               name: 'New Stack'
               cardIds: data.cardIds
@@ -104,13 +96,13 @@ class Sockets
     Card.findById attributes._id, (error, card) =>
       throw error if error
       card.updateAttributes attributes, =>
-        Board.findByName card.boardName, (board) =>
+        Board.findByName card.boardName, (error, board) =>
           # /boards functionality
           @boardsChannel.emit 'user_activity', board, card.author, 'Did something'
 
   @start: (app) ->
     @boardsChannel = undefined
     @io = sockets.listen app
-    #@io.set 'log level', 1
+    @io.set 'log level', 1
 
 module.exports = { Sockets }

@@ -1,4 +1,4 @@
 $.fn.removeClassMatching = (regexp) ->
   @each ->
-    $(@).removeClass (_, klass) ->
-      klass.match(regexp)?.join ' '
+    $(@).attr 'class', (_, value) ->
+      value.replace regexp, ''

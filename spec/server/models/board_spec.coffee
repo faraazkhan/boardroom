@@ -21,16 +21,26 @@ describe 'board.Board', ->
           done()
 
   describe '.findByName', ->
-    name = 'name-1'
+    describe 'by default', ->
+      name = 'name-1'
 
-    beforeEach (done) ->
-      Factory.create 'board', name: name, ->
-        done()
+      beforeEach (done) ->
+        Factory.create 'board', name: name, ->
+          done()
 
-    it 'finds a board by name', (done) ->
-      Board.findByName name, (board) ->
-        expect(board.name).toEqual(name)
-        done()
+      it 'finds a board by name', (done) ->
+        Board.findByName name, (error, board) ->
+          done error if error?
+          expect(board.name).toEqual(name)
+          done()
+
+    describe 'when unable to find the board', ->
+      it 'yields an error', (done) ->
+        Board.findByName '', (error, board) ->
+          expect(error).not.toBeUndefined()
+          expect(error.message).toEqual 'board not found'
+          expect(board).toBeUndefined()
+          done()
 
   describe '#addGroup', ->
     board = null

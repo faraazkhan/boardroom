@@ -22,7 +22,7 @@ class BoardsController extends ApplicationController
   show: (request, response) =>
     boardName = request.params.board
     Card.findByBoardName boardName, (cards) =>
-      Board.findByName boardName, (board) =>
+      Board.findByName boardName, (error, board) =>
         board =
           name: boardName
           cards: cards

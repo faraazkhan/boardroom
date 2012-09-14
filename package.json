@@ -7,8 +7,8 @@
     "url": "git@github.com:carbonfive/boardroom.git"
   },
   "scripts": {
-    "test" : "cake spec",
-    "start" : "node index.js"
+    "test": "cake spec",
+    "start": "node index.js"
   },
   "dependencies": {
     "jquery": "1.7",
@@ -22,10 +22,11 @@
     "mongoose": "latest"
   },
   "devDependencies": {
-    "jasmine-node" : "latest",
+    "jasmine-node": "latest",
     "sinon": "1.4",
-    "factory-lady" : "latest",
-    "supertest" : "latest",
-    "jsdom" : "latest"
+    "factory-lady": "latest",
+    "supertest": "latest",
+    "jsdom": "latest",
+    "socket.io-client": "latest"
   }
 }

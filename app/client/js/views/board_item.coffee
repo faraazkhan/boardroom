@@ -18,9 +18,7 @@ class boardroom.views.BoardItem extends Backbone.View
     event.preventDefault()
     $element = $ event.target
     if $element.hasClass('confirm')
-      @socket.emit 'delete',
-        board_id: @id
-        boardName: @$el.attr('name')
+      @socket.emit 'delete', id: @id
       @$('.message').hide()
       @$el.slideUp()
     else
@@ -52,7 +50,7 @@ class boardroom.views.BoardItem extends Backbone.View
       setTimeout fadeUserActivity, 10000
 
   removeBoard: (data) =>
-    if data._id is @id
+    if data.id is @id
       @$el.height @$el.height()
       @$el
         .empty()

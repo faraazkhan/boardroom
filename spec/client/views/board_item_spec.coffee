@@ -121,7 +121,7 @@ describe 'boardroom.views.BoardItem', ->
           el: $('.boards li')
           socket: @socket
         @data =
-          _id: @id
+          id: @id
 
         @socket.emit 'delete', @data
 
@@ -183,10 +183,6 @@ describe 'boardroom.views.BoardItem', ->
         @boardItemView
           .$('.delete')
           .click()
-
-      it 'removes itself', ->
-        expect(@boardItemView.$('.message')).not.toBeVisible()
-        expect(@boardItemView.$el.attr('style')).toMatch /hidden/
 
       it 'emits a "delete" socket event', ->
         expect(@delete.called).toBeTruthy()
