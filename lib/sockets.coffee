@@ -68,7 +68,7 @@ class Sockets
           Board.findByName boardName, (error, board) =>
             board.title = data.title
             board.save (error) =>
-              socket.broadcast.emit 'title_changed', board.title
+              boardNamespace.emit 'title_changed', board.title
               # /boards functionality
               @boardsChannel.emit 'board_changed', board
 

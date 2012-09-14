@@ -35,6 +35,8 @@ describe 'boardroom.views.Header', ->
 
         it 'emits the "title changed" socket event', ->
           expect(@titleChanged.called).toBeTruthy()
+          [args] = @titleChanged.lastCall.args
+          expect(args.title).toEqual ''
 
       describe 'the enter key is hit', ->
         beforeEach ->
