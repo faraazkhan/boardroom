@@ -7,35 +7,39 @@ describe 'boardroom.views.Board', ->
     @board = new boardroom.models.Board
       cards: [new boardroom.models.Card]
       users: {}
+      user_id: 1
     @socket = new io.Socket
 
   describe 'socket events', ->
     describe 'joined', ->
       beforeEach ->
-        @addUser = sinon.spy @board, 'addUser'
         @boardView = new boardroom.views.Board
           model: @board
           socket: @socket
 
-        @socket.emit 'joined', {}
+        @user =
+          user_id: 1
+        @socket.emit 'joined', @user
 
-      it 'adds the new user to the user list', ->
-        expect(@addUser.called).toBeTruthy()
+      it "adds the new user to the board's user list", ->
+        users = @board.get 'users'
+        expect(users[@user.user_id]).toEqual @user
 
     describe 'connect', ->
       beforeEach ->
-        @publishUserJoinedEvent = sinon.spy boardroom.views.Board.prototype, 'publishUserJoinedEvent'
         @boardView = new boardroom.views.Board
           model: @board
           socket: @socket
 
+        @join = sinon.spy()
+        @socket.on 'join', @join
+
         @socket.emit 'connect', {}
 
-      afterEach ->
-        boardroom.views.Board.prototype.publishUserJoinedEvent.restore()
-
       it 'publishes that a user joined', ->
-        expect(@publishUserJoinedEvent.called).toBeTruthy()
+        expect(@join.called).toBeTruthy()
+        [args] = @join.lastCall.args
+        expect(args.user_id).toEqual @board.get('user_id')
 
     describe 'boardDeleted', ->
       beforeEach ->
@@ -54,45 +58,55 @@ describe 'boardroom.views.Board', ->
 
     describe 'add', ->
       beforeEach ->
-        @displayNewCard = sinon.spy boardroom.views.Board.prototype, 'displayNewCard'
         @boardView = new boardroom.views.Board
           model: @board
           socket: @socket
+        @cardCount = @boardView.$('.card').length
 
         @socket.emit 'add', {}
 
-      afterEach ->
-        boardroom.views.Board.prototype.displayNewCard.restore()
 
       it 'displays the new card', ->
-        expect(@displayNewCard.called).toBeTruthy()
+        expect(@boardView.$('.card').length).toEqual @cardCount + 1
 
     describe 'move', ->
       beforeEach ->
-        @updateCardPosition = sinon.spy boardroom.views.Board.prototype, 'updateCardPosition'
         @boardView = new boardroom.views.Board
           model: @board
           socket: @socket
+        @card =
+          _id: 1
+          x: 100
+          y: 200
+        @socket.emit 'add', @card
 
-        @socket.emit 'move', {}
+        move =
+          _id: @card._id
+          x: 200
+          y: 200
+          user: 'user-1'
+        @socket.emit 'move', move
 
-      afterEach ->
-        boardroom.views.Board.prototype.updateCardPosition.restore()
-
-      it 'moves the card to the new position', ->
-        expect(@updateCardPosition.called).toBeTruthy()
+      it 'locks the card to prevent other users from moving it', ->
+        expect(@boardView.cardLock.locks[@card._id]).not.toBeUndefined()
 
     describe 'text', ->
       beforeEach ->
-        @updateCardText = sinon.spy boardroom.views.Board.prototype, 'updateCardText'
         @boardView = new boardroom.views.Board
           model: @board
           socket: @socket
+        @card =
+          _id: 1
+          x: 100
+          y: 200
+        @socket.emit 'add', @card
 
-        @socket.emit 'text', {}
-
-      afterEach ->
-        boardroom.views.Board.prototype.updateCardText.restore()
+        @text = 'updated text'
+        @socket.emit 'text',
+          _id: @card._id
+          author: 'author-1'
+          text: @text
 
       it 'updates the card text', ->
-        expect(@updateCardText.called).toBeTruthy()
+        cardView = _.last @boardView.cardViews
+        expect(cardView.$('textarea')).toHaveValue(@text)
