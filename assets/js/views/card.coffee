@@ -58,11 +58,10 @@ class boardroom.views.Card extends Backbone.View
       @uncolor()
       @setColor data.colorIndex
 
-  changeText: (event) ->
-    $cardElement = $ event.target
+  changeText: ->
     @socket.emit 'text'
       _id: @model.id
-      text: $cardElement.val()
+      text: @$('textarea').val()
       author: @model.get('board').get('user_id')
     @addAuthor @model.get('board').get('user_id')
     @adjustTextarea()
@@ -85,11 +84,10 @@ class boardroom.views.Card extends Backbone.View
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
 
-  commitText: (event) ->
-    $cardElement = $ event.target
+  commitText: ->
     @socket.emit 'text_commit',
       _id: @model.id
-      text: $cardElement.val()
+      text: @$('textarea').val()
       board_name: @model.get('board').get('name')
       author: @model.get('board').get('user_id')
     if groupId = @$el.data('group-id')
@@ -99,7 +97,6 @@ class boardroom.views.Card extends Backbone.View
     @socket.emit 'delete'
       _id: @model.id
       author: @model.get('board').get('user_id')
-    @remove()
 
   removeIfDeleted: (data) =>
     if data._id is @model.id
