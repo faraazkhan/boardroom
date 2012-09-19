@@ -31,7 +31,7 @@ class BoardsController extends ApplicationController
           title: boardName
           user_id: request.session.user_id
         response.render 'board',
+          board: board
           user: request.session
-          boardAsJson: JSON.stringify(board)
 
 module.exports = BoardsController

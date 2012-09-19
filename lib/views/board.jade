@@ -2,13 +2,13 @@
   a.title(href="/")
     span.logo Bo
   button.create Add a Thought
-  input#title(type="text")
+  input#title(type="text", value="#{board.name}")
   include includes/user_info
 
 .board
 
 script(type="text/javascript")
-  var attributes = !{boardAsJson};
+  var attributes = !{JSON.stringify(board)};
   var board = new boardroom.models.Board(attributes);
   var roomView = new boardroom.views.Room({ model: board });
   roomView.render();
