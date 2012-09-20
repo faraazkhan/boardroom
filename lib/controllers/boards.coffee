@@ -21,8 +21,11 @@ class BoardsController extends ApplicationController
 
   show: (request, response) =>
     boardName = request.params.board
-    Card.findByBoardName boardName, (error, cards) =>
-      Board.findByName boardName, (error, board) =>
+    Board.findByName boardName, (error, board) =>
+      if ! board?
+        return @throw404(response)
+        
+      Card.findByBoardName boardName, (error, cards) =>
         board =
           name: boardName
           cards: cards

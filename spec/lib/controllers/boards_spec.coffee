@@ -8,17 +8,23 @@ Card = require "#{__dirname}/../../../lib/models/card"
 LoggedInRouter = require './../support/authentication'
 
 describe 'BoardsController', ->
+  beforeEach (done) ->
+    Board.remove (error) ->
+      done error if error?
+      Card.remove (error) ->
+        done error if error?
+        done()
+
   describe '#create', ->
     router = null
     count = null
 
     beforeEach (done) ->
-      Board.remove ->
-        Board.count (error, currentCount) ->
-          done error if error?
-          router = new LoggedInRouter
-          count = currentCount
-          done()
+      Board.count (error, currentCount) ->
+        done error if error?
+        router = new LoggedInRouter
+        count = currentCount
+        done()
 
     it 'creates a new board', (done) ->
       title = 'title-1'
@@ -42,14 +48,12 @@ describe 'BoardsController', ->
     boards = []
 
     beforeEach (done) ->
-      Board.remove ->
-        Card.remove ->
+      Factory.create 'board', (board) ->
+        boards.push board
+        Factory.create 'card', boardName: board.name, ->
           Factory.create 'board', (board) ->
             boards.push board
-            Factory.create 'card', boardName: board.name, ->
-              Factory.create 'board', (board) ->
-                boards.push board
-                done()
+            done()
 
       router = new LoggedInRouter
 
@@ -68,17 +72,31 @@ describe 'BoardsController', ->
 
   describe '#show', ->
     router = null
+    boardName = null
 
-    beforeEach ->
+    beforeEach (done) ->
       router = new LoggedInRouter
+      Factory.create 'board', (board) ->
+        boardName = board.name
+        done()
 
-    it 'renders the board page', (done) ->
-      request(router.app)
-        .get('/boards/1')
-        .end (error, response) ->
-          done error if error?
-          expect(response.ok).toBeTruthy()
-          done()
+    describe 'given a board', ->
+      it 'returns the board page', (done) ->
+        request(router.app)
+          .get("/boards/#{boardName}")
+          .end (error, response) ->
+            done error if error?
+            expect(response.statusCode).toBe(200)
+            done()
+
+    describe 'given no board', ->
+      it 'returns a 404 code', (done) ->
+        request(router.app)
+          .get('/boards/unknownid')
+          .end (error, response) ->
+            done error if error?
+            expect(response.statusCode).toBe(404)
+            done()
 
   describe '#destroy', ->
     router = null
