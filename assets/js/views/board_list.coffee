@@ -5,4 +5,4 @@ class boardroom.views.BoardList extends Backbone.View
     'submit ul': 'deleteBoard'
 
   deleteBoard: ->
-    confirm 'Are you sure?'
+    confirm 'WARNING: This will delete all cards this board!!  You cannot get this board back.\n\nAre you sure you want to do this?'
