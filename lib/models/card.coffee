@@ -13,9 +13,7 @@ CardSchema = new mongoose.Schema
 
 CardSchema.statics =
   findByBoardName: (boardName, callback) ->
-    @where('boardName', boardName)
-      .exec (error, cards) ->
-        callback cards
+    @find { boardName: boardName }, callback
 
   countsByBoard: (callback) ->
     group =

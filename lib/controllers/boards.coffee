@@ -21,7 +21,7 @@ class BoardsController extends ApplicationController
 
   show: (request, response) =>
     boardName = request.params.board
-    Card.findByBoardName boardName, (cards) =>
+    Card.findByBoardName boardName, (error, cards) =>
       Board.findByName boardName, (error, board) =>
         board =
           name: boardName
@@ -36,7 +36,7 @@ class BoardsController extends ApplicationController
 
   destroy: (request, response) =>
     Board.findById request.params.id, (error, board) ->
-      board.destroy ->
+      board.destroy (error) ->
         response.redirect '/boards'
 
 module.exports = BoardsController

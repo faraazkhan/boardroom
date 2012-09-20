@@ -1,4 +1,5 @@
 { mongoose, db } = require './db'
+Card = require "#{__dirname}/card"
 
 BoardSchema = new mongoose.Schema
   name: String
@@ -29,9 +30,12 @@ BoardSchema.methods =
       callback attributes
 
   destroy: (callback) ->
-    @deleted = true
-    @save (error) ->
-      callback()
+    @remove (error) =>
+      if (error)
+        callback(error)
+      else
+        Card.findByBoardName(@name).remove (error) ->
+          callback(error)
 
 Board = db.model 'Board', BoardSchema
 
