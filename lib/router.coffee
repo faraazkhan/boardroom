@@ -30,7 +30,7 @@ class Router
 
     boardsController = new BoardsController
     @app.get '/boards', @authenticate, boardsController.index
-    @app.get '/boards/:board', @authenticate, @createSocketNamespace, boardsController.show
+    @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
     @app.post '/boards/:id', @authenticate, boardsController.destroy
     @app.post '/boards', @authenticate, boardsController.create
     @app.get '/boards/:board/info', @authenticate, boardsController.info

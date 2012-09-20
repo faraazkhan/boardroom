@@ -32,7 +32,7 @@
                 .actions
                   form(action="/boards/#{board._id}", method="post")
                     input(type="submit", value="Delete")
-              a(href='/boards/' + board.name)
+              a(href='/boards/' + board._id)
                 h4.title= board.title
                 .note-count
                   span.count= countsByBoard[board.name] || 0

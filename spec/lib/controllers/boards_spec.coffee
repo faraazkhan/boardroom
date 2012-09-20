@@ -72,18 +72,18 @@ describe 'BoardsController', ->
 
   describe '#show', ->
     router = null
-    boardName = null
+    board = null
 
     beforeEach (done) ->
       router = new LoggedInRouter
-      Factory.create 'board', (board) ->
-        boardName = board.name
+      Factory.create 'board', (defaultBoard) ->
+        board = defaultBoard
         done()
 
     describe 'given a board', ->
       it 'returns the board page', (done) ->
         request(router.app)
-          .get("/boards/#{boardName}")
+          .get("/boards/#{board.id}")
           .end (error, response) ->
             done error if error?
             expect(response.statusCode).toBe(200)
