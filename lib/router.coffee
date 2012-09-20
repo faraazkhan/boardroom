@@ -6,6 +6,7 @@ HomeController = require './controllers/home'
 SessionsController = require './controllers/sessions'
 BoardsController = require './controllers/boards'
 UsersController = require './controllers/users'
+Board = require './models/board'
 
 class Router
   constructor: ->
@@ -53,8 +54,9 @@ class Router
       response.redirect '/login'
 
   createSocketNamespace: (request, _, next) ->
-    Sockets.findOrCreateByBoardName request.params.board
-    next()
+    Board.findById request.params.id, (error, board) ->
+      Sockets.findOrCreateByBoardName board.name
+      next()
 
   start: ->
     @app.listen parseInt(process.env.PORT) || 7777
