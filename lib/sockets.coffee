@@ -1,20 +1,19 @@
 sockets = require 'socket.io'
 Board = require './models/board'
 Card = require './models/card'
-util = require 'util'
 
 class Sockets
   @boards: {}
 
-  @findOrCreateByBoardName: (boardName) ->
-    unless @boards[boardName]
-      @createBoard boardName
+  @findOrCreateByBoardId: (boardId) ->
+    unless @boards[boardId]
+      @createBoard boardId
 
-  @createBoard: (boardName) ->
+  @createBoard: (boardId) ->
     @users = {}
 
     boardNamespace = @io
-      .of("/boardNamespace/#{boardName}")
+      .of("/boards/#{boardId}")
       .on 'connection', (socket) =>
         @rebroadcast socket, ['move', 'text', 'color']
         socket.on 'join', (user) =>
@@ -47,13 +46,13 @@ class Sockets
           socket.broadcast.emit 'removedCard', data
 
         socket.on 'title_changed', (data) =>
-          Board.findByName boardName, (error, board) =>
+          Board.findById boardId, (error, board) =>
             board.title = data.title
             board.save (error) =>
               boardNamespace.emit 'title_changed', board.title
 
         socket.on 'createGroup', (data) ->
-          Board.findByName data.boardName, (error, board) ->
+          Board.findById data.boardId, (error, board) ->
             attributes =
               name: 'New Stack'
               cardIds: data.cardIds
@@ -65,7 +64,7 @@ class Sockets
           group.updateGroup data.boardName, data._id, data.name, data.cardIds
           socket.broadcast.emit 'createdOrUpdatedGroup', data
 
-    @boards[boardName] = @users
+    @boards[boardId] = @users
 
   @rebroadcast: (socket, events) ->
     events.forEach (event) ->

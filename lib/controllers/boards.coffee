@@ -2,6 +2,7 @@ Sockets = require './../sockets'
 ApplicationController = require './application'
 Board = require './../models/board'
 Card = require './../models/card'
+util = require 'util'
 
 class BoardsController extends ApplicationController
   create: (request, response) =>
@@ -20,15 +21,19 @@ class BoardsController extends ApplicationController
           countsByBoard: countsByBoard
 
   show: (request, response) =>
-    boardName = request.params.board
-    Card.findByBoardName boardName, (error, cards) =>
-      Board.findByName boardName, (error, board) =>
+    id = request.params.id
+    Board.findById id, (error, board) =>
+      #return @throw500 response, error if error?
+      return @throw404 response unless board?
+
+      Card.findByBoardName board.name, (error, cards) =>
         board =
-          name: boardName
+          sid: board.id
+          name: board.name
           cards: cards
           groups: board?.groups || {}
-          users: Sockets.boards[boardName] || {}
-          title: boardName
+          users: Sockets.boards[board.name] || {}
+          title: board.name
           user_id: request.session.user_id
         response.render 'board',
           board: board

@@ -6,6 +6,7 @@ HomeController = require './controllers/home'
 SessionsController = require './controllers/sessions'
 BoardsController = require './controllers/boards'
 UsersController = require './controllers/users'
+Board = require './models/board'
 
 class Router
   constructor: ->
@@ -30,7 +31,7 @@ class Router
 
     boardsController = new BoardsController
     @app.get '/boards', @authenticate, boardsController.index
-    @app.get '/boards/:board', @authenticate, @createSocketNamespace, boardsController.show
+    @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
     @app.post '/boards/:id', @authenticate, boardsController.destroy
     @app.post '/boards', @authenticate, boardsController.create
     @app.get '/boards/:board/info', @authenticate, boardsController.info
@@ -53,7 +54,7 @@ class Router
       response.redirect '/login'
 
   createSocketNamespace: (request, _, next) ->
-    Sockets.findOrCreateByBoardName request.params.board
+    Sockets.findOrCreateByBoardId request.params.id
     next()
 
   start: ->
