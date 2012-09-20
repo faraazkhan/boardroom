@@ -1,7 +1,6 @@
 sockets = require 'socket.io'
 Board = require './models/board'
 Card = require './models/card'
-util = require 'util'
 
 class Sockets
   @boards: {}
