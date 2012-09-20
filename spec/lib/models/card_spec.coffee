@@ -16,7 +16,8 @@ describe 'card.Card', ->
           done()
 
     it 'finds all cards for the given board', (done) ->
-      Card.findByBoardName board.name, (cards) ->
+      Card.findByBoardName board.name, (error, cards) ->
+        done error if error?
         expect(cards.length).toEqual 1
         done()
 
@@ -30,7 +31,8 @@ describe 'card.Card', ->
 
     it 'returns the number of cards by board', (done) ->
       Card.countsByBoard (counts) ->
-        Card.findByBoardName board.name, (cards) ->
+        Card.findByBoardName board.name, (error, cards) ->
+          done error if error?
           expect(cards.length).toEqual counts[board.name]
           done()
 

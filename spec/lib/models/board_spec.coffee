@@ -1,9 +1,11 @@
 Factory = require './../support/factories'
 Board = require "#{__dirname}/../../../lib/models/board"
+Card = require "#{__dirname}/../../../lib/models/card"
 
 describe 'board.Board', ->
   beforeEach (done) ->
-    Board.remove done
+    Board.remove ->
+      Card.remove done
 
   describe '.all', ->
     describe 'given deleted and non-deleted boards', ->
@@ -64,12 +66,22 @@ describe 'board.Board', ->
     beforeEach (done) ->
       Factory.create 'board', (defaultBoard) ->
         board = defaultBoard
-        done()
+        Factory.create 'card', boardName: board.name, ->
+          Factory.create 'card', boardName: board.name, ->
+            done()
 
-    it 'marks itself as deleted', (done) ->
-      board.destroy ->
-        expect(board.deleted).toBeTruthy()
+    it 'removes the board', (done) ->
+      board.destroy (error) ->
+        done error if error?
         Board.count {}, (error, count) ->
           done error if error?
-          expect(count).toEqual 1
+          expect(count).toEqual 0
+          done()
+
+    it 'removes the board\'s cards', (done) ->
+      board.destroy (error) ->
+        done error if error?
+        Card.count {}, (error, count) ->
+          done error if error?
+          expect(count).toEqual 0
           done()

@@ -100,6 +100,6 @@ describe 'BoardsController', ->
           expect(redirect.pathname).toEqual '/boards'
           Board.findById board.id, (error, board) ->
             done error if error?
-            expect(board.deleted).toBeTruthy()
+            expect(board).toBeNull()
             done()
 
