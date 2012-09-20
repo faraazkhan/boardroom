@@ -1,13 +1,8 @@
 class boardroom.views.BoardList extends Backbone.View
   el: '#boards'
 
-  initialize: ->
-    @boardItems = []
+  events:
+    'submit ul': 'deleteBoard'
 
-  render: ->
-    socket = io.connect '/channel/boards'
-    for li in @$('ul li')
-      boardItem = new boardroom.views.BoardItem
-        el: li
-        socket: socket
-      @boardItems.push boardItem
+  deleteBoard: ->
+    confirm 'Are you sure?'

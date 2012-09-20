@@ -1,6 +1,6 @@
 request = require 'supertest'
 url = require 'url'
-Router = require "#{__dirname}/../../../lib/routes"
+Router = require "#{__dirname}/../../../lib/router"
 LoggedInRouter = require './../support/authentication'
 
 describe 'SessionsController', ->
@@ -14,6 +14,7 @@ describe 'SessionsController', ->
       request(router.app)
         .get('/login')
         .end (error, response) ->
+          done error if error?
           expect(response.ok).toBeTruthy()
           done()
 
@@ -27,6 +28,7 @@ describe 'SessionsController', ->
       request(router.app)
         .post('/login')
         .end (error, response) ->
+          done error if error?
           expect(response.redirect).toBeTruthy()
           redirect = url.parse response.headers.location
           expect(redirect.path).toEqual '/'
@@ -42,6 +44,7 @@ describe 'SessionsController', ->
       request(router.app)
         .get('/logout')
         .end (error, response) ->
+          done error if error?
           expect(response.redirect).toBeTruthy()
           redirect = url.parse response.headers.location
           expect(redirect.path).toEqual '/'

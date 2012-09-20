@@ -69,6 +69,7 @@ describe 'board.Board', ->
     it 'marks itself as deleted', (done) ->
       board.destroy ->
         expect(board.deleted).toBeTruthy()
-        Board.count {}, (_, count) ->
+        Board.count {}, (error, count) ->
+          done error if error?
           expect(count).toEqual 1
           done()

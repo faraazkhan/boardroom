@@ -1,37 +1,25 @@
 sockets = require 'socket.io'
 Board = require './models/board'
 Card = require './models/card'
+util = require 'util'
 
 class Sockets
-  @boardNamespaces: {}
+  @boards: {}
 
   @findOrCreateByBoardName: (boardName) ->
-    unless @boardNamespaces[boardName]
-      @createBoardSession boardName
+    unless @boards[boardName]
+      @createBoard boardName
 
-  @createBoardSession: (boardName) ->
-    @boardsChannel = @io
-      .of('/channel/boards')
-      .on 'connection', (socket) =>
-        @rebroadcast socket, ['delete']
-        socket.on 'delete', (data) =>
-          Board.findById data._id, (error, board) =>
-            board.destroy (error) =>
-              @io
-                .of("/boardNamespace/#{data.boardName}")
-                .emit 'boardDeleted'
-
-    @boardMembers = {}
+  @createBoard: (boardName) ->
+    @users = {}
 
     boardNamespace = @io
       .of("/boardNamespace/#{boardName}")
       .on 'connection', (socket) =>
         @rebroadcast socket, ['move', 'text', 'color']
         socket.on 'join', (user) =>
-          @boardMembers[user.user_id] = user
+          @users[user.user_id] = user
           boardNamespace.emit 'joined', user
-          Board.findByName boardName, (error, board) ->
-            socket.emit 'title_changed', board.title
 
         socket.on 'add', (data) =>
           card = new Card data
@@ -39,9 +27,6 @@ class Sockets
           card.save (error) =>
             throw error if error
             boardNamespace.emit 'add', card
-            # /boards functionality
-            Board.findByName boardName, (error, board) =>
-              @boardsChannel.emit 'card_added', board, data.author
 
         socket.on 'delete', (data) =>
           Card.findById data._id, (error, card) =>
@@ -49,9 +34,6 @@ class Sockets
             card.remove (error) =>
               throw error if error
               boardNamespace.emit 'delete', card
-              # /boards functionality
-              Board.findByName boardName, (error, board) =>
-                @boardsChannel.emit 'card_deleted', board, data.author
 
         socket.on 'move_commit', @updateCard
         socket.on 'text_commit', @updateCard
@@ -69,8 +51,6 @@ class Sockets
             board.title = data.title
             board.save (error) =>
               boardNamespace.emit 'title_changed', board.title
-              # /boards functionality
-              @boardsChannel.emit 'board_changed', board
 
         socket.on 'createGroup', (data) ->
           Board.findByName data.boardName, (error, board) ->
@@ -85,7 +65,7 @@ class Sockets
           group.updateGroup data.boardName, data._id, data.name, data.cardIds
           socket.broadcast.emit 'createdOrUpdatedGroup', data
 
-    @boardNamespaces[boardName] = @boardMembers
+    @boards[boardName] = @users
 
   @rebroadcast: (socket, events) ->
     events.forEach (event) ->
@@ -95,13 +75,9 @@ class Sockets
   @updateCard: (attributes) =>
     Card.findById attributes._id, (error, card) =>
       throw error if error
-      card.updateAttributes attributes, =>
-        Board.findByName card.boardName, (error, board) =>
-          # /boards functionality
-          @boardsChannel.emit 'user_activity', board, card.author, 'Did something'
+      card.updateAttributes attributes, ->
 
   @start: (app) ->
-    @boardsChannel = undefined
     @io = sockets.listen app
     @io.set 'log level', 1
 
