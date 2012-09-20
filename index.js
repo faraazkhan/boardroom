@@ -1,5 +1,5 @@
 require('coffee-script');
-var Router = require('./lib/routes'),
+var Router = require('./lib/router'),
   router = new Router;
 
 router.start();

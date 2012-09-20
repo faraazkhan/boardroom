@@ -26,12 +26,17 @@ class BoardsController extends ApplicationController
         board =
           name: boardName
           cards: cards
-          groups: (board && board.groups) || {}
-          users: Sockets.boardNamespaces[boardName] || {}
+          groups: board?.groups || {}
+          users: Sockets.boards[boardName] || {}
           title: boardName
           user_id: request.session.user_id
         response.render 'board',
           board: board
           user: request.session
+
+  destroy: (request, response) =>
+    Board.findById request.params.id, (error, board) ->
+      board.destroy ->
+        response.redirect '/boards'
 
 module.exports = BoardsController

@@ -4,21 +4,21 @@ Card = require './models/card'
 util = require 'util'
 
 class Sockets
-  @boardNamespaces: {}
+  @boards: {}
 
   @findOrCreateByBoardName: (boardName) ->
-    unless @boardNamespaces[boardName]
-      @createBoardSession boardName
+    unless @boards[boardName]
+      @createBoard boardName
 
-  @createBoardSession: (boardName) ->
-    @boardMembers = {}
+  @createBoard: (boardName) ->
+    @users = {}
 
     boardNamespace = @io
       .of("/boardNamespace/#{boardName}")
       .on 'connection', (socket) =>
         @rebroadcast socket, ['move', 'text', 'color']
         socket.on 'join', (user) =>
-          @boardMembers[user.user_id] = user
+          @users[user.user_id] = user
           boardNamespace.emit 'joined', user
 
         socket.on 'add', (data) =>
@@ -65,7 +65,7 @@ class Sockets
           group.updateGroup data.boardName, data._id, data.name, data.cardIds
           socket.broadcast.emit 'createdOrUpdatedGroup', data
 
-    @boardNamespaces[boardName] = @boardMembers
+    @boards[boardName] = @users
 
   @rebroadcast: (socket, events) ->
     events.forEach (event) ->

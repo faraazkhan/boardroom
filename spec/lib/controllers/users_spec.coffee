@@ -1,5 +1,5 @@
 request = require 'supertest'
-Router = require "#{__dirname}/../../../lib/routes"
+Router = require "#{__dirname}/../../../lib/router"
 
 describe 'UsersController', ->
   describe '#avatar', ->
@@ -12,6 +12,7 @@ describe 'UsersController', ->
       request(router.app)
         .get("/user/avatar/#{encodeURIComponent '@handle'}")
         .end (error, response) ->
+          done error if error?
           expect(response.redirect).toBeTruthy()
           expect(response.headers.location).toMatch /api.twitter.com/
           done()
