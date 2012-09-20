@@ -54,9 +54,8 @@ class Router
       response.redirect '/login'
 
   createSocketNamespace: (request, _, next) ->
-    Board.findById request.params.id, (error, board) ->
-      Sockets.findOrCreateByBoardName board.name
-      next()
+    Sockets.findOrCreateByBoardId request.params.id
+    next()
 
   start: ->
     @app.listen parseInt(process.env.PORT) || 7777

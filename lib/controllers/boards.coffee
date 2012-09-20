@@ -28,6 +28,7 @@ class BoardsController extends ApplicationController
 
       Card.findByBoardName board.name, (error, cards) =>
         board =
+          sid: board.id
           name: board.name
           cards: cards
           groups: board?.groups || {}
