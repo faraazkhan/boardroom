@@ -1,7 +1,6 @@
 class boardroom.views.Room extends Backbone.View
   initialize: ->
-    console.log @model
-    @socket = io.connect "/boards/#{@model.get 'sid'}"
+    @socket = io.connect "/boards/#{@model.get '_id'}"
     @headerView = new boardroom.views.Header
       model: @model
       socket: @socket

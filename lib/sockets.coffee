@@ -24,7 +24,7 @@ class Sockets
           card = new Card data
           card.authors = []
           card.save (error) =>
-            throw error if error
+            throw error if error?
             boardNamespace.emit 'add', card
 
         socket.on 'delete', (data) =>
