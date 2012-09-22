@@ -10,7 +10,7 @@ class BoardsController extends ApplicationController
     board.name = board.title
     board.creator_id = request.session.user_id
     board.save (error) ->
-      response.redirect "/boards/#{board.name}"
+      response.redirect "/boards/#{board.id}"
 
   index: (request, response) =>
     Board.all (boards) =>
@@ -26,9 +26,9 @@ class BoardsController extends ApplicationController
       #return @throw500 response, error if error?
       return @throw404 response unless board?
 
-      Card.findByBoardName board.name, (error, cards) =>
+      Card.findByBoardId board.id, (error, cards) =>
         board =
-          sid: board.id
+          _id: board.id
           name: board.name
           cards: cards
           groups: board?.groups || {}

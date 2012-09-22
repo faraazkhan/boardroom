@@ -1,7 +1,7 @@
 { mongoose, db } = require './db'
 
 CardSchema = new mongoose.Schema
-  boardName: String
+  boardId: String
   author: String
   x: Number
   y: Number
@@ -12,18 +12,18 @@ CardSchema = new mongoose.Schema
   focus: Boolean
 
 CardSchema.statics =
-  findByBoardName: (boardName, callback) ->
-    @find { boardName: boardName }, callback
+  findByBoardId: (boardId, callback) ->
+    @find { boardId: boardId }, callback
 
   countsByBoard: (callback) ->
     group =
       $group:
-        _id: '$boardName'
+        _id: '$boardId'
         count:
           $sum: 1
     project =
       $project:
-        boardName: 1
+        boardId: 1
         count: 1
     @aggregate project, group, (error, response) =>
       fn = (totals, total) ->

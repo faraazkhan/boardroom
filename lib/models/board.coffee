@@ -27,7 +27,7 @@ BoardSchema.methods =
       if (error)
         callback(error)
       else
-        Card.findByBoardName(@name).remove (error) ->
+        Card.findByBoardId(@id).remove (error) ->
           callback(error)
 
 Board = db.model 'Board', BoardSchema

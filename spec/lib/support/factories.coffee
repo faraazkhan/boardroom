@@ -13,7 +13,6 @@ Factory.define 'deletedBoard', Board,
   deleted: true
 
 Factory.define 'card', Card,
-  boardName: 'name-1'
   author: 'author-1'
   x: 100
   y: 100
