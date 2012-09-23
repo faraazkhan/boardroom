@@ -50,7 +50,7 @@ describe 'BoardsController', ->
     beforeEach (done) ->
       Factory.create 'board', (board) ->
         boards.push board
-        Factory.create 'card', boardName: board.name, ->
+        Factory.create 'card', boardId: board.id, ->
           Factory.create 'board', (board) ->
             boards.push board
             done()
