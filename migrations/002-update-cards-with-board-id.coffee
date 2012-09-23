@@ -7,7 +7,12 @@ exports.up = (next) ->
     count = 0
     for board in boards
       do (board) ->
-        DB.update 'cards', { boardName: board.name }, { $set: { boardId: board._id.toHexString(), boardName: null } }, (error, num) ->
+        update =
+          $set:
+            boardId: board._id.toHexString()
+          $unset:
+            boardName: 1
+        DB.update 'cards', { boardName: board.name }, update, (error, num) ->
           return next error if error?
           console.log "Updated #{num} cards in board #{board.name}" if num > 0
           count += 1
@@ -20,7 +25,12 @@ exports.down = (next) ->
     count = 0
     for board in boards
       do (board) ->
-        DB.update 'cards', { boardId: board._id.toHexString() }, { $set: { boardName: board.name, boardId: null } }, (error, num) ->
+        update =
+          $set:
+            boardName: board.name
+          $unset:
+            boardId: 1
+        DB.update 'cards', { boardId: board._id.toHexString() }, update, (error, num) ->
           return next error if error?
           console.log "Updated #{num} cards in board #{board.name}" if num > 0
           count += 1
