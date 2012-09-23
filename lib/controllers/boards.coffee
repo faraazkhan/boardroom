@@ -27,6 +27,7 @@ class BoardsController extends ApplicationController
       return @throw404 response unless board?
 
       Card.findByBoardId board.id, (error, cards) =>
+        return @throw500 response, error if error?
         board =
           _id: board.id
           name: board.name
