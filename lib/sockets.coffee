@@ -45,11 +45,11 @@ class Sockets
             group.updateGroup data.boardName, data._id, data.cardIds
           socket.broadcast.emit 'removedCard', data
 
-        socket.on 'title_changed', (data) =>
+        socket.on 'name_changed', (data) =>
           Board.findById boardId, (error, board) =>
-            board.title = data.title
+            board.name = data.name
             board.save (error) =>
-              boardNamespace.emit 'title_changed', board.title
+              boardNamespace.emit 'name_changed', board.name
 
         socket.on 'createGroup', (data) ->
           Board.findById data.boardId, (error, board) ->

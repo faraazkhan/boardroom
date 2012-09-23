@@ -3,7 +3,6 @@ Card = require "#{__dirname}/card"
 
 BoardSchema = new mongoose.Schema
   name: String
-  title: String
   creator_id: String
   deleted: Boolean
   groups: Array

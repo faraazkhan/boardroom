@@ -27,10 +27,10 @@ describe 'BoardsController', ->
         done()
 
     it 'creates a new board', (done) ->
-      title = 'title-1'
+      name = 'name-1'
       request(router.app)
         .post('/boards')
-        .send(title: title)
+        .send(name: name)
         .end (error, response) ->
           done error if error?
           Board.count (error, count) ->
@@ -38,8 +38,7 @@ describe 'BoardsController', ->
             expect(count).toEqual 1
             Board.findOne {}, (error, board) ->
               done error if error?
-              expect(board.title).toEqual title
-              expect(board.name).toEqual title
+              expect(board.name).toEqual name
               expect(board.creator_id).toEqual '1'
               done()
 

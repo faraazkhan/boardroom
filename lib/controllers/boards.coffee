@@ -7,7 +7,6 @@ util = require 'util'
 class BoardsController extends ApplicationController
   create: (request, response) =>
     board = new Board request.body
-    board.name = board.title
     board.creator_id = request.session.user_id
     board.save (error) ->
       response.redirect "/boards/#{board.id}"
@@ -34,7 +33,6 @@ class BoardsController extends ApplicationController
           cards: cards
           groups: board?.groups || {}
           users: Sockets.boards[board.name] || {}
-          title: board.name
           user_id: request.session.user_id
         response.render 'board',
           board: board

@@ -2,7 +2,7 @@ describe 'boardroom.views.Header', ->
   beforeEach ->
     setFixtures '''
       <div id="header">
-        <input id="title" />
+        <input id="name" />
         <button class="create" />
       </div>
     '''
@@ -12,39 +12,39 @@ describe 'boardroom.views.Header', ->
       socket: @socket
 
   describe 'socket events', ->
-    describe "when the board's title changes", ->
+    describe "when the board's name changes", ->
       beforeEach ->
-        @title = 'title'
-        @socket.emit 'title_changed', @title
+        @name = 'name'
+        @socket.emit 'name_changed', @name
 
-      it 'updates its title', ->
-        expect(@header.$('#title')).toHaveValue @title
+      it 'updates its name', ->
+        expect(@header.$('#name')).toHaveValue @name
 
   describe 'DOM events', ->
-    describe 'when entering a title', ->
-      describe 'and the user is still typing', ->
+    describe 'when entering a name', ->
+      describe 'and the user is still name', ->
         beforeEach ->
-          @titleChanged = sinon.spy()
-          @socket.on 'title_changed', @titleChanged
+          @nameChanged = sinon.spy()
+          @socket.on 'name_changed', @nameChanged
 
           keyup = $.Event 'keyup'
           keyup.keyCode = 50
           @header
-            .$('#title')
+            .$('#name')
             .trigger keyup
 
-        it 'emits the "title changed" socket event', ->
-          expect(@titleChanged.called).toBeTruthy()
-          [args] = @titleChanged.lastCall.args
-          expect(args.title).toEqual ''
+        it 'emits the "name changed" socket event', ->
+          expect(@nameChanged.called).toBeTruthy()
+          [args] = @nameChanged.lastCall.args
+          expect(args.name).toEqual ''
 
       describe 'the enter key is hit', ->
         beforeEach ->
-          $('input#title').focus()
+          $('input#name').focus()
           enter = $.Event 'keyup'
           enter.keyCode = 13
           @header
-            .$('#title')
+            .$('#name')
             .trigger enter
 
         it 'blurs the input field', ->
