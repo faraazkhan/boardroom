@@ -20,8 +20,7 @@
     "less": "1",
     "coffee-script": "1.3",
     "mongoose": "latest",
-    "mongodb": "latest",
-    "migrate": "https://github.com/carbonfive/node-migrate/tarball/master"
+    "mongodb": "latest"
   },
   "devDependencies": {
     "jasmine-node": "latest",
