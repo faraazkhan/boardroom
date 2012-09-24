@@ -3,7 +3,6 @@ Card = require "#{__dirname}/card"
 
 BoardSchema = new mongoose.Schema
   name: String
-  title: String
   creator_id: String
   deleted: Boolean
   groups: Array
@@ -27,7 +26,7 @@ BoardSchema.methods =
       if (error)
         callback(error)
       else
-        Card.findByBoardName(@name).remove (error) ->
+        Card.findByBoardId(@id).remove (error) ->
           callback(error)
 
 Board = db.model 'Board', BoardSchema

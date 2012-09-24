@@ -7,16 +7,16 @@ describe 'card.Card', ->
     Board.remove ->
       Card.remove done
 
-  describe '.findByBoardName', ->
+  describe '.findByBoardId', ->
     board = null
     beforeEach (done) ->
       Factory.create 'board', (defaultBoard) ->
         board = defaultBoard
-        Factory.create 'card', boardName: board.name, ->
+        Factory.create 'card', boardId: board.id, ->
           done()
 
     it 'finds all cards for the given board', (done) ->
-      Card.findByBoardName board.name, (error, cards) ->
+      Card.findByBoardId board.id, (error, cards) ->
         done error if error?
         expect(cards.length).toEqual 1
         done()
@@ -26,14 +26,14 @@ describe 'card.Card', ->
     beforeEach (done) ->
       Factory.create 'board', (defaultBoard) ->
         board = defaultBoard
-        Factory.create 'card', boardName: board.name, ->
+        Factory.create 'card', boardId: board.id, ->
           done()
 
     it 'returns the number of cards by board', (done) ->
       Card.countsByBoard (counts) ->
-        Card.findByBoardName board.name, (error, cards) ->
+        Card.findByBoardId board.id, (error, cards) ->
           done error if error?
-          expect(cards.length).toEqual counts[board.name]
+          expect(cards.length).toEqual counts[board.id]
           done()
 
   describe '#updateAttributes', ->

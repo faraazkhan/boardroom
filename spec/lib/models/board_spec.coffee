@@ -44,8 +44,8 @@ describe 'board.Board', ->
     beforeEach (done) ->
       Factory.create 'board', (defaultBoard) ->
         board = defaultBoard
-        Factory.create 'card', boardName: board.name, ->
-          Factory.create 'card', boardName: board.name, ->
+        Factory.create 'card', boardId: board.id, ->
+          Factory.create 'card', boardId: board.id, ->
             done()
 
     it 'removes the board', (done) ->

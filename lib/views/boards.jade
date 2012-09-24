@@ -22,7 +22,7 @@
     #boards
       h2 Here's what we're reflecting about!
       form(id='enter-board', method='post', action='/boards')
-        input#board-name(type='text', name='title')
+        input#board-name(type='text', name='name')
         button create board
       ul
         for board in boards
@@ -33,9 +33,9 @@
                   form(action="/boards/#{board._id}", method="post")
                     input(type="submit", value="Delete")
               a(href='/boards/' + board._id)
-                h4.title= board.title
+                h4.title= board.name
                 .note-count
-                  span.count= countsByBoard[board.name] || 0
+                  span.count= countsByBoard[board._id] || 0
                   | &nbsp; notes
 
 script(type="text/javascript")
