@@ -4,12 +4,12 @@ class Migrator
   constructor: ->
     @migrations = @loadMigrations()
 
-  migrate: ->
+  migrate: (callback) ->
     next = (error) =>
-      throw error if error?
-      return if @migrations.length == 0
+      return callback error if error?
+      return callback() if @migrations.length == 0
       migration = @migrations.shift()
-      console.log "[Migrate] #{migration}"
+      console.log "[Migrate] #{migration.split('/').pop()}"
       m = require migration
       m.up next
     next()
