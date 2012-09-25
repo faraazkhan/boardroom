@@ -4,15 +4,11 @@ Card = require "#{__dirname}/card"
 BoardSchema = new mongoose.Schema
   name: String
   creator_id: String
-  deleted: Boolean
   groups: Array
 
 BoardSchema.statics =
   all: (callback) ->
-    @find()
-      .or([{ deleted: false }, { deleted: { $exists: false } }])
-      .exec (error, boards) ->
-        callback boards
+    @find {}, callback
 
 BoardSchema.methods =
   addGroup: (attributes, callback) ->

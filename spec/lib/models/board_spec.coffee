@@ -8,18 +8,16 @@ describe 'board.Board', ->
       Card.remove done
 
   describe '.all', ->
-    describe 'given deleted and non-deleted boards', ->
+    describe 'given some boards', ->
       beforeEach (done) ->
         Factory.create 'board', ->
-          Factory.create 'board', deleted: undefined, ->
-            Factory.create 'deletedBoard', ->
-              done()
+          Factory.create 'board', ->
+            done()
 
-      it 'finds all non-deleted boards', (done) ->
-        Board.all (boards) ->
+      it 'finds all boards', (done) ->
+        Board.all (error, boards) ->
+          done error if error?
           expect(boards.length).toEqual 2
-          for board in boards
-            expect(board.deleted).toBeFalsy()
           done()
 
   describe '#addGroup', ->
