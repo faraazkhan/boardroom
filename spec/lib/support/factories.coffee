@@ -5,12 +5,6 @@ Factory = require 'factory-lady'
 Factory.define 'board', Board,
   name: 'name-1'
   creator_id: 'creator-1'
-  deleted: false
-
-Factory.define 'deletedBoard', Board,
-  name: 'name-2'
-  creator_id: 'creator-2'
-  deleted: true
 
 Factory.define 'card', Card,
   author: 'author-1'
