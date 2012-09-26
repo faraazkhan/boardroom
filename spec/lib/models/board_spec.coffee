@@ -7,18 +7,6 @@ describe 'board.Board', ->
     Board.remove ->
       Card.remove done
 
-  describe '.all', ->
-    beforeEach (done) ->
-      Factory.create 'board', ->
-        Factory.create 'board', ->
-          done()
-
-    it 'finds all boards', (done) ->
-      Board.all (error, boards) ->
-        done error if error?
-        expect(boards.length).toEqual 2
-        done()
-
   describe '.created_by', ->
     beforeEach (done) ->
       Factory.createBundle 'typical', ->

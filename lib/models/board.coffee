@@ -7,9 +7,6 @@ BoardSchema = new mongoose.Schema
   groups: Array
 
 BoardSchema.statics =
-  all: (callback) ->
-    @find {}, callback
-
   created_by: (user, callback) ->
     @find { creator: user }, callback
 
