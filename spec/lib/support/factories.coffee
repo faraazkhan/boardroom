@@ -4,15 +4,15 @@ Factory = require 'factory-lady'
 
 Factory.define 'board', Board,
   name: 'name-1'
-  creator_id: 'creator-1'
+  creator: 'creator-1'
 
 Factory.define 'card', Card,
-  author: 'author-1'
+  creator: 'creator-2'
   x: 100
   y: 100
   text: 'text'
   colorIndex: 2
   deleted: false
-  authors: ['author-2']
+  authors: ['author-1']
 
 module.exports = Factory

@@ -39,7 +39,7 @@ describe 'BoardsController', ->
             Board.findOne {}, (error, board) ->
               done error if error?
               expect(board.name).toEqual name
-              expect(board.creator_id).toEqual '1'
+              expect(board.creator).toEqual '1'
               done()
 
   describe '#index', ->

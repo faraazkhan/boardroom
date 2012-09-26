@@ -3,7 +3,7 @@ Card = require "#{__dirname}/card"
 
 BoardSchema = new mongoose.Schema
   name: String
-  creator_id: String
+  creator: String
   groups: Array
 
 BoardSchema.statics =

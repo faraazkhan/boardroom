@@ -7,7 +7,7 @@ util = require 'util'
 class BoardsController extends ApplicationController
   create: (request, response) =>
     board = new Board request.body
-    board.creator_id = request.session.user_id
+    board.creator = request.session.user_id
     board.save (error) ->
       response.redirect "/boards/#{board.id}"
 

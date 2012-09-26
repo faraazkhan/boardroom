@@ -62,7 +62,7 @@ describe 'card.Card', ->
             expect(card.deleted).toEqual attributes.deleted
             done()
 
-    describe 'given a new contributor to the card', ->
+    describe 'given a new author to the card', ->
       beforeEach (done) ->
         Factory.create 'card', (defaultCard) ->
           card = defaultCard
@@ -71,10 +71,10 @@ describe 'card.Card', ->
       it 'adds them to its authors', (done) ->
         attributes =
           authors: [
-            "#{card.author}-contributor-1"
-            "#{card.author}-contributor-2"
+            "#{card.creator}-author-1"
+            "#{card.creator}-author-2"
           ]
-        authorsCount = card.authors.length
+        count = card.authors.length
         card.updateAttributes attributes, ->
-          expect(card.authors.length).toEqual authorsCount + 2
+          expect(card.authors.length).toEqual count + 2
           done()

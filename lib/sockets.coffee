@@ -22,7 +22,6 @@ class Sockets
 
         socket.on 'add', (data) =>
           card = new Card data
-          card.authors = []
           card.save (error) =>
             throw error if error?
             boardNamespace.emit 'add', card
@@ -73,7 +72,7 @@ class Sockets
 
   @updateCard: (attributes) =>
     Card.findById attributes._id, (error, card) =>
-      throw error if error
+      throw error if error?
       card.updateAttributes attributes, ->
 
   @start: (app) ->

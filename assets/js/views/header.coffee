@@ -22,7 +22,7 @@ class boardroom.views.Header extends Backbone.View
   requestNewCard: ->
     @socket.emit 'add',
       boardId: @model.get('_id')
-      author: @model.get('user_id')
+      creator: @model.get('user_id')
       x: parseInt Math.random() * 700
       y: parseInt Math.random() * 400
       focus: true
