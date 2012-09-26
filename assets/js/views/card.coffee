@@ -66,10 +66,10 @@ class boardroom.views.Card extends Backbone.View
     @addAuthor @model.get('board').get('user_id')
     @adjustTextarea()
 
-  addAuthor: (author) ->
-    avatar = boardroom.models.User.avatar author
-    if @$(".authors img[title='#{author}']").length is 0
-      @$('.authors').append("<img src='#{avatar}' title='#{_.escape author}'/>")
+  addAuthor: (user) ->
+    avatar = boardroom.models.User.avatar user
+    if @$(".authors img[title='#{user}']").length is 0
+      @$('.authors').append("<img src='#{avatar}' title='#{_.escape user}'/>")
 
   adjustTextarea: ->
     $textarea = @$ 'textarea'

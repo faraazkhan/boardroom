@@ -2,7 +2,7 @@
 
 CardSchema = new mongoose.Schema
   boardId: String
-  author: String
+  creator: String
   x: Number
   y: Number
   text: String
@@ -33,12 +33,17 @@ CardSchema.statics =
       callback results
 
 CardSchema.methods =
+  initialize: ->
+    @authors = []
+
   updateAttributes: (attributes, callback) ->
     for attribute in ['x', 'y', 'text', 'colorIndex', 'deleted'] when attributes[attribute]?
       @[attribute] = attributes[attribute]
+    if attributes.author?
+      @authors.push attributes.author unless author in @authors
     if attributes.authors?
       for author in attributes.authors
-        @authors.push author if author not in @authors
+        @authors.push author unless author in @authors
     @save (error, card) ->
       callback card
 
