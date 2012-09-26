@@ -1,0 +1,12 @@
+for board in boards
+  - if (board.name)
+    li(id=board._id, name=board.name)
+      - if (board.creator === user.user_id)
+        .actions
+          form(action="/boards/#{board._id}", method="post")
+            input(type="submit", value="Delete")
+      a(href='/boards/' + board._id)
+        h4.title= board.name
+        .note-count
+          span.count= 0
+          | &nbsp; notes

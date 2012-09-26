@@ -39,34 +39,7 @@ describe 'BoardsController', ->
             Board.findOne {}, (error, board) ->
               done error if error?
               expect(board.name).toEqual name
-              expect(board.creator).toEqual '1'
-              done()
-
-  describe '#index', ->
-    router = null
-    boards = []
-
-    beforeEach (done) ->
-      Factory.create 'board', (board) ->
-        boards.push board
-        Factory.create 'card', boardId: board.id, ->
-          Factory.create 'board', (board) ->
-            boards.push board
-            done()
-
-      router = new LoggedInRouter
-
-    it 'renders the boards page', (done) ->
-      request(router.app)
-        .get('/boards')
-        .end (error, response) ->
-          done error if error?
-          jsdom.env
-            html: response.text
-            done: (error, window) ->
-              doen(error) if error?
-              expect(response.ok).toBeTruthy()
-              expect($('#boards li', window.document).length).toEqual 2
+              expect(board.creator).toEqual 'user'
               done()
 
   describe '#show', ->

@@ -11,15 +11,6 @@ class BoardsController extends ApplicationController
     board.save (error) ->
       response.redirect "/boards/#{board.id}"
 
-  index: (request, response) =>
-    Board.all (error, boards) =>
-      return @throw500 response, error if error?
-      Card.countsByBoard (countsByBoard) =>
-        response.render 'boards',
-          user: request.session
-          boards: boards
-          countsByBoard: countsByBoard
-
   show: (request, response) =>
     id = request.params.id
     Board.findById id, (error, board) =>
