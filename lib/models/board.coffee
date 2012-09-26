@@ -10,6 +10,15 @@ BoardSchema.statics =
   all: (callback) ->
     @find {}, callback
 
+  created_by: (user, callback) ->
+    @find { creator: user }, callback
+
+  collaborated_by: (user, callback) ->
+    Card.find { authors: user }, (error, cards) =>
+      ids = cards.map (card) ->
+        card.boardId
+      @find { _id: { $in: ids } }, callback
+
 BoardSchema.methods =
   addGroup: (attributes, callback) ->
     @_id = null
