@@ -5,7 +5,13 @@ BoardSchema = new mongoose.Schema
   name: String
   creator: String
   groups: Array
-  created: { type: Date, default: Date.now }
+  created: Date
+  updated: Date
+
+BoardSchema.pre 'save', (next) ->
+  @created = new Date() unless @created?
+  @updated = new Date()
+  next()
 
 BoardSchema.statics =
   created_by: (user, callback) ->

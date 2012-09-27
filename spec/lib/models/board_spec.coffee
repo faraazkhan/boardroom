@@ -35,8 +35,6 @@ describe 'board.Board', ->
         expect(names[1]).toEqual 'board3'
         done()
 
-    it 'shows all contributors', ->
-
   describe '#addGroup', ->
     board = null
     beforeEach (done) ->

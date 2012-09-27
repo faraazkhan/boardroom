@@ -10,8 +10,13 @@ CardSchema = new mongoose.Schema
   colorIndex: Number
   deleted: Boolean
   focus: Boolean
-  created: { type: Date, default: Date.now }
-  updated: { type: Date, default: Date.now }
+  created: Date
+  updated: Date
+
+CardSchema.pre 'save', (next) ->
+  @created = new Date() unless @created?
+  @updated = new Date()
+  next()
 
 CardSchema.statics =
   findByBoardId: (boardId, callback) ->
