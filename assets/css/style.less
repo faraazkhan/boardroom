@@ -73,6 +73,12 @@ a {
   }
 }
 
+img.avatar {
+  width: 20px;
+  height: 20px;
+  border: 1px solid white;
+}
+
 .stack-name {
   cursor: pointer;
 }
@@ -154,10 +160,7 @@ a {
     width: 100%;
 
     img {
-      width: 20px;
-      height: 20px;
       margin-right: 0.5em;
-      border: 1px solid white;
       .box-shadow(2px,2px,3px,rgba(0,0,0,0.5));
     }
 
@@ -172,10 +175,7 @@ a {
 
     img {
       visibility: hidden;
-      width: 20px;
-      height: 20px;
       margin-right: 0.5em;
-      border: 1px solid white;
     }
   }
 }
@@ -325,7 +325,7 @@ a {
 
         a {
           display: block;
-          padding: 1.5em 2em;
+          padding: 1.5em 4em 1.5em 3em;
           color: #000;
           :active, :hover {
             text-decoration: none;
@@ -335,6 +335,11 @@ a {
             margin-top: 0.33em;
             margin-bottom: 0.33em;
           }
+        }
+
+        .creator {
+          float: left;
+          padding: 2em 10px;
         }
 
         .actions {
@@ -403,10 +408,7 @@ a {
 }
 
 #user-info img {
-  width: 20px;
-  height: 20px;
   margin-right: 0.5em;
-  border: 1px solid white;
   .box-shadow(2px, 2px, 3px, rgba(0,0,0,0.5);
 }
 

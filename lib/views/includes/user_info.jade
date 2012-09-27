@@ -1,6 +1,6 @@
 #user-info
   - if(user)
-    img(src='/user/avatar/#{encodeURIComponent(user.user_id)}')
+    img.avatar(src='/user/avatar/#{encodeURIComponent(user.user_id)}')
     span
       = user.user_id
       &nbsp;

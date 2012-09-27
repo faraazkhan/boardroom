@@ -1,12 +1,13 @@
 for board in boards
-  - if (board.name)
-    li(id=board._id, name=board.name)
-      - if (board.creator === user.user_id)
-        .actions
-          form(action="/boards/#{board._id}", method="post")
-            input(type="submit", value="Delete")
-      a(href='/boards/' + board._id)
-        h4.title= board.name
-        .note-count
-          span.count= board.cards.length
-          | &nbsp; notes
+  li(id=board._id, name=board.name)
+    - if (board.creator === user.user_id)
+      .actions
+        form(action="/boards/#{board._id}", method="post")
+          input(type="submit", value="Delete")
+    .creator
+      img.avatar(src='/user/avatar/#{encodeURIComponent(board.creator)}', title='#{board.creator}')
+    a(href='/boards/' + board._id)
+      h4.title= board.name
+      .note-count
+        span.count= board.cards.length
+        | &nbsp; notes
