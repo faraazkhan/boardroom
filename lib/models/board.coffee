@@ -8,13 +8,30 @@ BoardSchema = new mongoose.Schema
 
 BoardSchema.statics =
   created_by: (user, callback) ->
+    callback = @_decorate callback if callback?
     @find { creator: user }, null, { sort: 'name' }, callback
 
   collaborated_by: (user, callback) ->
+    callback = @_decorate callback if callback?
     Card.find { authors: user }, (error, cards) =>
-      ids = cards.map (card) ->
+      boardIds = cards.map (card) ->
         card.boardId
-      @find { _id: { $in: ids }, creator: { $ne: user } }, null, { sort: 'name' }, callback
+      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, callback
+
+  _decorate: (callback) ->
+    (error, boards) ->
+      boardMap = {}
+      boardIds = []
+      for board in boards
+        do (board) ->
+          board.cards = []
+          boardIds.push board.id
+          boardMap[board.id] = board
+      Card.find { boardId: { $in: boardIds } }, (error, cards) ->
+        for card in cards
+          do (card) ->
+            boardMap[card.boardId].cards.push card
+        callback error, boards
 
 BoardSchema.methods =
   addGroup: (attributes, callback) ->

@@ -17,6 +17,7 @@ describe 'board.Board', ->
         done error if error?
         expect(boards.length).toEqual 1
         expect(boards[0].name).toEqual 'board1'
+        expect(boards[0].cards.length).toEqual 1
         done()
 
   describe '.collaborated_by', ->

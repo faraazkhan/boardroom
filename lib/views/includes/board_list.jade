@@ -8,5 +8,5 @@ for board in boards
       a(href='/boards/' + board._id)
         h4.title= board.name
         .note-count
-          span.count= 0
+          span.count= board.cards.length
           | &nbsp; notes
