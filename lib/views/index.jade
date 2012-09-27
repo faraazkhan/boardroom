@@ -24,10 +24,10 @@
       form(id='enter-board', method='post', action='/boards')
         input#board-name(type='text', name='name')
         button create board
-      ul
+      ul.created
         boards = created
         include includes/board_list
-      ul
+      ul.collaborated
         boards = collaborated
         include includes/board_list
 

@@ -8,9 +8,11 @@ class HomeController extends ApplicationController
       return @throw500 response, error if error?
       Board.collaborated_by user, (error, collaborated) ->
         return @throw500 response, error if error?
+        cmp = (a, b) ->
+          a.name.toLowerCase().localeCompare b.name.toLowerCase()
         response.render 'index',
           user: request.session
-          created: created
-          collaborated: collaborated
+          created: created.sort cmp
+          collaborated: collaborated.sort cmp
 
 module.exports = HomeController

@@ -27,7 +27,8 @@ describe 'HomeController', ->
                 done(error) if error?
                 expect(response.ok).toBeTruthy()
                 expect($('#boards ul', window.document).length).toEqual 2
-                expect($('#boards li', window.document).length).toEqual 2
+                expect($('#boards ul.created li', window.document).length).toEqual 1
+                expect($('#boards ul.collaborated li', window.document).length).toEqual 2
                 done()
 
     describe 'when logged out', ->

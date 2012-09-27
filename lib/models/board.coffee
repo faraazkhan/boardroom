@@ -8,13 +8,13 @@ BoardSchema = new mongoose.Schema
 
 BoardSchema.statics =
   created_by: (user, callback) ->
-    @find { creator: user }, callback
+    @find { creator: user }, null, { sort: 'name' }, callback
 
   collaborated_by: (user, callback) ->
     Card.find { authors: user }, (error, cards) =>
       ids = cards.map (card) ->
         card.boardId
-      @find { _id: { $in: ids } }, callback
+      @find { _id: { $in: ids }, creator: { $ne: user } }, null, { sort: 'name' }, callback
 
 BoardSchema.methods =
   addGroup: (attributes, callback) ->

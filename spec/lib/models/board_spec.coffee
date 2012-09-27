@@ -16,6 +16,7 @@ describe 'board.Board', ->
       Board.created_by 'board-creator-1', (error, boards) ->
         done error if error?
         expect(boards.length).toEqual 1
+        expect(boards[0].name).toEqual 'board1'
         done()
 
   describe '.collaborated_by', ->
@@ -26,7 +27,11 @@ describe 'board.Board', ->
     it 'finds boards i collaborated on', (done) ->
       Board.collaborated_by 'board-creator-1', (error, boards) ->
         done error if error?
-        expect(boards.length).toEqual 1
+        expect(boards.length).toEqual 2
+        names = boards.map (board) ->
+          board.name
+        expect(names[0]).toEqual 'board2'
+        expect(names[1]).toEqual 'board3'
         done()
 
   describe '#addGroup', ->
