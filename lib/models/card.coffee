@@ -3,13 +3,15 @@
 CardSchema = new mongoose.Schema
   boardId: String
   creator: String
+  authors: Array
   x: Number
   y: Number
   text: String
   colorIndex: Number
   deleted: Boolean
-  authors: Array
   focus: Boolean
+  created: { type: Date, default: Date.now }
+  updated: { type: Date, default: Date.now }
 
 CardSchema.statics =
   findByBoardId: (boardId, callback) ->

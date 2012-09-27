@@ -5,6 +5,7 @@ BoardSchema = new mongoose.Schema
   name: String
   creator: String
   groups: Array
+  created: { type: Date, default: Date.now }
 
 BoardSchema.statics =
   created_by: (user, callback) ->
@@ -34,6 +35,15 @@ BoardSchema.statics =
         callback error, boards
 
 BoardSchema.methods =
+  collaborators: ->
+    collabs = []
+    for card in @cards
+      do (card) ->
+        for user in card.authors
+          do (user) ->
+            collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 )
+    collabs
+
   addGroup: (attributes, callback) ->
     @_id = null
     @groups.push attributes

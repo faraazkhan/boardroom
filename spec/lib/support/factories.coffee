@@ -22,7 +22,7 @@ Factory.createBundle = (name, callback) ->
         Factory.create 'board', name: 'board3', creator: 'board-creator-3', (board3) ->
           Factory.create 'board', name: 'board4', creator: 'board-creator-4', (board4) ->
             Factory.create 'card', boardId: board1.id, authors: [ 'board-creator-1' ], ->
-              Factory.create 'card', boardId: board2.id, authors: [ 'board-creator-1' ], ->
+              Factory.create 'card', boardId: board2.id, authors: [ 'board-creator-1', 'someotherguy' ], ->
                 Factory.create 'card', boardId: board3.id, authors: [ 'board-creator-1' ], ->
                   Factory.create 'card', boardId: board4.id, authors: [ 'nobody' ], ->
                     callback()
