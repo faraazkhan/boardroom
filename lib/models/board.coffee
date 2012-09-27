@@ -5,12 +5,51 @@ BoardSchema = new mongoose.Schema
   name: String
   creator: String
   groups: Array
+  created: Date
+  updated: Date
+
+BoardSchema.pre 'save', (next) ->
+  @created = new Date() unless @created?
+  @updated = new Date()
+  next()
 
 BoardSchema.statics =
-  all: (callback) ->
-    @find {}, callback
+  created_by: (user, callback) ->
+    callback = @_decorate callback if callback?
+    @find { creator: user }, null, { sort: 'name' }, callback
+
+  collaborated_by: (user, callback) ->
+    callback = @_decorate callback if callback?
+    Card.find { authors: user }, (error, cards) =>
+      boardIds = cards.map (card) ->
+        card.boardId
+      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, callback
+
+  _decorate: (callback) ->
+    (error, boards) ->
+      boardMap = {}
+      boardIds = []
+      for board in boards
+        do (board) ->
+          board.cards = []
+          boardIds.push board.id
+          boardMap[board.id] = board
+      Card.find { boardId: { $in: boardIds } }, (error, cards) ->
+        for card in cards
+          do (card) ->
+            boardMap[card.boardId].cards.push card
+        callback error, boards
 
 BoardSchema.methods =
+  collaborators: ->
+    collabs = []
+    for card in @cards
+      do (card) ->
+        for user in card.authors
+          do (user) ->
+            collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 )
+    collabs
+
   addGroup: (attributes, callback) ->
     @_id = null
     @groups.push attributes

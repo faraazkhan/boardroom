@@ -29,7 +29,6 @@ class Router
     @app.get '/logout', sessionsController.destroy
 
     boardsController = new BoardsController
-    @app.get '/boards', @authenticate, boardsController.index
     @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
     @app.post '/boards/:id', @authenticate, boardsController.destroy
     @app.post '/boards', @authenticate, boardsController.create

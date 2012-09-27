@@ -24,19 +24,12 @@
       form(id='enter-board', method='post', action='/boards')
         input#board-name(type='text', name='name')
         button create board
-      ul
-        for board in boards
-          - if (board.name)
-            li(id=board._id, name=board.name)
-              - if (board.creator_id === user.user_id)
-                .actions
-                  form(action="/boards/#{board._id}", method="post")
-                    input(type="submit", value="Delete")
-              a(href='/boards/' + board._id)
-                h4.title= board.name
-                .note-count
-                  span.count= countsByBoard[board._id] || 0
-                  | &nbsp; notes
+      ul.created
+        boards = created
+        include includes/board_list
+      ul.collaborated
+        boards = collaborated
+        include includes/board_list
 
 script(type="text/javascript")
   var boardList = new boardroom.views.BoardList();

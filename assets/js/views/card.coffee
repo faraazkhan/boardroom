@@ -69,7 +69,7 @@ class boardroom.views.Card extends Backbone.View
   addAuthor: (user) ->
     avatar = boardroom.models.User.avatar user
     if @$(".authors img[title='#{user}']").length is 0
-      @$('.authors').append("<img src='#{avatar}' title='#{_.escape user}'/>")
+      @$('.authors').append("<img class='avatar' src='#{avatar}' title='#{_.escape user}'/>")
 
   adjustTextarea: ->
     $textarea = @$ 'textarea'
@@ -105,7 +105,7 @@ class boardroom.views.Card extends Backbone.View
   showNotice: ({ user, message }) =>
     if user?
       @$('.notice')
-        .html("<img src='#{boardroom.models.User.avatar user}'/>
+        .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/>
                <span>#{_.escape message}</span>")
         .show()
     else

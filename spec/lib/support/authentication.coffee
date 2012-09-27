@@ -1,8 +1,12 @@
 Router = require "#{__dirname}/../../../lib/router"
 
 class LoggedInRouter extends Router
-  authenticate: (request, response, next) ->
-    request.session = { user_id: 1 }
+  constructor: (user = 'user') ->
+    @user = user
+    super()
+
+  authenticate: (request, response, next) =>
+    request.session = { user_id: @user }
     next()
 
   createSocketNamespace: (request, response, next) ->

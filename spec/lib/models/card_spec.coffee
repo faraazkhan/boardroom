@@ -21,21 +21,6 @@ describe 'card.Card', ->
         expect(cards.length).toEqual 1
         done()
 
-  describe '.countsByBoard', ->
-    board = null
-    beforeEach (done) ->
-      Factory.create 'board', (defaultBoard) ->
-        board = defaultBoard
-        Factory.create 'card', boardId: board.id, ->
-          done()
-
-    it 'returns the number of cards by board', (done) ->
-      Card.countsByBoard (counts) ->
-        Card.findByBoardId board.id, (error, cards) ->
-          done error if error?
-          expect(cards.length).toEqual counts[board.id]
-          done()
-
   describe '#updateAttributes', ->
     card = null
 

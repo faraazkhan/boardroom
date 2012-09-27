@@ -7,18 +7,33 @@ describe 'board.Board', ->
     Board.remove ->
       Card.remove done
 
-  describe '.all', ->
-    describe 'given some boards', ->
-      beforeEach (done) ->
-        Factory.create 'board', ->
-          Factory.create 'board', ->
-            done()
+  describe '.created_by', ->
+    beforeEach (done) ->
+      Factory.createBundle 'typical', ->
+        done()
 
-      it 'finds all boards', (done) ->
-        Board.all (error, boards) ->
-          done error if error?
-          expect(boards.length).toEqual 2
-          done()
+    it 'finds boards i created', (done) ->
+      Board.created_by 'board-creator-1', (error, boards) ->
+        done error if error?
+        expect(boards.length).toEqual 1
+        expect(boards[0].name).toEqual 'board1'
+        expect(boards[0].cards.length).toEqual 1
+        done()
+
+  describe '.collaborated_by', ->
+    beforeEach (done) ->
+      Factory.createBundle 'typical', ->
+        done()
+
+    it 'finds boards i collaborated on', (done) ->
+      Board.collaborated_by 'board-creator-1', (error, boards) ->
+        done error if error?
+        expect(boards.length).toEqual 2
+        names = boards.map (board) ->
+          board.name
+        expect(names[0]).toEqual 'board2'
+        expect(names[1]).toEqual 'board3'
+        done()
 
   describe '#addGroup', ->
     board = null

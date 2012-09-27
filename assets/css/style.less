@@ -73,6 +73,12 @@ a {
   }
 }
 
+img.avatar {
+  width: 20px;
+  height: 20px;
+  border: 1px solid white;
+}
+
 .stack-name {
   cursor: pointer;
 }
@@ -154,10 +160,7 @@ a {
     width: 100%;
 
     img {
-      width: 20px;
-      height: 20px;
       margin-right: 0.5em;
-      border: 1px solid white;
       .box-shadow(2px,2px,3px,rgba(0,0,0,0.5));
     }
 
@@ -172,10 +175,7 @@ a {
 
     img {
       visibility: hidden;
-      width: 20px;
-      height: 20px;
       margin-right: 0.5em;
-      border: 1px solid white;
     }
   }
 }
@@ -305,6 +305,7 @@ a {
       color: #000;
 
       li {
+        position: relative;
         border-top: 1px solid rgba(0,0,0,0.33);
         &:first-child {
           border-radius: 5px 5px 0 0;
@@ -325,7 +326,7 @@ a {
 
         a {
           display: block;
-          padding: 1.5em 2em;
+          padding: 1.5em 4em 1.5em 3em;
           color: #000;
           :active, :hover {
             text-decoration: none;
@@ -337,8 +338,24 @@ a {
           }
         }
 
+        .creator {
+          position: absolute;
+          top: 2em;
+          left: 10px;
+        }
+
+        .created {
+          position: absolute;
+          bottom: 5px;
+          right: 10px;
+          font-size: 11px;
+          font-style: italic;
+        }
+
         .actions {
-          float: right;
+          position: absolute;
+          top: 10px;
+          right: 10px;
           cursor: pointer;
           padding-left: 2em;
 
@@ -403,10 +420,7 @@ a {
 }
 
 #user-info img {
-  width: 20px;
-  height: 20px;
   margin-right: 0.5em;
-  border: 1px solid white;
   .box-shadow(2px, 2px, 3px, rgba(0,0,0,0.5);
 }
 
