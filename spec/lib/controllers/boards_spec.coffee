@@ -87,7 +87,7 @@ describe 'BoardsController', ->
           done error if error?
           expect(response.redirect).toBeTruthy()
           redirect = url.parse response.headers.location
-          expect(redirect.pathname).toEqual '/boards'
+          expect(redirect.pathname).toEqual '/'
           Board.findById board.id, (error, board) ->
             done error if error?
             expect(board).toBeNull()

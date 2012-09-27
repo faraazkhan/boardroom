@@ -33,6 +33,6 @@ class BoardsController extends ApplicationController
   destroy: (request, response) =>
     Board.findById request.params.id, (error, board) ->
       board.destroy (error) ->
-        response.redirect '/boards'
+        response.redirect '/'
 
 module.exports = BoardsController
