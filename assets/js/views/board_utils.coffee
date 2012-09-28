@@ -79,6 +79,9 @@ window.boardUtils = (socket, boardInfo) ->
           cardIds: boardInfo.groups[cardGroupId] && boardInfo.groups[cardGroupId].cardIds || []
 
     grouping : (e) ->
+      # disabling this feature for now
+      return
+
       $activeCard = $(e.target).closest '.card'
 
       sorted = $('.card').not($activeCard).toArray().sort (first, second) ->
