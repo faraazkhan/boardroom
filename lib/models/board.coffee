@@ -13,41 +13,36 @@ BoardSchema.pre 'save', (next) ->
   @updated = new Date()
   next()
 
+BoardSchema.pre 'init', (next) ->
+  Card.find { boardId: @id }, (error, cards) =>
+    @cards = cards
+    next()
+
 BoardSchema.statics =
   created_by: (user, callback) ->
-    callback = @_decorate callback if callback?
-    @find { creator: user }, null, { sort: 'name' }, callback
+    @find { creator: user }, null, { sort: 'name' }, @_decorate(callback)
 
   collaborated_by: (user, callback) ->
-    callback = @_decorate callback if callback?
     Card.find { authors: user }, (error, cards) =>
       boardIds = cards.map (card) ->
         card.boardId
-      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, callback
+      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, @_decorate(callback)
 
   _decorate: (callback) ->
+    return undefined unless callback?
     (error, boards) ->
+      boardIds = ( board.id for board in boards )
       boardMap = {}
-      boardIds = []
-      for board in boards
-        do (board) ->
-          board.cards = []
-          boardIds.push board.id
-          boardMap[board.id] = board
+      boardMap[board.id] = board for board in boards
       Card.find { boardId: { $in: boardIds } }, (error, cards) ->
-        for card in cards
-          do (card) ->
-            boardMap[card.boardId].cards.push card
+        boardMap[card.boardId].cards.push card for card in cards
         callback error, boards
 
 BoardSchema.methods =
   collaborators: ->
     collabs = []
-    for card in @cards
-      do (card) ->
-        for user in card.authors
-          do (user) ->
-            collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 )
+    ( ( collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 ) ) \
+      for user in card.authors ) for card in @cards
     collabs
 
   addGroup: (attributes, callback) ->
