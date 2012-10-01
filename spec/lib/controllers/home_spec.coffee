@@ -1,16 +1,11 @@
-request = require 'supertest'
-jsdom = require 'jsdom'
-url = require 'url'
-$ = require 'jquery'
-Router = require "#{__dirname}/../../../lib/router"
-LoggedInRouter = require './../support/authentication'
-Factory = require './../support/factories'
+{ Factory, Board, Card, LoggedOutRouter, LoggedInRouter, request, jsdom, url, $ } =
+  require '../support/controller_test_support'
 
 describe 'HomeController', ->
+  router = null
+
   describe '#index', ->
     describe 'when logged in', ->
-      router = null
-
       beforeEach (done) ->
         router = new LoggedInRouter 'board-creator-1'
         Factory.createBundle 'typical', ->
@@ -32,10 +27,8 @@ describe 'HomeController', ->
                 done()
 
     describe 'when logged out', ->
-      router = null
-
       beforeEach ->
-        router = new Router
+        router = new LoggedOutRouter
 
       it 'redirects to the login page', (done) ->
         request(router.app)

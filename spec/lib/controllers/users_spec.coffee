@@ -1,12 +1,12 @@
-request = require 'supertest'
-Router = require "#{__dirname}/../../../lib/router"
+{ LoggedOutRouter, request } =
+  require '../support/controller_test_support'
 
 describe 'UsersController', ->
-  describe '#avatar', ->
-    router = null
+  router = null
 
+  describe '#avatar', ->
     beforeEach ->
-      router = new Router
+      router = new LoggedOutRouter
 
     it "redirects to the url for the handle's avatar", (done) ->
       request(router.app)

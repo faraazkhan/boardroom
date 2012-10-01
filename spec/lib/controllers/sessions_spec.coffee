@@ -1,14 +1,12 @@
-request = require 'supertest'
-url = require 'url'
-Router = require "#{__dirname}/../../../lib/router"
-LoggedInRouter = require './../support/authentication'
+{ LoggedOutRouter, LoggedInRouter, request, url } =
+  require '../support/controller_test_support'
 
 describe 'SessionsController', ->
-  describe '#new', ->
-    router = null
+  router = null
 
+  describe '#new', ->
     beforeEach ->
-      router = new Router
+      router = new LoggedOutRouter
 
     it 'renders the login page', (done) ->
       request(router.app)
@@ -19,10 +17,8 @@ describe 'SessionsController', ->
           done()
 
   describe '#create', ->
-    router = null
-
     beforeEach ->
-      router = new Router
+      router = new LoggedOutRouter
 
     it 'redirects to the home page', (done) ->
       request(router.app)
@@ -35,8 +31,6 @@ describe 'SessionsController', ->
           done()
 
   describe '#destroy', ->
-    router = null
-
     beforeEach ->
       router = new LoggedInRouter
 
