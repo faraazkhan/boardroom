@@ -1,4 +1,4 @@
-User = require "#{__dirname}/../../../lib/models/user"
+{ User } = require "../support/model_test_support"
 
 describe 'User', ->
   describe '.avatar_for', ->

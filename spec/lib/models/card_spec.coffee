@@ -1,12 +1,6 @@
-Factory = require './../support/factories'
-Board = require "#{__dirname}/../../../lib/models/board"
-Card = require "#{__dirname}/../../../lib/models/card"
+{ Factory, Board, Card } = require "../support/model_test_support"
 
 describe 'card.Card', ->
-  beforeEach (done) ->
-    Board.remove ->
-      Card.remove done
-
   describe '.findByBoardId', ->
     board = null
     beforeEach (done) ->

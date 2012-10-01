@@ -1,6 +1,16 @@
 Router = require "#{__dirname}/../../../lib/router"
 
-class LoggedInRouter extends Router
+routers = []
+
+class LoggedOutRouter extends Router
+  constructor: ->
+    routers.push @
+    super()
+
+  stop: ->
+    @app.close()
+
+class LoggedInRouter extends LoggedOutRouter
   constructor: (user = 'user') ->
     @user = user
     super()
@@ -12,4 +22,4 @@ class LoggedInRouter extends Router
   createSocketNamespace: (request, response, next) ->
     next()
 
-module.exports = LoggedInRouter
+module.exports = { LoggedOutRouter, LoggedInRouter, routers }

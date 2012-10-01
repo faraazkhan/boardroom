@@ -1,12 +1,6 @@
-Factory = require './../support/factories'
-Board = require "#{__dirname}/../../../lib/models/board"
-Card = require "#{__dirname}/../../../lib/models/card"
+{ Factory, Board, Card } = require "../support/model_test_support"
 
 describe 'board.Board', ->
-  beforeEach (done) ->
-    Board.remove ->
-      Card.remove done
-
   describe '.created_by', ->
     beforeEach (done) ->
       Factory.createBundle 'typical', ->

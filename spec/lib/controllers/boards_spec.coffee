@@ -1,30 +1,12 @@
-request = require 'supertest'
-jsdom = require 'jsdom'
-url = require 'url'
-$ = require 'jquery'
-Factory = require './../support/factories'
-Board = require "#{__dirname}/../../../lib/models/board"
-Card = require "#{__dirname}/../../../lib/models/card"
-LoggedInRouter = require './../support/authentication'
+{ Factory, Board, Card, LoggedInRouter, request, jsdom, url, $ } =
+  require '../support/controller_test_support'
 
 describe 'BoardsController', ->
-  beforeEach (done) ->
-    Board.remove (error) ->
-      done error if error?
-      Card.remove (error) ->
-        done error if error?
-        done()
+  router = null
 
   describe '#create', ->
-    router = null
-    count = null
-
-    beforeEach (done) ->
-      Board.count (error, currentCount) ->
-        done error if error?
-        router = new LoggedInRouter
-        count = currentCount
-        done()
+    beforeEach ->
+      router = new LoggedInRouter
 
     it 'creates a new board', (done) ->
       name = 'name-1'
@@ -43,9 +25,7 @@ describe 'BoardsController', ->
               done()
 
   describe '#show', ->
-    router = null
     board = null
-
     beforeEach (done) ->
       router = new LoggedInRouter
       Factory.create 'board', (defaultBoard) ->
@@ -71,9 +51,7 @@ describe 'BoardsController', ->
             done()
 
   describe '#destroy', ->
-    router = null
     board = null
-
     beforeEach (done) ->
       router = new LoggedInRouter
       Factory.create 'board', (defaultBoard) ->
@@ -92,4 +70,3 @@ describe 'BoardsController', ->
             done error if error?
             expect(board).toBeNull()
             done()
-
