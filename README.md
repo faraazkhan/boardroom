@@ -53,7 +53,6 @@ Deployment uses Capistrano. Acceptance is the default stage.
     brew update
     brew install mongodb
     brew install node
-    curl http://npmjs.org/install.sh | sh
     npm install
     # start mongo. for instructions: brew info mongodb
     npm start
@@ -69,13 +68,11 @@ Visit [localhost:7777](http://localhost:7777).
 3. Follow homebrew's instructions to run Mongo. They're printed after installation; view them again with `brew info mongodb`.
 4. Install [Node.js](http://nodejs.org/) with Homebrew:  
    `brew install node`
-5. Install the Node package manager [npm](http://npmjs.org/):  
-   `curl http://npmjs.org/install.sh | sh`
-6. Install project dependencies using npm:  
+5. Install project dependencies using npm:  
    `npm install`
-7. Run Boardroom:  
-   `node server.js`
-8. Visit [localhost:7777](http://localhost:7777).
+6. Run Boardroom:  
+   `node index.js`
+7. Visit [localhost:7777](http://localhost:7777).
 
 ### Ubuntu / Debian
 Coming soon
@@ -92,10 +89,10 @@ Then:
     > help
     ⋮
     > show dbs
-    carbonite
+    boardroom_development
     ⋮
-    > use carbonite
-    switched to db carbonite
+    > use boardroom_development
+    switched to db boardroom_development
     > db.boards.find()
     { "name" : "test", "title" : "test", "_id" : ObjectId("4ff1e6658aa3445a14000001") }
     > db.cards.find()
