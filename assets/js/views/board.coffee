@@ -17,6 +17,9 @@ class boardroom.views.Board extends Backbone.View
   initializeSocketEventHandlers: ->
     @socket.on 'joined', @model.addUser
     @socket.on 'connect', @publishUserJoinedEvent
+    @socket.on 'disconnect', @displayDisconnectedStatus
+    @socket.on 'reconnecting', @displayReconnectingStatus
+    @socket.on 'reconnect', @hideDisconnectedStatus
     @socket.on 'boardDeleted', @redirectToBoardsList
     @socket.on 'add', @displayNewCard
     @socket.on 'move', @updateCardPosition
@@ -49,6 +52,17 @@ class boardroom.views.Board extends Backbone.View
 
   publishUserJoinedEvent: =>
     @socket.emit 'join', user_id: @model.get('user_id')
+
+  displayDisconnectedStatus: =>
+    @$('#connection-status').html 'Disconnected'
+    @$('#connection-status-modal').show()
+
+  displayReconnectingStatus: =>
+    @$('#connection-status').html 'Reconnecting...'
+
+  hideDisconnectedStatus: =>
+    @$('#connection-status').html ''
+    @$('#connection-status-modal').hide()
 
   redirectToBoardsList: ->
     alert 'This board has been deleted by its owner.'

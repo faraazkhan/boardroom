@@ -520,3 +520,27 @@ form#login {
     h2 { text-align: center; }
   }
 }
+
+#connection-status-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+
+  #connection-status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    margin-left: -60px;
+    margin-top: -9px;
+    height: 100%;
+    text-align: center;
+    color: #D43D1A;
+    font-weight: bold;
+    font-size: 18px;
+  }
+}
