@@ -75,7 +75,7 @@ class boardroom.views.Card extends Backbone.View
     $textarea = @$ 'textarea'
     $textarea.css 'height', 'auto'
     if $textarea.innerHeight() < $textarea[0].scrollHeight
-      $textarea.css 'height', $textarea[0].textarea.scrollHeight + 14
+      $textarea.css 'height', $textarea[0].scrollHeight + 14
     @analyzeText $textarea
 
   analyzeText: ($textarea) ->
