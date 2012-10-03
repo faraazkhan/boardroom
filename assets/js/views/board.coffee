@@ -3,6 +3,7 @@ class boardroom.views.Board extends Backbone.View
 
   events:
     'click .stack-name': 'changeStackName'
+    'dblclick': 'requestNewCard'
 
   initialize: (attributes) ->
     { @socket } = attributes
@@ -102,6 +103,13 @@ class boardroom.views.Board extends Backbone.View
     _.detect @cardViews, (cardView) ->
       cardView.model.id is id
 
+  requestNewCard: (event) ->
+    @socket.emit 'add',
+      boardId: @model.get('_id')
+      creator: @model.get('user_id')
+      x: parseInt event.offsetX - 10
+      y: parseInt event.offsetY - 10
+      focus: true
 
 
   # GROUPS

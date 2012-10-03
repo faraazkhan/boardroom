@@ -50,14 +50,3 @@ describe 'boardroom.views.Header', ->
         it 'blurs the input field', ->
           expect(document.activeElement.tagName).not.toMatch /input/i
 
-    describe 'when clicking the "new card" button', ->
-      beforeEach ->
-        @add = sinon.spy()
-        @socket.on 'add', @add
-
-        @header
-          .$('.create')
-          .click()
-
-      it 'emits an "add" socket event', ->
-        expect(@add.called).toBeTruthy()

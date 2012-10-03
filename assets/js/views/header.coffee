@@ -3,7 +3,6 @@ class boardroom.views.Header extends Backbone.View
 
   events:
     'keyup #name': 'updateBoardName'
-    'click button.create': 'requestNewCard'
 
   initialize: (attributes) ->
     { @socket } = attributes
@@ -18,11 +17,3 @@ class boardroom.views.Header extends Backbone.View
       @$('#name').blur()
     else
       @socket.emit 'name_changed', name: @$('#name').val()
-
-  requestNewCard: ->
-    @socket.emit 'add',
-      boardId: @model.get('_id')
-      creator: @model.get('user_id')
-      x: parseInt Math.random() * 700
-      y: parseInt Math.random() * 400
-      focus: true
