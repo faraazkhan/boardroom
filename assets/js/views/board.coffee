@@ -108,8 +108,8 @@ class boardroom.views.Board extends Backbone.View
     @socket.emit 'add',
       boardId: @model.get('_id')
       creator: @model.get('user_id')
-      x: parseInt event.offsetX - 10
-      y: parseInt event.offsetY - 10
+      x: parseInt (event.pageX - $(event.target).offset().left) - 10
+      y: parseInt (event.pageY - $(event.target).offset().top)  - 10
       focus: true
 
 
