@@ -41,6 +41,13 @@
   border: 1px solid @c0;
 }
 
+.timestamp {
+  position: absolute;
+  bottom: 5px;
+  font-size: 11px;
+  font-style: italic;
+}
+
 html {
   overflow-y: scroll;
 }
@@ -345,11 +352,13 @@ img.avatar {
         }
 
         .created {
-          position: absolute;
-          bottom: 5px;
+          .timestamp;
           right: 10px;
-          font-size: 11px;
-          font-style: italic;
+        }
+
+        .updated {
+          .timestamp;
+          right: 130px;
         }
 
         .actions {

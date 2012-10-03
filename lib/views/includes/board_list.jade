@@ -6,6 +6,11 @@ for board in boards
           input(type="submit", value="Delete")
     .creator
       img.avatar(src='/user/avatar/#{encodeURIComponent(board.creator)}', title='#{board.creator}')
+    .updated
+      | updated on&nbsp;
+      span
+        date = board.created
+        include pretty_date
     .created
       | created on&nbsp;
       span
