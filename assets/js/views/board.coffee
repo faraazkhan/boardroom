@@ -104,6 +104,7 @@ class boardroom.views.Board extends Backbone.View
       cardView.model.id is id
 
   requestNewCard: (event) ->
+    return unless event.target.className == 'board'
     @socket.emit 'add',
       boardId: @model.get('_id')
       creator: @model.get('user_id')
