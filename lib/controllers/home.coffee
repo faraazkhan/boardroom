@@ -4,9 +4,9 @@ Board = require './../models/board'
 class HomeController extends ApplicationController
   index: (request, response) =>
     user = request.session.user_id
-    Board.created_by user, (error, created) ->
+    Board.createdBy user, (error, created) ->
       return @throw500 response, error if error?
-      Board.collaborated_by user, (error, collaborated) ->
+      Board.collaboratedBy user, (error, collaborated) ->
         return @throw500 response, error if error?
         cmp = (a, b) ->
           a.name.toLowerCase().localeCompare b.name.toLowerCase()
