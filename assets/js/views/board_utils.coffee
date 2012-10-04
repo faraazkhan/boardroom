@@ -109,11 +109,12 @@ window.boardUtils = (socket, boardInfo) ->
 
     card:
       onMouseDownHelper: (x, y) ->
-        deltaX = x - @offsetLeft
-        deltaY = y - @offsetTop
-        dragged = @id
+        $card = $(@).closest '.card'
+        card = $card[0]
+        deltaX = x - card.offsetLeft
+        deltaY = y - card.offsetTop
+        dragged = card.id
         hasMoved = false
-        $card = $(@)
 
         location = ->
           card = $("##{dragged}")[0]
@@ -141,7 +142,7 @@ window.boardUtils = (socket, boardInfo) ->
 
         $(window).mousemove mousemove
         $(window).mouseup mouseup
-        boardroom.moveToTop @
+        boardroom.moveToTop card
         false
 
       onMouseDown: (e) ->
