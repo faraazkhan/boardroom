@@ -131,8 +131,8 @@ describe 'boardroom.views.Board', ->
       @add = sinon.spy()
       @socket.on 'add', @add
       dblclick = new $.Event 'dblclick'
-      dblclick.offsetX = 200
-      dblclick.offsetY = 201
+      dblclick.pageX = 200
+      dblclick.pageY = 201
       @boardView.$el.trigger dblclick
 
     it 'emits an "add" socket event', ->
@@ -140,5 +140,8 @@ describe 'boardroom.views.Board', ->
 
     it 'creates the card at the mouse location', ->
       call = @add.firstCall
-      expect(call.args[0].x).toEqual 200 - 10
-      expect(call.args[0].y).toEqual 201 - 10
+      # our test $("<div id='board'>") elements always have an offset of
+      # top: 5, left: 5
+      # for some reason - mike
+      expect(call.args[0].x).toEqual 200 - 10 - 5
+      expect(call.args[0].y).toEqual 201 - 10 - 5
