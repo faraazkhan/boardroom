@@ -9,7 +9,7 @@ for board in boards
     .updated
       | updated on&nbsp;
       span
-        date = board.created
+        date = board.lastUpdated()
         include pretty_date
     .created
       | created on&nbsp;
