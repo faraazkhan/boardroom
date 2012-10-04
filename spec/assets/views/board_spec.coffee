@@ -7,19 +7,18 @@ describe 'boardroom.views.Board', ->
         </div>
       </div>
     '''
+    @socket = new io.Socket
     @board = new boardroom.models.Board
       cards: [new boardroom.models.Card]
       users: {}
       user_id: 1
-    @socket = new io.Socket
+    @boardView = new boardroom.views.Board
+      model: @board
+      socket: @socket
 
   describe 'socket events', ->
     describe 'joined', ->
       beforeEach ->
-        @boardView = new boardroom.views.Board
-          model: @board
-          socket: @socket
-
         @user =
           user_id: 1
         @socket.emit 'joined', @user
@@ -30,13 +29,8 @@ describe 'boardroom.views.Board', ->
 
     describe 'connect', ->
       beforeEach ->
-        @boardView = new boardroom.views.Board
-          model: @board
-          socket: @socket
-
         @join = sinon.spy()
         @socket.on 'join', @join
-
         @socket.emit 'connect', {}
 
       it 'publishes that a user joined', ->
@@ -79,36 +73,25 @@ describe 'boardroom.views.Board', ->
     describe 'boardDeleted', ->
       beforeEach ->
         @redirectToBoardsList = sinon.stub boardroom.views.Board.prototype, 'redirectToBoardsList'
-        @boardView = new boardroom.views.Board
+        delete @boardView
+        new boardroom.views.Board
           model: @board
           socket: @socket
-
         @socket.emit 'boardDeleted', {}
-
-      afterEach ->
-        boardroom.views.Board.prototype.redirectToBoardsList.restore()
 
       it 'redirects to the user to the board list', ->
         expect(@redirectToBoardsList.called).toBeTruthy()
 
     describe 'add', ->
       beforeEach ->
-        @boardView = new boardroom.views.Board
-          model: @board
-          socket: @socket
         @cardCount = @boardView.$('.card').length
-
         @socket.emit 'add', {}
-
 
       it 'displays the new card', ->
         expect(@boardView.$('.card').length).toEqual @cardCount + 1
 
     describe 'move', ->
       beforeEach ->
-        @boardView = new boardroom.views.Board
-          model: @board
-          socket: @socket
         @card =
           _id: 1
           x: 100
@@ -127,9 +110,6 @@ describe 'boardroom.views.Board', ->
 
     describe 'text', ->
       beforeEach ->
-        @boardView = new boardroom.views.Board
-          model: @board
-          socket: @socket
         @card =
           _id: 1
           x: 100
@@ -145,3 +125,23 @@ describe 'boardroom.views.Board', ->
       it 'updates the card text', ->
         cardView = _.last @boardView.cardViews
         expect(cardView.$('textarea')).toHaveValue(@text)
+
+  describe 'when double clicking the board', ->
+    beforeEach ->
+      @add = sinon.spy()
+      @socket.on 'add', @add
+      dblclick = new $.Event 'dblclick'
+      dblclick.pageX = 200
+      dblclick.pageY = 201
+      @boardView.$el.trigger dblclick
+
+    it 'emits an "add" socket event', ->
+      expect(@add.called).toBeTruthy()
+
+    it 'creates the card at the mouse location', ->
+      call = @add.firstCall
+      # our test $("<div id='board'>") elements always have an offset of
+      # top: 5, left: 5
+      # for some reason - mike
+      expect(call.args[0].x).toEqual 200 - 10 - 5
+      expect(call.args[0].y).toEqual 201 - 10 - 5
