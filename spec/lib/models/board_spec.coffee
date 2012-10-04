@@ -1,26 +1,26 @@
 { Factory, Board, Card } = require "../support/model_test_support"
 
 describe 'board.Board', ->
-  describe '.created_by', ->
+  describe '.createdBy', ->
     beforeEach (done) ->
       Factory.createBundle 'typical', ->
         done()
 
     it 'finds boards i created', (done) ->
-      Board.created_by 'board-creator-1', (error, boards) ->
+      Board.createdBy 'board-creator-1', (error, boards) ->
         done error if error?
         expect(boards.length).toEqual 1
         expect(boards[0].name).toEqual 'board1'
         expect(boards[0].cards.length).toEqual 1
         done()
 
-  describe '.collaborated_by', ->
+  describe '.collaboratedBy', ->
     beforeEach (done) ->
       Factory.createBundle 'typical', ->
         done()
 
     it 'finds boards i collaborated on', (done) ->
-      Board.collaborated_by 'board-creator-1', (error, boards) ->
+      Board.collaboratedBy 'board-creator-1', (error, boards) ->
         done error if error?
         expect(boards.length).toEqual 2
         names = boards.map (board) ->

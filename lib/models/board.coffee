@@ -17,10 +17,10 @@ BoardSchema.statics =
   findById: (id, callback) ->
     @findOne { _id: id }, @_decorate(callback)
 
-  created_by: (user, callback) ->
+  createdBy: (user, callback) ->
     @find { creator: user }, null, { sort: 'name' }, @_decorate(callback)
 
-  collaborated_by: (user, callback) ->
+  collaboratedBy: (user, callback) ->
     Card.find { authors: user }, (error, cards) =>
       boardIds = cards.map (card) ->
         card.boardId
