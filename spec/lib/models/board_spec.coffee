@@ -29,6 +29,27 @@ describe 'board.Board', ->
         expect(names[1]).toEqual 'board3'
         done()
 
+  describe '#lastUpdated', ->
+    board = card = null
+    beforeEach (done) ->
+      Factory.create 'board', (defaultBoard) ->
+        board = defaultBoard
+        Factory.create 'card', boardId: board.id, (defaultCard) ->
+          card = defaultCard
+          done()
+
+    it 'returns last updated of cards', (done) ->
+      card.save (error, card) ->
+        Board.findById board.id, (error, board) ->
+          expect(board.lastUpdated().getTime()).toEqual card.updated.getTime()
+          done()
+
+    it 'returns last updated of board', (done) ->
+      board.save (error, board) ->
+        Board.findById board.id, (error, board) ->
+          expect(board.lastUpdated().getTime()).toEqual board.updated.getTime()
+          done()
+
   describe '#addGroup', ->
     board = null
     beforeEach (done) ->
