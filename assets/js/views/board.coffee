@@ -85,6 +85,7 @@ class boardroom.views.Board extends Backbone.View
       model: card
       socket: @socket
     @$el.append cardView.render().el
+    cardView.adjustTextarea()
     cardView.bringForward()
     @cardViews.push cardView
 

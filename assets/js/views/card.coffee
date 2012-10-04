@@ -148,7 +148,6 @@ class boardroom.views.Card extends Backbone.View
         top: @model.get('y')
     @uncolor()
     @setColor @model.get('colorIndex') || 2
-    @adjustTextarea()
     if @model.has('authors')
       for author in @model.get('authors')
         @addAuthor author
