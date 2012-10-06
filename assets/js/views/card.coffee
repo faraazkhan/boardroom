@@ -20,16 +20,32 @@ class boardroom.views.Card extends Backbone.View
     'mousedown': 'updatePosition'
     'click .color': 'changeColor'
     'keyup textarea': 'changeText'
-    'change textarea': 'commitText'
     'click .delete': 'delete'
 
   initialize: (attributes) ->
     { @socket } = attributes
-
     _.extend @, boardUtils @socket, @model
-
-    @socket.on 'color', @updateColor
     @socket.on 'card.delete', @removeIfDeleted
+    @cardLock = new boardroom.models.CardLock
+    @cardLock.poll (id) =>
+      @hideNotice()
+      @enableEditing()
+
+  update: (data) =>
+    if data.x?
+      @moveTo x: data.x, y: data.y
+      @showNotice user: data.author, message: data.author
+      @cardLock.lock data._id, { user_id: data.author, updated: new Date().getTime(), move: true }
+      @bringForward()
+    if data.text?
+      @disableEditing data.text
+      @showNotice user: data.author, message: "#{data.author} is typing..."
+      @cardLock.lock data._id, { user_id: data.author, updated: new Date().getTime() }
+      @addAuthor data.author
+      @adjustTextarea()
+      @bringForward()
+    if data.colorIndex?
+      @setColor data.colorIndex
 
   updatePosition: (event) ->
     isColorSelection = $(event.target).is '.color'
@@ -44,22 +60,15 @@ class boardroom.views.Card extends Backbone.View
     data =
       _id: @model.id
       colorIndex: color
-    @socket.emit 'color', data
-    @updateColor data
+    @socket.emit 'card.update', data
+    @setColor data.colorIndex
 
   setColor: (color) ->
+    @$el.removeClassMatching /color-\d+/g
     @$el.addClass "color-#{color}"
 
-  uncolor: ->
-    @$el.removeClassMatching /color-\d+/g
-
-  updateColor: (data) =>
-    if data._id is @model.id
-      @uncolor()
-      @setColor data.colorIndex
-
   changeText: ->
-    @socket.emit 'text'
+    @socket.emit 'card.update'
       _id: @model.id
       text: @$('textarea').val()
       author: @model.get('board').get('user_id')
@@ -83,15 +92,6 @@ class boardroom.views.Card extends Backbone.View
     $card.removeClass 'i-wish i-like'
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
-
-  commitText: ->
-    @socket.emit 'text_commit',
-      _id: @model.id
-      text: @$('textarea').val()
-      board_name: @model.get('board').get('name')
-      author: @model.get('board').get('user_id')
-    if groupId = @$el.data('group-id')
-      @group.layOut groupId
 
   delete: ->
     @socket.emit 'card.delete', @model.id
@@ -144,7 +144,6 @@ class boardroom.views.Card extends Backbone.View
       .css
         left: @model.get('x')
         top: @model.get('y')
-    @uncolor()
     @setColor @model.get('colorIndex') || 2
     if @model.has('authors')
       for author in @model.get('authors')

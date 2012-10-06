@@ -21,8 +21,7 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'reconnect', @hideDisconnectedStatus
     @socket.on 'boardDeleted', @redirectToBoardsList
     @socket.on 'card.create', @displayNewCard
-    @socket.on 'move', @updateCardPosition
-    @socket.on 'text', @updateCardText
+    @socket.on 'card.update', @updateCard
 
   initializeCards: ->
     @cardViews = []
@@ -54,15 +53,13 @@ class boardroom.views.Board extends Backbone.View
     alert 'This board has been deleted by its owner.'
     window.location = '/boards'
 
-  updateCardPosition: (data) =>
+  findCardView: (id) ->
+    _.detect @cardViews, (cardView) ->
+      cardView.model.id is id
+
+  updateCard: (data) =>
     cardView = @findCardView data._id
-    cardView.moveTo x: data.x, y: data.y
-    cardView.showNotice user: data.moved_by, message: data.moved_by
-    @cardLock.lock data._id,
-      user_id: data.moved_by
-      updated: new Date().getTime()
-      move: true
-    cardView.bringForward()
+    cardView.update data
 
   displayNewCard: (data) =>
     card = new boardroom.models.Card _.extend(data, board: @model)
@@ -73,21 +70,6 @@ class boardroom.views.Board extends Backbone.View
     cardView.adjustTextarea()
     cardView.bringForward()
     @cardViews.push cardView
-
-  updateCardText: (data) =>
-    cardView = @findCardView data._id
-    cardView.disableEditing data.text
-    cardView.showNotice user: data.author, message: "#{data.author} is typing..."
-    @cardLock.lock data._id,
-      user_id: data.author
-      updated: new Date().getTime()
-    cardView.addAuthor data.author
-    cardView.adjustTextarea()
-    cardView.bringForward()
-
-  findCardView: (id) ->
-    _.detect @cardViews, (cardView) ->
-      cardView.model.id is id
 
   requestNewCard: (event) ->
     return unless event.target.className == 'board'

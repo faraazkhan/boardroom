@@ -20,20 +20,14 @@ class Sockets
         for Handler in handlers
           do (Handler) ->
             handler = new Handler()
-            handler.namespace = boardNamespace
             handler.socket = socket
             handler.registerAll()
 
 
 
-        @rebroadcast socket, ['move', 'text', 'color']
         socket.on 'join', (user) =>
           @users[user.user_id] = user
           boardNamespace.emit 'joined', user
-
-        socket.on 'move_commit', @updateCard
-        socket.on 'text_commit', @updateCard
-        socket.on 'color', @updateCard
 
         socket.on 'name_changed', (data) =>
           Board.findById boardId, (error, board) =>
@@ -42,16 +36,6 @@ class Sockets
               boardNamespace.emit 'name_changed', board.name
 
     @boards[boardId] = @users
-
-  @rebroadcast: (socket, events) ->
-    events.forEach (event) ->
-      socket.on event, (data) ->
-        socket.broadcast.emit(event, data)
-
-  @updateCard: (attributes) =>
-    Card.findById attributes._id, (error, card) =>
-      throw error if error?
-      card.updateAttributes attributes, ->
 
   @start: (app) ->
     @io = sockets.listen app

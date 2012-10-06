@@ -32,7 +32,7 @@ CardSchema.methods =
       for author in attributes.authors
         @authors.push author unless author in @authors
     @save (error, card) ->
-      callback card
+      callback error, card
 
 Card = db.model 'Card', CardSchema
 

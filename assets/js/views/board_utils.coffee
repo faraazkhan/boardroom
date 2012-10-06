@@ -20,24 +20,18 @@ window.boardUtils = (socket, boardInfo) ->
           _id: dragged
           x: card.offsetLeft
           y: card.offsetTop
-          board_name: window.board.name
           author: window.board.user_id
-          moved_by: window.board.user_id
-
-        onMousePause = $('.card').onMousePause(boardroom.grouping, 400)
 
         mousemove = (e) ->
           hasMoved = true
           $("##{dragged}").css 'top', e.clientY - deltaY
           $("##{dragged}").css 'left', e.clientX - deltaX
-          socket.emit 'move', location()
+          socket.emit 'card.update', location()
           false
 
         mouseup = ->
-          onMousePause.off()
           $(window).unbind 'mousemove', mousemove
           $(window).unbind 'mouseup', mouseup
-          socket.emit 'move_commit', location()
 
         $(window).mousemove mousemove
         $(window).mouseup mouseup
