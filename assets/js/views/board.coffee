@@ -26,7 +26,7 @@ class boardroom.views.Board extends Backbone.View
   displayStatus: (status) ->
     @$('#connection-status').html status
     modal = @$('#connection-status-modal')
-    if status then model.show() else modal.hide()
+    if status then modal.show() else modal.hide()
 
   findCardView: (id) ->
     _.detect @cardViews, (cardView) ->
