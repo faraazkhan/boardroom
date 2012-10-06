@@ -2,7 +2,6 @@ class boardroom.views.Board extends Backbone.View
   el: '.board'
 
   events:
-    'click .stack-name': 'changeStackName'
     'dblclick': 'requestNewCard'
 
   initialize: (attributes) ->
@@ -12,7 +11,6 @@ class boardroom.views.Board extends Backbone.View
 
     @initializeSocketEventHandlers()
     @initializeCards()
-    @initializeGroups()
     @initializeCardLockPoller()
 
   initializeSocketEventHandlers: ->
@@ -25,24 +23,11 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'add', @displayNewCard
     @socket.on 'move', @updateCardPosition
     @socket.on 'text', @updateCardText
-    @socket.on 'removedCard', @removeCardFromGroup
-    @socket.on 'createdOrUpdatedGroup', @group.onCreatedOrUpdated
-    @socket.on 'group', @onGroup
 
   initializeCards: ->
     @cardViews = []
     for card in @model.get('cards')
       @displayNewCard card
-
-  initializeGroups: ->
-    for groupId, group of @model.get('groups')
-      for cardId in group.cardIds
-        cardView = @findCardView cardId
-        cardView.$el.data 'group-id', groupId
-        cardView.$el.off 'mousedown'
-        cardView.followDrag()
-
-      @group.onCreatedOrUpdated $.extend(group, { _id: groupId })
 
   initializeCardLockPoller: ->
     @cardLock = new boardroom.models.CardLock
@@ -112,31 +97,3 @@ class boardroom.views.Board extends Backbone.View
       x: parseInt (event.pageX - $(event.target).offset().left) - 10
       y: parseInt (event.pageY - $(event.target).offset().top)  - 10
       focus: true
-
-
-  # GROUPS
-  removeCardFromGroup: (data) =>
-    @group.remove $("##{data.cardId}")
-
-  changeStackName: (event) ->
-    $stackElement = $ event.target
-    offset = $stackElement.offset()
-    offset.left -= 1
-
-    $input = $('<input type="text" class="stack-name-edit">')
-      .val($stackElement.text())
-    $input
-      .appendTo($stackElement.parent())
-      .offset(offset)
-      .focus()
-    $stackElement.remove()
-
-    $input.on 'blur change', =>
-      $stackElement.text($input.val())
-      $stackElement.appendTo($input.parent())
-      $input.remove()
-      targetGroupId = $stackElement.attr('id').split('-')[0]
-      @socket.emit 'updateGroup',
-        boardName: board.name
-        _id: targetGroupId
-        name: $input.val()

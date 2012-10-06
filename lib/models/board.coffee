@@ -4,7 +4,6 @@ Card = require "#{__dirname}/card"
 BoardSchema = new mongoose.Schema
   name: String
   creator: String
-  groups: Array
   created: Date
   updated: Date
 
@@ -55,12 +54,6 @@ BoardSchema.methods =
     up = @updated
     ( up = if up.getTime() > card.updated.getTime() then up else card.updated ) for card in @cards
     up
-
-  addGroup: (attributes, callback) ->
-    @_id = null
-    @groups.push attributes
-    @save (error) ->
-      callback attributes
 
   destroy: (callback) ->
     @remove (error) =>

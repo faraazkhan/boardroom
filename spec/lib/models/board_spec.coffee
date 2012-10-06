@@ -50,23 +50,6 @@ describe 'board.Board', ->
           expect(board.lastUpdated().getTime()).toEqual board.updated.getTime()
           done()
 
-  describe '#addGroup', ->
-    board = null
-    beforeEach (done) ->
-      Factory.create 'board', (defaultBoard) ->
-        board = defaultBoard
-        done()
-
-    it 'adds a new group to its groups', (done) ->
-      attributes =
-        name: 'group-1'
-      board.addGroup attributes, ->
-        expect(board._id).toBeNull()
-        expect(board.groups.length).toEqual 1
-        [group] = board.groups
-        expect(group.name).toEqual(attributes.name)
-        done()
-
   describe '#destroy', ->
     board = null
     beforeEach (done) ->

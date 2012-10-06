@@ -37,31 +37,11 @@ class Sockets
         socket.on 'text_commit', @updateCard
         socket.on 'color', @updateCard
 
-        socket.on 'removeCard', (data) ->
-          if data.cardIds.length is 0
-            group.removeGroup data.boardName, data._id
-          else
-            group.updateGroup data.boardName, data._id, data.cardIds
-          socket.broadcast.emit 'removedCard', data
-
         socket.on 'name_changed', (data) =>
           Board.findById boardId, (error, board) =>
             board.name = data.name
             board.save (error) =>
               boardNamespace.emit 'name_changed', board.name
-
-        socket.on 'createGroup', (data) ->
-          Board.findById data.boardId, (error, board) ->
-            attributes =
-              name: 'New Stack'
-              cardIds: data.cardIds
-            board.addGroup attributes, (group) ->
-              socket.broadcast.emit 'createdOrUpdatedGroup', group
-              socket.emit 'createdOrUpdatedGroup', group
-
-        socket.on 'updateGroup', (data) ->
-          group.updateGroup data.boardName, data._id, data.name, data.cardIds
-          socket.broadcast.emit 'createdOrUpdatedGroup', data
 
     @boards[boardId] = @users
 
