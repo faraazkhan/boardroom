@@ -23,7 +23,6 @@ class BoardsController extends ApplicationController
           _id: board.id
           name: board.name
           cards: cards
-          groups: board?.groups || {}
           users: Sockets.boards[board.name] || {}
           user_id: request.session.user_id
         response.render 'board',
