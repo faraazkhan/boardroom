@@ -17,6 +17,10 @@ class Handler
       handler event, data
 
   handleCreate: (event, data) =>
+    model = new @modelClass data
+    model.save (error) =>
+      throw error if error?
+      @namespace.emit event, model
 
   handleUpdate: (event, data) =>
 

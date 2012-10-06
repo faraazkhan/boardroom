@@ -20,7 +20,7 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'reconnecting', @displayReconnectingStatus
     @socket.on 'reconnect', @hideDisconnectedStatus
     @socket.on 'boardDeleted', @redirectToBoardsList
-    @socket.on 'add', @displayNewCard
+    @socket.on 'card.create', @displayNewCard
     @socket.on 'move', @updateCardPosition
     @socket.on 'text', @updateCardText
 
@@ -91,7 +91,7 @@ class boardroom.views.Board extends Backbone.View
 
   requestNewCard: (event) ->
     return unless event.target.className == 'board'
-    @socket.emit 'add',
+    @socket.emit 'card.create',
       boardId: @model.get('_id')
       creator: @model.get('user_id')
       x: parseInt (event.pageX - $(event.target).offset().left) - 10

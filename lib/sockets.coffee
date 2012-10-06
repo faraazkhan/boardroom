@@ -31,12 +31,6 @@ class Sockets
           @users[user.user_id] = user
           boardNamespace.emit 'joined', user
 
-        socket.on 'add', (data) =>
-          card = new Card data
-          card.save (error) =>
-            throw error if error?
-            boardNamespace.emit 'add', card
-
         socket.on 'move_commit', @updateCard
         socket.on 'text_commit', @updateCard
         socket.on 'color', @updateCard
