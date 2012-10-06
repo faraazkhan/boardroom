@@ -32,8 +32,8 @@ class boardroom.views.Card extends Backbone.View
     @socket.on 'delete', @removeIfDeleted
 
   updatePosition: (event) ->
-    isColorSelection = $(event.target).is 'span'
-    isDeletion = $(event.target).is 'img'
+    isColorSelection = $(event.target).is '.color'
+    isDeletion = $(event.target).is '.delete'
     unless isColorSelection or isDeletion
       @card.onMouseDown event
 
