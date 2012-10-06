@@ -1,6 +1,7 @@
 sockets = require 'socket.io'
 Board = require './models/board'
 Card = require './models/card'
+CardHandler = require './handlers/card_handler'
 
 class Sockets
   @boards: {}
@@ -10,11 +11,21 @@ class Sockets
       @createBoard boardId
 
   @createBoard: (boardId) ->
+    handlers = [ CardHandler ]
     @users = {}
 
     boardNamespace = @io
       .of("/boards/#{boardId}")
       .on 'connection', (socket) =>
+        for Handler in handlers
+          do (Handler) ->
+            handler = new Handler()
+            handler.namespace = boardNamespace
+            handler.socket = socket
+            handler.registerAll()
+
+
+
         @rebroadcast socket, ['move', 'text', 'color']
         socket.on 'join', (user) =>
           @users[user.user_id] = user
@@ -25,13 +36,6 @@ class Sockets
           card.save (error) =>
             throw error if error?
             boardNamespace.emit 'add', card
-
-        socket.on 'delete', (data) =>
-          Card.findById data._id, (error, card) =>
-            throw error if error
-            card.remove (error) =>
-              throw error if error
-              boardNamespace.emit 'delete', card
 
         socket.on 'move_commit', @updateCard
         socket.on 'text_commit', @updateCard

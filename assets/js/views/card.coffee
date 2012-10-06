@@ -29,7 +29,7 @@ class boardroom.views.Card extends Backbone.View
     _.extend @, boardUtils @socket, @model
 
     @socket.on 'color', @updateColor
-    @socket.on 'delete', @removeIfDeleted
+    @socket.on 'card.delete', @removeIfDeleted
 
   updatePosition: (event) ->
     isColorSelection = $(event.target).is '.color'
@@ -94,12 +94,10 @@ class boardroom.views.Card extends Backbone.View
       @group.layOut groupId
 
   delete: ->
-    @socket.emit 'delete'
-      _id: @model.id
-      author: @model.get('board').get('user_id')
+    @socket.emit 'card.delete', @model.id
 
-  removeIfDeleted: (data) =>
-    if data._id is @model.id
+  removeIfDeleted: (id) =>
+    if id is @model.id
       @remove()
 
   showNotice: ({ user, message }) =>
