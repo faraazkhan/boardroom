@@ -70,18 +70,6 @@ describe 'boardroom.views.Board', ->
         expect(@boardView.$('#connection-status')).toBeEmpty()
         expect(@boardView.$('#connection-status-modal')).toBeHidden()
 
-    describe 'boardDeleted', ->
-      beforeEach ->
-        @redirectToBoardsList = sinon.stub boardroom.views.Board.prototype, 'redirectToBoardsList'
-        delete @boardView
-        new boardroom.views.Board
-          model: @board
-          socket: @socket
-        @socket.emit 'boardDeleted', {}
-
-      it 'redirects to the user to the board list', ->
-        expect(@redirectToBoardsList.called).toBeTruthy()
-
     describe 'add', ->
       beforeEach ->
         @cardCount = @boardView.$('.card').length

@@ -64,6 +64,7 @@ class boardroom.views.Card extends Backbone.View
     @setColor data.colorIndex
 
   setColor: (color) ->
+    color = 2 if color == undefined
     @$el.removeClassMatching /color-\d+/g
     @$el.addClass "color-#{color}"
 
@@ -144,7 +145,7 @@ class boardroom.views.Card extends Backbone.View
       .css
         left: @model.get('x')
         top: @model.get('y')
-    @setColor @model.get('colorIndex') || 2
+    @setColor @model.get('colorIndex')
     if @model.has('authors')
       for author in @model.get('authors')
         @addAuthor author
