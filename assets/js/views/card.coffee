@@ -130,8 +130,6 @@ class boardroom.views.Card extends Backbone.View
     if @model.has('authors')
       for author in @model.get('authors')
         @addAuthor author
-    if @model.has('groupId')
-      @$el.data 'group-id', @model.get('groupId')
     if @model.get('focus')
       @$('textarea').focus()
     @
