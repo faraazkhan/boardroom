@@ -25,7 +25,6 @@ class boardroom.views.Card extends Backbone.View
   initialize: (attributes) ->
     { @socket } = attributes
     _.extend @, boardUtils @socket, @model
-    @socket.on 'card.delete', @removeIfDeleted
     @cardLock = new boardroom.models.CardLock
     @cardLock.poll =>
       @hideNotice()
@@ -96,10 +95,6 @@ class boardroom.views.Card extends Backbone.View
 
   delete: ->
     @socket.emit 'card.delete', @model.id
-
-  removeIfDeleted: (id) =>
-    if id is @model.id
-      @remove()
 
   showNotice: ({ user, message }) =>
     if user?

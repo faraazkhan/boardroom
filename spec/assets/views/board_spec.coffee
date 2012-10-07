@@ -77,6 +77,16 @@ describe 'boardroom.views.Board', ->
       it 'displays the new card', ->
         expect(@boardView.$('.card').length).toEqual @cardCount + 1
 
+    describe 'card.delete', ->
+      beforeEach ->
+        @card = { _id: 1 }
+        @cardCount = @boardView.$('.card').length
+        @socket.emit 'card.create', @card
+        @socket.emit 'card.delete', @card._id
+
+      it 'removes the card', ->
+        expect(@boardView.$('.card').length).toEqual @cardCount
+
     describe 'card.update (move)', ->
       beforeEach ->
         @card = { _id: 1, x: 100, y: 200 }

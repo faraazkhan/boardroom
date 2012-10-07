@@ -3,24 +3,6 @@ describe 'boardroom.views.Card', ->
     beforeEach ->
       @socket = new io.Socket
 
-
-    describe 'card.delete', ->
-      beforeEach ->
-        setFixtures '''
-          <div class="board"></div>
-        '''
-        @card = new boardroom.models.Card
-          id: 1
-        @cardView = new boardroom.views.Card
-          model: @card
-          socket: @socket
-        $('.board').append @cardView.render().el
-
-        @socket.emit 'card.delete', @card.id
-
-      it 'removes itself', ->
-        expect($('.board')).not.toContain('.card')
-
   describe 'DOM events', ->
     describe 'moving the card', ->
       beforeEach ->

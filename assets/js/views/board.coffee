@@ -18,6 +18,7 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'reconnect', @onReconnect
     @socket.on 'card.create', @onCardCreate
     @socket.on 'card.update', @onCardUpdate
+    @socket.on 'card.delete', @onCardDelete
 
   initializeCards: ->
     for card in @model.get('cards')
@@ -59,6 +60,10 @@ class boardroom.views.Board extends Backbone.View
 
   onCardCreate: (data) =>
     @displayNewCard data
+
+  onCardDelete: (id) =>
+    cardView = @findCardView id
+    cardView.remove()
 
   onConnect: =>
     @socket.emit 'join', user_id: @model.get('user_id')
