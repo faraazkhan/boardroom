@@ -27,7 +27,7 @@ class boardroom.views.Card extends Backbone.View
     _.extend @, boardUtils @socket, @model
     @socket.on 'card.delete', @removeIfDeleted
     @cardLock = new boardroom.models.CardLock
-    @cardLock.poll (id) =>
+    @cardLock.poll =>
       @hideNotice()
       @enableEditing()
 
@@ -35,12 +35,12 @@ class boardroom.views.Card extends Backbone.View
     if data.x?
       @moveTo x: data.x, y: data.y
       @showNotice user: data.author, message: data.author
-      @cardLock.lock data._id, { user_id: data.author, updated: new Date().getTime(), move: true }
+      @cardLock.lock 500
       @bringForward()
     if data.text?
       @disableEditing data.text
       @showNotice user: data.author, message: "#{data.author} is typing..."
-      @cardLock.lock data._id, { user_id: data.author, updated: new Date().getTime() }
+      @cardLock.lock()
       @addAuthor data.author
       @adjustTextarea()
       @bringForward()

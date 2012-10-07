@@ -2,13 +2,10 @@ describe 'boardroom.models.CardLock', ->
   describe '#lock', ->
     beforeEach ->
       @cardLock = new boardroom.models.CardLock
-
-      @id = 'id'
-      @data = 'data'
-      @cardLock.lock @id, @data
+      @cardLock.lock()
 
     it 'locks the item', ->
-      expect(@cardLock.locks[@id]).toEqual @data
+      expect(@cardLock.lock_data).not.toBeUndefined()
 
   describe '#poll', ->
     beforeEach ->
@@ -17,14 +14,10 @@ describe 'boardroom.models.CardLock', ->
     afterEach ->
       @clock.restore()
 
-    describe 'when a card move lock expires', ->
+    describe 'when a card lock expires', ->
       beforeEach ->
-        @id = 'id'
-        @data =
-          move: true
-          updated: new Date().getTime()
         @cardLock = new boardroom.models.CardLock
-        @cardLock.lock @id, @data
+        @cardLock.lock 500
 
         @expirationCallback = sinon.spy()
         @cardLock.poll @expirationCallback
@@ -32,23 +25,7 @@ describe 'boardroom.models.CardLock', ->
         @clock.tick(600)
 
       it 'unlocks the lock', ->
-        expect(@cardLock.locks[@id]).toBeUndefined()
+        expect(@cardLock.lock_data).toBeUndefined()
 
       it 'calls the given expiration callback', ->
         expect(@expirationCallback.called).toBeTruthy()
-
-    describe 'when a card edit lock expires', ->
-      beforeEach ->
-        @id = 'id'
-        @data =
-          updated: new Date().getTime()
-        @cardLock = new boardroom.models.CardLock
-        @cardLock.lock @id, @data
-
-        @expirationCallback = sinon.spy()
-        @cardLock.poll @expirationCallback
-
-        @clock.tick(6000)
-
-      it 'unlocks the lock', ->
-        expect(@cardLock.locks[@id]).toBeUndefined()

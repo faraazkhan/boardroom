@@ -3,24 +3,8 @@ describe 'boardroom.views.Card', ->
     beforeEach ->
       @socket = new io.Socket
 
-    describe 'color', ->
-      beforeEach ->
-        @card = new boardroom.models.Card
-          id: 1
-        @cardView = new boardroom.views.Card
-          model: @card
-          socket: @socket
-        @cardView.render()
 
-        @color =
-          _id: @card.id
-          colorIndex: 0
-        @socket.emit 'color', @color
-
-      it 'updates the card color', ->
-        expect(@cardView.$el).toHaveClass "color-#{@color.colorIndex}"
-
-    describe 'delete', ->
+    describe 'card.delete', ->
       beforeEach ->
         setFixtures '''
           <div class="board"></div>
@@ -32,9 +16,7 @@ describe 'boardroom.views.Card', ->
           socket: @socket
         $('.board').append @cardView.render().el
 
-        data =
-          _id: @card.id
-        @socket.emit 'delete', data
+        @socket.emit 'card.delete', @card.id
 
       it 'removes itself', ->
         expect($('.board')).not.toContain('.card')
@@ -67,7 +49,7 @@ describe 'boardroom.views.Card', ->
           socket: @socket
         @cardView.render()
         @color = sinon.spy()
-        @socket.on 'color', @color
+        @socket.on 'card.update', @color
 
         @colorIndex = '3'
         @cardView
@@ -97,7 +79,7 @@ describe 'boardroom.views.Card', ->
           socket: @socket
         @cardView.render()
         @text = sinon.spy()
-        @socket.on 'text', @text
+        @socket.on 'card.update', @text
         @authorCount = @card.get('authors').length
 
         event = $.Event 'keyup'
@@ -115,35 +97,6 @@ describe 'boardroom.views.Card', ->
         expect(args.text).toEqual ''
         expect(args.author).toEqual @board.get('user_id')
 
-    describe 'finish entering text', ->
-      beforeEach ->
-        @socket = new io.Socket
-        @board = new boardroom.models.Board
-          id: 1
-          name: 'name-1'
-          user_id: 1
-        @card = new boardroom.models.Card
-          id: 2
-          board: @board
-        @cardView = new boardroom.views.Card
-          model: @card
-          socket: @socket
-        @cardView.render()
-        @textCommit = sinon.spy()
-        @socket.on 'text_commit', @textCommit
-
-        @cardView
-          .$('textarea')
-          .change()
-
-      it 'emits a "text commit" socket event', ->
-        expect(@textCommit.called).toBeTruthy()
-        [args] = @textCommit.lastCall.args
-        expect(args._id).toEqual @card.id
-        expect(args.text).toEqual ''
-        expect(args.board_name).toEqual @board.get('name')
-        expect(args.author).toEqual @board.get('user_id')
-
     describe 'deleting the card', ->
       beforeEach ->
         @socket = new io.Socket
@@ -157,7 +110,7 @@ describe 'boardroom.views.Card', ->
           socket: @socket
         @cardView.render()
         @delete = sinon.spy()
-        @socket.on 'delete', @delete
+        @socket.on 'card.delete', @delete
 
         @cardView
           .$('.delete')
@@ -166,5 +119,4 @@ describe 'boardroom.views.Card', ->
       it 'emits a "delete" socket event', ->
         expect(@delete.called).toBeTruthy()
         [args] = @delete.lastCall.args
-        expect(args._id).toEqual @card.id
-        expect(args.author).toEqual @board.get('user_id')
+        expect(args).toEqual @card.id
