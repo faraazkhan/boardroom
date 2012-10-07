@@ -2,18 +2,18 @@ class boardroom.views.Header extends Backbone.View
   el: '#header'
 
   events:
-    'keyup #name': 'updateBoardName'
+    'keyup #name': 'changeBoardName'
 
   initialize: (attributes) ->
     { @socket } = attributes
-    @socket.on 'name_changed', @externalNameUpdate
+    @socket.on 'board.update', @onBoardUpdate
 
-  externalNameUpdate: (name) =>
-    @$('#name').val name
-
-  updateBoardName: (event) ->
+  changeBoardName: (event) ->
     isEnter = event.keyCode is 13
     if isEnter
       @$('#name').blur()
     else
-      @socket.emit 'name_changed', name: @$('#name').val()
+      @socket.emit 'board.update', _id: @model.get('_id'), name: @$('#name').val()
+
+  onBoardUpdate: (data) =>
+    @$('#name').val data.name

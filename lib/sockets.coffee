@@ -2,6 +2,7 @@ sockets = require 'socket.io'
 Board = require './models/board'
 Card = require './models/card'
 CardHandler = require './handlers/card_handler'
+BoardHandler = require './handlers/board_handler'
 
 class Sockets
   @boards: {}
@@ -11,7 +12,7 @@ class Sockets
       @createBoard boardId
 
   @createBoard: (boardId) ->
-    handlers = [ CardHandler ]
+    handlers = [ CardHandler, BoardHandler ]
     @users = {}
 
     boardNamespace = @io
@@ -23,17 +24,9 @@ class Sockets
             handler.socket = socket
             handler.registerAll()
 
-
-
         socket.on 'join', (user) =>
           @users[user.user_id] = user
           boardNamespace.emit 'joined', user
-
-        socket.on 'name_changed', (data) =>
-          Board.findById boardId, (error, board) =>
-            board.name = data.name
-            board.save (error) =>
-              boardNamespace.emit 'name_changed', board.name
 
     @boards[boardId] = @users
 

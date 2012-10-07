@@ -15,7 +15,7 @@ describe 'boardroom.views.Header', ->
     describe "when the board's name changes", ->
       beforeEach ->
         @name = 'name'
-        @socket.emit 'name_changed', @name
+        @socket.emit 'board.update', _id: 1, name: @name
 
       it 'updates its name', ->
         expect(@header.$('#name')).toHaveValue @name
@@ -25,7 +25,7 @@ describe 'boardroom.views.Header', ->
       describe 'and the user is still name', ->
         beforeEach ->
           @nameChanged = sinon.spy()
-          @socket.on 'name_changed', @nameChanged
+          @socket.on 'board.update', @nameChanged
 
           keyup = $.Event 'keyup'
           keyup.keyCode = 50

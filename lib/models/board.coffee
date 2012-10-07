@@ -63,6 +63,12 @@ BoardSchema.methods =
         Card.findByBoardId(@id).remove (error) ->
           callback(error)
 
+  updateAttributes: (attributes, callback) ->
+    for attribute in ['name'] when attributes[attribute]?
+      @[attribute] = attributes[attribute]
+    @save (error, card) ->
+      callback error, card
+
 Board = db.model 'Board', BoardSchema
 
 module.exports = Board
