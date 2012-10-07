@@ -1,6 +1,4 @@
 sockets = require 'socket.io'
-Board = require './models/board'
-Card = require './models/card'
 CardHandler = require './handlers/card_handler'
 BoardHandler = require './handlers/board_handler'
 
