@@ -5,7 +5,8 @@ $.fn.followDrag = (opts) ->
     otherFollowers : []
     onMouseMove : () ->
     onMouseUp : () ->
-    isTarget: (target) -> true
+    onMouseDown : () ->
+    isTarget : (target) -> true
     position : (dx, dy, x, y) -> left: x, top: y
   , opts
 
@@ -32,14 +33,15 @@ $.fn.followDrag = (opts) ->
       lastX = e.pageX
       lastY = e.pageY
 
-      settings.onMouseMove()
-
+      settings.onMouseMove e
       false
 
     $(window).on 'mouseup.followDrag', (e) ->
       $(window).off 'mousemove.followDrag'
-      settings.onMouseUp()
+      settings.onMouseUp e
+      false
 
+    settings.onMouseDown e
     false
 
   $this

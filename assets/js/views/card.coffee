@@ -23,7 +23,6 @@ class boardroom.views.Card extends Backbone.View
 
   initialize: (attributes) ->
     { @socket } = attributes
-    _.extend @, boardUtils @socket, @model
     @followDrag()
     @cardLock = new boardroom.models.CardLock
     @cardLock.poll =>
@@ -35,14 +34,14 @@ class boardroom.views.Card extends Backbone.View
       @moveTo x: data.x, y: data.y
       @showNotice user: data.author, message: data.author
       @cardLock.lock 500
-      @bringForward()
+    if data.z?
+      @$el.css 'z-index', data.z
     if data.text?
       @disableEditing data.text
       @showNotice user: data.author, message: "#{data.author} is typing..."
       @cardLock.lock()
       @addAuthor data.author
       @adjustTextarea()
-      @bringForward()
     if data.colorIndex?
       @setColor data.colorIndex
 
@@ -51,14 +50,16 @@ class boardroom.views.Card extends Backbone.View
     author = @model.get('board').get('user_id')
     @setColor colorIndex
     @addAuthor author
-    @socket.emit 'card.update', { _id: @model.id, colorIndex, author }
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
 
   changeText: ->
     text = @$('textarea').val()
     author = @model.get('board').get('user_id')
     @addAuthor author
     @adjustTextarea()
-    @socket.emit 'card.update', { _id: @model.id, text, author }
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, text, z, author }
 
   delete: ->
     @socket.emit 'card.delete', @model.id
@@ -103,16 +104,32 @@ class boardroom.views.Card extends Backbone.View
   hideNotice: ->
     @$('.notice').fadeOut 100
 
+  zIndex: ->
+    parseInt(@$el.css('z-index')) || 0
+
   bringForward: ->
-    @moveToTop @$el
+    siblings = @$el.siblings '.card'
+    return if siblings.length == 0
+
+    allZs = _.map siblings, (sibling) ->
+      parseInt($(sibling).css('z-index')) || 0
+    maxZ = _.max allZs
+    return if @zIndex() > maxZ
+
+    newZ = maxZ + 1
+    @$el.css 'z-index', newZ
+    newZ
 
   followDrag: ->
     @$el.followDrag
       isTarget: (target) ->
         return false if $(target).is 'textarea'
-        return false if $(target).is 'color'
-        return false if $(target).is 'delete'
+        return false if $(target).is '.color'
+        return false if $(target).is '.delete'
         true
+      onMouseDown: =>
+        z = @bringForward()
+        @socket.emit 'card.update', { _id: @model.id, z }
       onMouseMove: =>
         @socket.emit 'card.update',
           _id: @model.id
@@ -126,6 +143,7 @@ class boardroom.views.Card extends Backbone.View
       .css
         left: @model.get('x')
         top: @model.get('y')
+        'z-index': @model.get('z')
     @setColor @model.get('colorIndex')
     if @model.has('authors')
       for author in @model.get('authors')

@@ -35,11 +35,13 @@ class boardroom.views.Board extends Backbone.View
 
   requestNewCard: (event) ->
     return unless event.target.className == 'board'
+    maxZ = _.max(@cardViews, (view) -> view.zIndex()).zIndex()
     @socket.emit 'card.create',
       boardId: @model.get('_id')
       creator: @model.get('user_id')
       x: parseInt (event.pageX - $(event.target).offset().left) - 10
       y: parseInt (event.pageY - $(event.target).offset().top)  - 10
+      z: maxZ + 1
       focus: true
 
   displayNewCard: (data) ->
@@ -49,7 +51,6 @@ class boardroom.views.Board extends Backbone.View
       socket: @socket
     @$el.append cardView.render().el
     cardView.adjustTextarea()
-    cardView.bringForward()
     @cardViews.push cardView
 
   # --------- socket handlers ---------
