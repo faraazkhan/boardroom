@@ -4,32 +4,21 @@ describe 'boardroom.views.Card', ->
       @socket = new io.Socket
 
   describe 'DOM events', ->
-    describe 'moving the card', ->
-      beforeEach ->
-        @card = new boardroom.models.Card
-        @socket = new io.Socket
-        @cardView = new boardroom.views.Card
-          model: @card
-          socket: @socket
-        @onMouseDown = sinon.spy @cardView.card, 'onMouseDown'
-        @cardView.render()
-
-        @cardView
-          .$el
-          .mousedown()
-
-      it 'updates its position', ->
-        expect(@onMouseDown.called).toBeTruthy()
+    beforeEach ->
+      @socket = new io.Socket
+      @board = new boardroom.models.Board
+        user_id: 1
+      @card = new boardroom.models.Card
+        id: 2
+        board: @board
+        authors: []
+      @cardView = new boardroom.views.Card
+        model: @card
+        socket: @socket
+      @cardView.render()
 
     describe 'clicking a color', ->
       beforeEach ->
-        @socket = new io.Socket
-        @card = new boardroom.models.Card
-          id: 1
-        @cardView = new boardroom.views.Card
-          model: @card
-          socket: @socket
-        @cardView.render()
         @color = sinon.spy()
         @socket.on 'card.update', @color
 
@@ -41,7 +30,7 @@ describe 'boardroom.views.Card', ->
       it 'changes its color', ->
         expect(@cardView.$el).toHaveClass "color-#{@colorIndex}"
 
-      it 'emits a "color" socket event', ->
+      it 'emits a "card.update" socket event', ->
         expect(@color.called).toBeTruthy()
         [args] = @color.lastCall.args
         expect(args._id).toEqual @card.id
@@ -49,17 +38,6 @@ describe 'boardroom.views.Card', ->
 
     describe 'entering text', ->
       beforeEach ->
-        @socket = new io.Socket
-        @board = new boardroom.models.Board
-          user_id: 1
-        @card = new boardroom.models.Card
-          id: 2
-          board: @board
-          authors: []
-        @cardView = new boardroom.views.Card
-          model: @card
-          socket: @socket
-        @cardView.render()
         @text = sinon.spy()
         @socket.on 'card.update', @text
         @authorCount = @card.get('authors').length
@@ -81,16 +59,6 @@ describe 'boardroom.views.Card', ->
 
     describe 'deleting the card', ->
       beforeEach ->
-        @socket = new io.Socket
-        @board = new boardroom.models.Board
-          user_id: 1
-        @card = new boardroom.models.Card
-          id: 2
-          board: @board
-        @cardView = new boardroom.views.Card
-          model: @card
-          socket: @socket
-        @cardView.render()
         @delete = sinon.spy()
         @socket.on 'card.delete', @delete
 

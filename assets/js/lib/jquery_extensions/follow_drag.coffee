@@ -5,10 +5,13 @@ $.fn.followDrag = (opts) ->
     otherFollowers : []
     onMouseMove : () ->
     onMouseUp : () ->
+    isTarget: (target) -> true
     position : (dx, dy, x, y) -> left: x, top: y
   , opts
 
   $this.on 'mousedown.followDrag', (e) ->
+    return true unless settings.isTarget(e.target)
+
     origX = lastX = e.pageX
     origY = lastY = e.pageY
     origLeft = $this.offset().left
@@ -31,7 +34,12 @@ $.fn.followDrag = (opts) ->
 
       settings.onMouseMove()
 
+      false
+
     $(window).on 'mouseup.followDrag', (e) ->
       $(window).off 'mousemove.followDrag'
       settings.onMouseUp()
+
+    false
+
   $this
