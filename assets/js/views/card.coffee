@@ -17,54 +17,57 @@ class boardroom.views.Card extends Backbone.View
     id: @model.id
 
   events:
-    'mousedown': 'updatePosition'
     'click .color': 'changeColor'
     'keyup textarea': 'changeText'
-    'change textarea': 'commitText'
     'click .delete': 'delete'
 
   initialize: (attributes) ->
     { @socket } = attributes
+    @followDrag()
+    @cardLock = new boardroom.models.CardLock
+    @cardLock.poll =>
+      @hideNotice()
+      @enableEditing()
 
-    _.extend @, boardUtils @socket, @model
-
-    @socket.on 'color', @updateColor
-    @socket.on 'delete', @removeIfDeleted
-
-  updatePosition: (event) ->
-    isColorSelection = $(event.target).is '.color'
-    isDeletion = $(event.target).is '.delete'
-    unless isColorSelection or isDeletion
-      @card.onMouseDown event
-
-  changeColor: (event) ->
-    color = $(event.target)
-      .attr('class')
-      .match(/color-(\d+)/)[1]
-    data =
-      _id: @model.id
-      colorIndex: color
-    @socket.emit 'color', data
-    @updateColor data
-
-  setColor: (color) ->
-    @$el.addClass "color-#{color}"
-
-  uncolor: ->
-    @$el.removeClassMatching /color-\d+/g
-
-  updateColor: (data) =>
-    if data._id is @model.id
-      @uncolor()
+  update: (data) =>
+    if data.x?
+      @moveTo x: data.x, y: data.y
+      @showNotice user: data.author, message: data.author
+      @cardLock.lock 500
+    if data.z?
+      @$el.css 'z-index', data.z
+    if data.text?
+      @disableEditing data.text
+      @showNotice user: data.author, message: "#{data.author} is typing..."
+      @cardLock.lock()
+      @addAuthor data.author
+      @adjustTextarea()
+    if data.colorIndex?
       @setColor data.colorIndex
 
+  changeColor: (event) ->
+    colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
+    author = @model.get('board').get('user_id')
+    @setColor colorIndex
+    @addAuthor author
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
+
   changeText: ->
-    @socket.emit 'text'
-      _id: @model.id
-      text: @$('textarea').val()
-      author: @model.get('board').get('user_id')
-    @addAuthor @model.get('board').get('user_id')
+    text = @$('textarea').val()
+    author = @model.get('board').get('user_id')
+    @addAuthor author
     @adjustTextarea()
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, text, z, author }
+
+  delete: ->
+    @socket.emit 'card.delete', @model.id
+
+  setColor: (color) ->
+    color = 2 if color == undefined
+    @$el.removeClassMatching /color-\d+/g
+    @$el.addClass "color-#{color}"
 
   addAuthor: (user) ->
     avatar = boardroom.models.User.avatar user
@@ -84,60 +87,54 @@ class boardroom.views.Card extends Backbone.View
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
 
-  commitText: ->
-    @socket.emit 'text_commit',
-      _id: @model.id
-      text: @$('textarea').val()
-      board_name: @model.get('board').get('name')
-      author: @model.get('board').get('user_id')
-    if groupId = @$el.data('group-id')
-      @group.layOut groupId
-
-  delete: ->
-    @socket.emit 'delete'
-      _id: @model.id
-      author: @model.get('board').get('user_id')
-
-  removeIfDeleted: (data) =>
-    if data._id is @model.id
-      @remove()
-
   showNotice: ({ user, message }) =>
-    if user?
-      @$('.notice')
-        .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/>
-               <span>#{_.escape message}</span>")
-        .show()
-    else
-      @$('.notice').show()
-
-  disableEditing: (text) ->
-    @$('textarea')
-      .val(text)
-      .attr 'disabled', 'disabled'
-
-  moveTo: ({x, y}) ->
-    @$el.css
-      left: x
-      top: y
-
-  hideNotice: ->
-    @$('.notice').fadeOut 100
+    @$('.notice')
+      .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
+      .show()
 
   enableEditing: ->
     @$('textarea').removeAttr 'disabled'
 
+  disableEditing: (text) ->
+    @$('textarea').val(text).attr('disabled', 'disabled')
+
+  moveTo: ({x, y}) ->
+    @$el.css { left: x, top: y }
+
+  hideNotice: ->
+    @$('.notice').fadeOut 100
+
+  zIndex: ->
+    parseInt(@$el.css('z-index')) || 0
+
   bringForward: ->
-    @moveToTop @$el
+    siblings = @$el.siblings '.card'
+    return if siblings.length == 0
+
+    allZs = _.map siblings, (sibling) ->
+      parseInt($(sibling).css('z-index')) || 0
+    maxZ = _.max allZs
+    return if @zIndex() > maxZ
+
+    newZ = maxZ + 1
+    @$el.css 'z-index', newZ
+    newZ
 
   followDrag: ->
     @$el.followDrag
+      isTarget: (target) ->
+        return false if $(target).is 'textarea'
+        return false if $(target).is '.color'
+        return false if $(target).is '.delete'
+        true
+      onMouseDown: =>
+        z = @bringForward()
+        @socket.emit 'card.update', { _id: @model.id, z }
       onMouseMove: =>
-        @socket.emit 'move',
+        @socket.emit 'card.update',
           _id: @model.id
           x: @$el.position().left
           y: @$el.position().top
-          board_name: @model.get('board').get('name')
           author: @model.get('board').get('user_id')
 
   render: ->
@@ -146,13 +143,11 @@ class boardroom.views.Card extends Backbone.View
       .css
         left: @model.get('x')
         top: @model.get('y')
-    @uncolor()
-    @setColor @model.get('colorIndex') || 2
+        'z-index': @model.get('z')
+    @setColor @model.get('colorIndex')
     if @model.has('authors')
       for author in @model.get('authors')
         @addAuthor author
-    if @model.has('groupId')
-      @$el.data 'group-id', @model.get('groupId')
     if @model.get('focus')
       @$('textarea').focus()
     @

@@ -19,8 +19,7 @@ describe 'boardroom.views.Board', ->
   describe 'socket events', ->
     describe 'joined', ->
       beforeEach ->
-        @user =
-          user_id: 1
+        @user = { user_id: 1 }
         @socket.emit 'joined', @user
 
       it "adds the new user to the board's user list", ->
@@ -70,76 +69,74 @@ describe 'boardroom.views.Board', ->
         expect(@boardView.$('#connection-status')).toBeEmpty()
         expect(@boardView.$('#connection-status-modal')).toBeHidden()
 
-    describe 'boardDeleted', ->
-      beforeEach ->
-        @redirectToBoardsList = sinon.stub boardroom.views.Board.prototype, 'redirectToBoardsList'
-        delete @boardView
-        new boardroom.views.Board
-          model: @board
-          socket: @socket
-        @socket.emit 'boardDeleted', {}
-
-      it 'redirects to the user to the board list', ->
-        expect(@redirectToBoardsList.called).toBeTruthy()
-
-    describe 'add', ->
+    describe 'card.create', ->
       beforeEach ->
         @cardCount = @boardView.$('.card').length
-        @socket.emit 'add', {}
+        @socket.emit 'card.create', {}
 
       it 'displays the new card', ->
         expect(@boardView.$('.card').length).toEqual @cardCount + 1
 
-    describe 'move', ->
+    describe 'card.delete', ->
       beforeEach ->
-        @card =
-          _id: 1
-          x: 100
-          y: 200
-        @socket.emit 'add', @card
+        @card = { _id: 1 }
+        @cardCount = @boardView.$('.card').length
+        @socket.emit 'card.create', @card
+        @socket.emit 'card.delete', @card._id
 
-        move =
-          _id: @card._id
-          x: 200
-          y: 200
-          user: 'user-1'
-        @socket.emit 'move', move
+      it 'removes the card', ->
+        expect(@boardView.$('.card').length).toEqual @cardCount
+
+    describe 'card.update (move)', ->
+      beforeEach ->
+        @card = { _id: 1, x: 100, y: 200 }
+        @socket.emit 'card.create', @card
+
+        move = { _id: @card._id, x: 200, y: 200, user: 'user-1' }
+        @socket.emit 'card.update', move
+
+      xit 'moves the card', ->
+        expect(@boardView.findCardView(@card._id).$el.css('left')).toEqual 200
 
       it 'locks the card to prevent other users from moving it', ->
-        expect(@boardView.cardLock.locks[@card._id]).not.toBeUndefined()
+        cardView = @boardView.findCardView 1
+        expect(cardView.cardLock.lock_data).not.toBeUndefined()
 
-    describe 'text', ->
+    describe 'card.update (text)', ->
       beforeEach ->
-        @card =
-          _id: 1
-          x: 100
-          y: 200
-        @socket.emit 'add', @card
+        @card = { _id: 1 }
+        @socket.emit 'card.create', @card
 
         @text = 'updated text'
-        @socket.emit 'text',
-          _id: @card._id
-          author: 'author-1'
-          text: @text
+        @socket.emit 'card.update', { _id: @card._id, text: @text }
 
       it 'updates the card text', ->
-        cardView = _.last @boardView.cardViews
+        cardView = @boardView.findCardView 1
         expect(cardView.$('textarea')).toHaveValue(@text)
+
+    describe 'card.update (color)', ->
+      beforeEach ->
+        @card = { _id: 1 }
+        @socket.emit 'card.update', { _id: @card._id, colorIndex: 0 }
+
+      it 'updates the card color', ->
+        cardView = @boardView.findCardView 1
+        expect(cardView.$el).toHaveClass "color-0"
 
   describe 'when double clicking the board', ->
     beforeEach ->
-      @add = sinon.spy()
-      @socket.on 'add', @add
+      @spy = sinon.spy()
+      @socket.on 'card.create', @spy
       dblclick = new $.Event 'dblclick'
       dblclick.pageX = 200
       dblclick.pageY = 201
       @boardView.$el.trigger dblclick
 
-    it 'emits an "add" socket event', ->
-      expect(@add.called).toBeTruthy()
+    it 'emits a "card.create" socket event', ->
+      expect(@spy.called).toBeTruthy()
 
     it 'creates the card at the mouse location', ->
-      call = @add.firstCall
+      call = @spy.firstCall
       # our test $("<div id='board'>") elements always have an offset of
       # top: 5, left: 5
       # for some reason - mike
