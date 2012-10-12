@@ -35,10 +35,10 @@ class boardroom.views.Board extends Backbone.View
 
   requestNewCard: (event) ->
     return unless event.target.className == 'board'
-    if @cardViews.length == 0
-      mazZ = 0
-    else
-      maxZ = _.max(@cardViews, (view) -> view.zIndex()).zIndex()
+    maxZ = if @cardViewslength
+        _.max(@cardViews, (view) -> view.zIndex()).zIndex()
+      else
+        0
     @socket.emit 'card.create',
       boardId: @model.get('_id')
       creator: @model.get('user_id')
