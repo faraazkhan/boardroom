@@ -137,8 +137,20 @@ describe 'boardroom.views.Board', ->
 
     it 'creates the card at the mouse location', ->
       call = @spy.firstCall
-      # our test $("<div id='board'>") elements always have an offset of
-      # top: 5, left: 5
-      # for some reason - mike
-      expect(call.args[0].x).toEqual 200 - 10 - 5
-      expect(call.args[0].y).toEqual 201 - 10 - 5
+      expect(call.args[0].x).toEqual 200 - 10
+      expect(call.args[0].y).toEqual 201 - 10
+
+    describe 'for the first card', ->
+      beforeEach ->
+        @boardView.cardViews = []
+        @spy = sinon.spy()
+        @socket.on 'card.create', @spy
+        dblclick = new $.Event 'dblclick'
+        dblclick.pageX = 200
+        dblclick.pageY = 201
+        @boardView.$el.trigger dblclick
+
+      it 'creates the card at the mouse location', ->
+        call = @spy.firstCall
+        expect(call.args[0].x).toEqual 200 - 10
+        expect(call.args[0].y).toEqual 201 - 10
