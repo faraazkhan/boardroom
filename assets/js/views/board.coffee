@@ -35,7 +35,7 @@ class boardroom.views.Board extends Backbone.View
 
   requestNewCard: (event) ->
     return unless event.target.className == 'board'
-    maxZ = if @cardViewslength
+    maxZ = if @cardViews.length
         _.max(@cardViews, (view) -> view.zIndex()).zIndex()
       else
         0
