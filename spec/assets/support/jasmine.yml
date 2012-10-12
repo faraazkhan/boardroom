@@ -28,7 +28,7 @@ src_files:
 #   - stylesheets/*.css
 #
 stylesheets:
-  # - assets/css/*.less
+  - spec/assets/helpers/spec-styles.css
 
 # helpers
 #
