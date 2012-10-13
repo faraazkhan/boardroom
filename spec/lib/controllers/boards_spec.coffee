@@ -2,71 +2,62 @@
   require '../support/controller_test_support'
 
 describe 'BoardsController', ->
-  router = null
-
   describe '#create', ->
     beforeEach ->
-      router = new LoggedInRouter
+      @router = new LoggedInRouter
 
-    it 'creates a new board', (done) ->
+    it 'creates a new board', ->
       name = 'name-1'
-      request(router.app)
+      response = request(@router.app)
         .post('/boards')
         .send(name: name)
-        .end (error, response) ->
-          done error if error?
-          Board.count (error, count) ->
-            done error if error
-            expect(count).toEqual 1
-            Board.findOne {}, (error, board) ->
-              done error if error?
-              expect(board.name).toEqual name
-              expect(board.creator).toEqual 'user'
-              done()
+        .sync
+        .end()
+      count = Board.sync.count()
+      expect(count).toEqual 1
+      board = Board.sync.findOne {}
+      expect(board.name).toEqual name
+      expect(board.creator).toEqual 'user'
 
   describe '#show', ->
-    board = null
-    beforeEach (done) ->
-      router = new LoggedInRouter
-      Factory.create 'board', (defaultBoard) ->
-        board = defaultBoard
-        done()
+    beforeEach ->
+      @router = new LoggedInRouter
 
     describe 'given a board', ->
-      it 'returns the board page', (done) ->
-        request(router.app)
-          .get("/boards/#{board.id}")
-          .end (error, response) ->
-            done error if error?
-            expect(response.statusCode).toBe(200)
-            done()
+      beforeEach ->
+        @board = Factory.sync.create 'board'
+        @id = @board.id
+
+      it 'returns the board page', ->
+        response = request(@router.app)
+          .get("/boards/#{@id}")
+          .sync
+          .end()
+        expect(response.statusCode).toBe(200)
 
     describe 'given no board', ->
-      it 'returns a 404 code', (done) ->
-        request(router.app)
-          .get('/boards/unknownid')
-          .end (error, response) ->
-            done error if error?
-            expect(response.statusCode).toBe(404)
-            done()
+      beforeEach ->
+        @id = 'unknownid'
+
+      it 'returns a 404 code', ->
+        response = request(@router.app)
+          .get("/boards/#{@id}")
+          .sync
+          .end()
+        expect(response.statusCode).toBe(404)
 
   describe '#destroy', ->
-    board = null
-    beforeEach (done) ->
-      router = new LoggedInRouter
-      Factory.create 'board', (defaultBoard) ->
-        board = defaultBoard
-        done()
+    beforeEach  ->
+      @router = new LoggedInRouter
+      @board = Factory.sync.create 'board'
 
-    it 'deletes the board', (done) ->
-      request(router.app)
-        .post("/boards/#{board.id}")
-        .end (error, response) ->
-          done error if error?
-          expect(response.redirect).toBeTruthy()
-          redirect = url.parse response.headers.location
-          expect(redirect.pathname).toEqual '/'
-          Board.findById board.id, (error, board) ->
-            done error if error?
-            expect(board).toBeNull()
-            done()
+    it 'deletes the board', ->
+      response = request(@router.app)
+        .post("/boards/#{@board.id}")
+        .sync
+        .end()
+      expect(response.redirect).toBeTruthy()
+      redirect = url.parse response.headers.location
+      expect(redirect.pathname).toEqual '/'
+      board = Board.sync.findById @board.id
+      expect(board).toBeNull()

@@ -25,9 +25,10 @@
   "devDependencies": {
     "jasmine-node": "latest",
     "sinon": "1.4",
-    "factory-lady": "latest",
+    "factory-lady": "git://github.com/carbonfive/factory-lady.git",
     "supertest": "latest",
     "jsdom": "latest",
-    "socket.io-client": "latest"
+    "socket.io-client": "latest",
+    "fibrous" : "latest"
   }
 }

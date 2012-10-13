@@ -2,58 +2,44 @@
 
 describe 'card.Card', ->
   describe '.findByBoardId', ->
-    board = null
-    beforeEach (done) ->
-      Factory.create 'board', (defaultBoard) ->
-        board = defaultBoard
-        Factory.create 'card', boardId: board.id, ->
-          done()
+    beforeEach ->
+      @board = Factory.sync.create 'board'
+      Factory.sync.create 'card', boardId: @board.id
 
-    it 'finds all cards for the given board', (done) ->
-      Card.findByBoardId board.id, (error, cards) ->
-        done error if error?
-        expect(cards.length).toEqual 1
-        done()
+    it 'finds all cards for the given board', ->
+      cards = Card.sync.findByBoardId @board.id
+      expect(cards.length).toEqual 1
 
   describe '#updateAttributes', ->
-    card = null
-
     describe 'by default', ->
-      beforeEach (done) ->
-        Factory.create 'card', (defaultCard) ->
-          card = defaultCard
-          done()
+      beforeEach ->
+        @card = Factory.sync.create 'card'
 
-      it 'updates its attributes', (done) ->
+      it 'updates its attributes', ->
         attributes =
-          x: card.x + 1
-          y: card.y + 1
-          text: "#{card.text}-updated"
-          colorIndex: card.colorIndex + 1
-          deleted: ! card.deleted
-        card.updateAttributes attributes, ->
-          Card.findById card.id, (error, card) ->
-            done error if error?
-            expect(card.x).toEqual attributes.x
-            expect(card.y).toEqual attributes.y
-            expect(card.text).toEqual attributes.text
-            expect(card.colorIndex).toEqual attributes.colorIndex
-            expect(card.deleted).toEqual attributes.deleted
-            done()
+          x: @card.x + 1
+          y: @card.y + 1
+          text: "#{@card.text}-updated"
+          colorIndex: @card.colorIndex + 1
+          deleted: ! @card.deleted
+        @card.sync.updateAttributes attributes
+        card = Card.sync.findById @card.id
+        expect(card.x).toEqual attributes.x
+        expect(card.y).toEqual attributes.y
+        expect(card.text).toEqual attributes.text
+        expect(card.colorIndex).toEqual attributes.colorIndex
+        expect(card.deleted).toEqual attributes.deleted
 
     describe 'given a new author to the card', ->
-      beforeEach (done) ->
-        Factory.create 'card', (defaultCard) ->
-          card = defaultCard
-          done()
+      beforeEach ->
+        @card = Factory.sync.create 'card'
 
-      it 'adds them to its authors', (done) ->
+      it 'adds them to its authors', ->
         attributes =
           authors: [
-            "#{card.creator}-author-1"
-            "#{card.creator}-author-2"
+            "#{@card.creator}-author-1"
+            "#{@card.creator}-author-2"
           ]
-        count = card.authors.length
-        card.updateAttributes attributes, ->
-          expect(card.authors.length).toEqual count + 2
-          done()
+        count = @card.authors.length
+        @card.sync.updateAttributes attributes
+        expect(@card.authors.length).toEqual count + 2

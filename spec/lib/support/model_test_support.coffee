@@ -1,5 +1,6 @@
 lib = "#{__dirname}/../../../lib"
 speclib = "#{__dirname}/.."
+require "#{speclib}/support/spec_helper"
 
 { db } = require "#{lib}/models/db"
 Board = require "#{lib}/models/board"
@@ -17,10 +18,10 @@ finalizers.push ->
 afterAll = ->
   f() for f in finalizers
 
-beforeEach (done) ->
+beforeEach ->
   clearTimeout timeout if timeout?
-  Board.remove ->
-    Card.remove done
+  Board.sync.remove()
+  Card.sync.remove()
 
 afterEach ->
   timeout = setTimeout afterAll, 100
