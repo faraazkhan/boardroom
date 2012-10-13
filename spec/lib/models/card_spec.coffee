@@ -3,8 +3,8 @@
 describe 'card.Card', ->
   describe '.findByBoardId', ->
     beforeEach ->
-      @board = Factory.sync.create 'board'
-      Factory.sync.create 'card', boardId: @board.id
+      @board = Factory.sync 'board'
+      Factory.sync 'card', boardId: @board.id
 
     it 'finds all cards for the given board', ->
       cards = Card.sync.findByBoardId @board.id
@@ -13,7 +13,7 @@ describe 'card.Card', ->
   describe '#updateAttributes', ->
     describe 'by default', ->
       beforeEach ->
-        @card = Factory.sync.create 'card'
+        @card = Factory.sync 'card'
 
       it 'updates its attributes', ->
         attributes =
@@ -32,7 +32,7 @@ describe 'card.Card', ->
 
     describe 'given a new author to the card', ->
       beforeEach ->
-        @card = Factory.sync.create 'card'
+        @card = Factory.sync 'card'
 
       it 'adds them to its authors', ->
         attributes =

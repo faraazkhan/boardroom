@@ -25,7 +25,7 @@ describe 'BoardsController', ->
 
     describe 'given an existing board id', ->
       beforeEach ->
-        @board = Factory.sync.create 'board'
+        @board = Factory.sync 'board'
         @id = @board.id
 
       it 'returns the board page', ->
@@ -50,7 +50,7 @@ describe 'BoardsController', ->
   describe '#destroy', ->
     beforeEach  ->
       @router = new LoggedInRouter
-      @board = Factory.sync.create 'board'
+      @board = Factory.sync 'board'
 
     it 'deletes the board', ->
       response = request(@router.app)

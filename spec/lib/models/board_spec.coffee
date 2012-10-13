@@ -24,8 +24,8 @@ describe 'board.Board', ->
 
   describe '#lastUpdated', ->
     beforeEach ->
-      @board = Factory.sync.create 'board'
-      @card = Factory.sync.create 'card', boardId: @board.id
+      @board = Factory.sync 'board'
+      @card = Factory.sync 'card', boardId: @board.id
 
     it 'returns last updated of cards', ->
       @card.sync.save()
@@ -39,9 +39,9 @@ describe 'board.Board', ->
 
   describe '#destroy', ->
     beforeEach ->
-      @board = Factory.sync.create 'board'
-      Factory.sync.create 'card', boardId: @board.id
-      Factory.sync.create 'card', boardId: @board.id
+      @board = Factory.sync 'board'
+      Factory.sync 'card', boardId: @board.id
+      Factory.sync 'card', boardId: @board.id
 
     it 'removes the board', ->
       @board.sync.destroy()
