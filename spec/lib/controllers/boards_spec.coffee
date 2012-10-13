@@ -23,7 +23,7 @@ describe 'BoardsController', ->
     beforeEach ->
       @router = new LoggedInRouter
 
-    describe 'given a board', ->
+    describe 'given an existing board id', ->
       beforeEach ->
         @board = Factory.sync.create 'board'
         @id = @board.id
@@ -35,9 +35,10 @@ describe 'BoardsController', ->
           .end()
         expect(response.statusCode).toBe(200)
 
-    describe 'given no board', ->
+    describe 'given an unknown board id', ->
       beforeEach ->
-        @id = 'unknownid'
+        mongoose = require 'mongoose'
+        @id = new mongoose.Types.ObjectId
 
       it 'returns a 404 code', ->
         response = request(@router.app)

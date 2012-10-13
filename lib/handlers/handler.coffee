@@ -1,3 +1,5 @@
+require 'fibrous'
+
 class Handler
 
   socket: null
@@ -18,10 +20,9 @@ class Handler
 
   handleCreate: (event, data) =>
     model = new @modelClass data
-    model.save (error) =>
-      throw error if error?
-      @socket.emit event, model
-      @socket.broadcast.emit event, model
+    model.sync.save()
+    @socket.emit event, model
+    @socket.broadcast.emit event, model
 
   handleUpdate: (event, data) =>
     @modelClass.findById data._id, (error, model) =>
