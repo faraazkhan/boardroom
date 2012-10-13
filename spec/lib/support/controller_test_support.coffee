@@ -1,8 +1,6 @@
-lib = "#{__dirname}/../../../lib"
 speclib = "#{__dirname}/.."
-
+require "#{speclib}/support/spec_helper"
 models = require "#{speclib}/support/model_test_support"
-
 request = require 'supertest'
 jsdom = require 'jsdom'
 url = require 'url'

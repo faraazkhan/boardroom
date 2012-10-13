@@ -2,75 +2,53 @@
 
 describe 'board.Board', ->
   describe '.createdBy', ->
-    beforeEach (done) ->
-      Factory.createBundle 'typical', ->
-        done()
+    beforeEach ->
+      Factory.sync.createBundle()
 
-    it 'finds boards i created', (done) ->
-      Board.createdBy 'board-creator-1', (error, boards) ->
-        done error if error?
-        expect(boards.length).toEqual 1
-        expect(boards[0].name).toEqual 'board1'
-        expect(boards[0].cards.length).toEqual 1
-        done()
+    it 'finds boards I created', ->
+      boards = Board.sync.createdBy 'board-creator-1'
+      expect(boards.length).toEqual 1
+      expect(boards[0].name).toEqual 'board1'
+      expect(boards[0].cards.length).toEqual 1
 
   describe '.collaboratedBy', ->
-    beforeEach (done) ->
-      Factory.createBundle 'typical', ->
-        done()
+    beforeEach ->
+      Factory.sync.createBundle()
 
-    it 'finds boards i collaborated on', (done) ->
-      Board.collaboratedBy 'board-creator-1', (error, boards) ->
-        done error if error?
-        expect(boards.length).toEqual 2
-        names = boards.map (board) ->
-          board.name
-        expect(names[0]).toEqual 'board2'
-        expect(names[1]).toEqual 'board3'
-        done()
+    it 'finds boards i collaborated on', ->
+      boards = Board.sync.collaboratedBy 'board-creator-1'
+      expect(boards.length).toEqual 2
+      names = (board.name for board in boards)
+      expect(names[0]).toEqual 'board2'
+      expect(names[1]).toEqual 'board3'
 
   describe '#lastUpdated', ->
-    board = card = null
-    beforeEach (done) ->
-      Factory.create 'board', (defaultBoard) ->
-        board = defaultBoard
-        Factory.create 'card', boardId: board.id, (defaultCard) ->
-          card = defaultCard
-          done()
+    beforeEach ->
+      @board = Factory.sync 'board'
+      @card = Factory.sync 'card', boardId: @board.id
 
-    it 'returns last updated of cards', (done) ->
-      card.save (error, card) ->
-        Board.findById board.id, (error, board) ->
-          expect(board.lastUpdated().getTime()).toEqual card.updated.getTime()
-          done()
+    it 'returns last updated of cards', ->
+      @card.sync.save()
+      board = Board.sync.findById @board.id
+      expect(board.lastUpdated().getTime()).toEqual @card.updated.getTime()
 
-    it 'returns last updated of board', (done) ->
-      board.save (error, board) ->
-        Board.findById board.id, (error, board) ->
-          expect(board.lastUpdated().getTime()).toEqual board.updated.getTime()
-          done()
+    it 'returns last updated of board', ->
+      @board.sync.save()
+      board = Board.sync.findById @board.id
+      expect(board.lastUpdated().getTime()).toEqual @board.updated.getTime()
 
   describe '#destroy', ->
-    board = null
-    beforeEach (done) ->
-      Factory.create 'board', (defaultBoard) ->
-        board = defaultBoard
-        Factory.create 'card', boardId: board.id, ->
-          Factory.create 'card', boardId: board.id, ->
-            done()
+    beforeEach ->
+      @board = Factory.sync 'board'
+      Factory.sync 'card', boardId: @board.id
+      Factory.sync 'card', boardId: @board.id
 
-    it 'removes the board', (done) ->
-      board.destroy (error) ->
-        done error if error?
-        Board.count {}, (error, count) ->
-          done error if error?
-          expect(count).toEqual 0
-          done()
+    it 'removes the board', ->
+      @board.sync.destroy()
+      count = Board.sync.count {}
+      expect(count).toEqual 0
 
-    it 'removes the board\'s cards', (done) ->
-      board.destroy (error) ->
-        done error if error?
-        Card.count {}, (error, count) ->
-          done error if error?
-          expect(count).toEqual 0
-          done()
+    it "removes the board's cards", ->
+      @board.sync.destroy()
+      count = Card.sync.count {}
+      expect(count).toEqual 0

@@ -1,6 +1,7 @@
 express = require 'express'
 cookies = require 'cookie-sessions'
 connectAssets = require 'connect-assets'
+fibrous = require 'fibrous'
 Sockets = require './sockets'
 HomeController = require './controllers/home'
 SessionsController = require './controllers/sessions'
@@ -18,6 +19,7 @@ class Router
       @app.use express.static "#{__dirname}/../public"
       @app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889',
                        session_key: 'boardroom')
+      @app.use fibrous.middleware
       @app.error @render500Page
 
     homeController = new HomeController

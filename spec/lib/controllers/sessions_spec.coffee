@@ -2,45 +2,39 @@
   require '../support/controller_test_support'
 
 describe 'SessionsController', ->
-  router = null
-
   describe '#new', ->
     beforeEach ->
-      router = new LoggedOutRouter
+      @router = new LoggedOutRouter
 
-    it 'renders the login page', (done) ->
-      request(router.app)
+    it 'renders the login page', ->
+      response = request(@router.app)
         .get('/login')
-        .end (error, response) ->
-          done error if error?
-          expect(response.ok).toBeTruthy()
-          done()
+        .sync
+        .end()
+      expect(response.ok).toBeTruthy()
 
   describe '#create', ->
     beforeEach ->
-      router = new LoggedOutRouter
+      @router = new LoggedOutRouter
 
-    it 'redirects to the home page', (done) ->
-      request(router.app)
+    it 'redirects to the home page', ->
+      response = request(@router.app)
         .post('/login')
-        .end (error, response) ->
-          done error if error?
-          expect(response.redirect).toBeTruthy()
-          redirect = url.parse response.headers.location
-          expect(redirect.path).toEqual '/'
-          done()
+        .sync
+        .end()
+      expect(response.redirect).toBeTruthy()
+      redirect = url.parse response.headers.location
+      expect(redirect.path).toEqual '/'
 
   describe '#destroy', ->
     beforeEach ->
-      router = new LoggedInRouter
+      @router = new LoggedInRouter
 
-    it 'logs out', (done) ->
-      request(router.app)
+    it 'logs out', ->
+      response = request(@router.app)
         .get('/logout')
-        .end (error, response) ->
-          done error if error?
-          expect(response.redirect).toBeTruthy()
-          redirect = url.parse response.headers.location
-          expect(redirect.path).toEqual '/'
-          done()
-
+        .sync
+        .end()
+      expect(response.redirect).toBeTruthy()
+      redirect = url.parse response.headers.location
+      expect(redirect.path).toEqual '/'

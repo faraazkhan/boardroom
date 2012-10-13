@@ -1,2 +1,2 @@
 require('coffee-script');
-require('./lib/server.coffee');
+require('./lib/server');
