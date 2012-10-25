@@ -13,3 +13,8 @@ form#login(action='/login', method='post')
     |  user (e.g.
     a(href='http://twitter.com/carbonfive') @carbonfive
     )
+
+script(type="text/javascript")
+  $(document).ready( function() {
+    $('#user_id').focus();
+  });
