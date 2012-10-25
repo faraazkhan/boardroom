@@ -33,7 +33,8 @@ class boardroom.views.Card extends Backbone.View
 
   initialize: (attributes) ->
     { @socket } = attributes
-    @followDrag()
+    @initializeDrag()
+    @initializeDropStacking()
     @cardLock = new boardroom.models.CardLock
     @cardLock.poll =>
       @hideNotice()
@@ -150,6 +151,12 @@ class boardroom.views.Card extends Backbone.View
   zIndex: ->
     parseInt(@$el.css('z-index')) || 0
 
+  left: ->
+    @$el.position().left
+
+  top: ->
+    @$el.position().top
+
   bringForward: ->
     siblings = @$el.siblings '.card'
     return if siblings.length == 0
@@ -163,7 +170,7 @@ class boardroom.views.Card extends Backbone.View
     @$el.css 'z-index', newZ
     newZ
 
-  followDrag: ->
+  initializeDrag: ->
     @$el.followDrag
       isTarget: (target) ->
         return false if $(target).is 'textarea'
@@ -174,11 +181,27 @@ class boardroom.views.Card extends Backbone.View
         z = @bringForward()
         @socket.emit 'card.update', { _id: @model.id, z }
       onMouseMove: =>
+        $('.board').trigger 'drag', _id: @model.id, x: @left(), y: @top()
         @socket.emit 'card.update',
           _id: @model.id
-          x: @$el.position().left
-          y: @$el.position().top
+          x: @left()
+          y: @top()
           author: @model.get('board').get('user_id')
+
+  initializeDropStacking: ->
+    thresh = 50
+    $('.board').on 'drag', (event, data) =>
+      isHovering = (data) =>
+        return false if @model.id == data._id
+        @left() <= data.x < (@left() + thresh) and @top() <= data.y <= (@top() + thresh)
+
+      if isHovering(data)
+        if ! @$el.is '.stackable'
+          @$el.addClass 'stackable'
+      else
+        if @$el.is '.stackable'
+          @$el.removeClass 'stackable'
+
 
   render: ->
     @$el
