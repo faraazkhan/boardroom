@@ -5,9 +5,9 @@ class SessionsController extends ApplicationController
     response.render 'login'
 
   create: (request, response) ->
+    redirect_url = request.session?.post_auth_url ? '/'
     request.session = user_id: request.body.user_id
-    response.redirect request.session.post_auth_url || '/'
-    delete request.session.post_auth_url
+    response.redirect redirect_url
 
   destroy: (request, response) ->
     request.session = {}
