@@ -16,6 +16,6 @@ class boardroom.views.Room extends Backbone.View
   socket_host: ->
     loc = window.location
     if loc.hostname == 'boardroom.carbonfive.com'
-      return 'http://boardroom.carbonfive.com:1337' if loc.port == 80
-      return 'http://boardroom.carbonfive.com:1338' if loc.port == 81
+      return 'http://boardroom.carbonfive.com:1337' if loc.port == '80'
+      return 'http://boardroom.carbonfive.com:1338' if loc.port == '81'
     ''
