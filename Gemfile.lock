@@ -1,6 +1,6 @@
 GIT
   remote: git@github.com:carbonfive/capistrano-node-deploy.git
-  revision: 21bdd70f8290ae71e7f5efc2518bdf5feb0f4b77
+  revision: e76aa206da84d93d326f4faea9c63028df1e0786
   specs:
     capistrano-node-deploy (1.0.8)
       multi_json (~> 1.3.6)
