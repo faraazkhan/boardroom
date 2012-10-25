@@ -25,6 +25,10 @@ DB.remove = (colName, query, callback) ->
     col.remove query, { safe: true }, (error, num) ->
       callback error, num
 
+DB.aggregate = (colName, query, callback) ->
+  withCollection colName, (error, col) ->
+    col.aggregate query, callback
+
 withCollection = (colName, callback) ->
   mongo (error, db) ->
     db.collection colName, (error, col) ->

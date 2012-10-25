@@ -28,10 +28,7 @@ CardSchema.methods =
     for attribute in ['x', 'y', 'z', 'text', 'colorIndex', 'deleted'] when attributes[attribute]?
       @[attribute] = attributes[attribute]
     if attributes.author?
-      @authors.push attributes.author unless author in @authors
-    if attributes.authors?
-      for author in attributes.authors
-        @authors.push author unless author in @authors
+      @authors.push attributes.author unless attributes.author in @authors
     @save (error, card) ->
       callback error, card
 
