@@ -36,6 +36,24 @@ describe 'boardroom.views.Card', ->
         expect(args._id).toEqual @card.id
         expect(args.colorIndex).toEqual @colorIndex
 
+    describe 'clicking +1', ->
+      beforeEach ->
+        @plus1 = sinon.spy()
+        @socket.on 'card.update', @plus1
+
+        @cardView
+          .$(".plus1 .btn")
+          .click()
+
+      it 'increments its plus count', ->
+        expect(@cardView.$('.plus1 .plus-count').text()).toBe('1')
+
+      it 'emits a "card.update" socket event', ->
+        expect(@plus1.called).toBeTruthy()
+        [args] = @plus1.lastCall.args
+        expect(args._id).toEqual @card.id
+        expect(args.plus_author).toEqual @board.get('user_id')
+
     describe 'entering text', ->
       beforeEach ->
         @text = sinon.spy()

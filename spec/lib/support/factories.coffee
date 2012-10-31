@@ -13,7 +13,8 @@ Factory.define 'card', Card,
   text: 'text'
   colorIndex: 2
   deleted: false
-  authors: ['author-1']
+  authors: ['factoryAuthor1']
+  plusAuthors: ['factoryPlusAuthor1']
 
 Factory.createBundle = (callback) ->
   board1 = Factory.sync 'board', name: 'board1', creator: 'board-creator-1'

@@ -44,3 +44,18 @@ describe 'card.Card', ->
         @card.sync.updateAttributes author: 'author1'
         @card.sync.updateAttributes author: 'author1'
         expect(@card.authors.length).toEqual count + 1
+
+    describe 'given a new plus author to the card', ->
+      beforeEach ->
+        @card = Factory.sync 'card'
+
+      it 'adds them to its plus authors', ->
+        count = @card.authors.length
+        @card.sync.updateAttributes plusAuthor: 'plusAuthor1'
+        expect(@card.plusAuthors.length).toEqual count + 1
+
+      it 'does not add duplicate plus authors', ->
+        count = @card.authors.length
+        @card.sync.updateAttributes plusAuthor: 'plusAuthor1'
+        @card.sync.updateAttributes plusAuthor: 'plusAuthor1'
+        expect(@card.plusAuthors.length).toEqual count + 1

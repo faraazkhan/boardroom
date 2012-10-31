@@ -11,7 +11,12 @@ class boardroom.views.Card extends Backbone.View
                           <span class='color color-4'></span>
                         </div>
                         <textarea><%= text %></textarea>
-                        <div class='authors'></div>")
+                        <div class='authors'></div>
+                        <div class='plus1'>
+                          <a class='btn' href='#'>+1</a>
+                          <p class='plus-count'></p>
+                        </div>
+                        <div class='plus-authors'></div>")
 
   attributes: ->
     id: @model.id
@@ -20,6 +25,7 @@ class boardroom.views.Card extends Backbone.View
     'click .color': 'changeColor'
     'keyup textarea': 'changeText'
     'focus textarea': 'focusText'
+    'click .plus1 .btn': 'incrementPlusCount'
     'click .delete': 'delete'
 
   initialize: (attributes) ->
@@ -44,7 +50,10 @@ class boardroom.views.Card extends Backbone.View
       @addAuthor data.author
       @adjustTextarea()
     if data.colorIndex?
+      @addAuthor data.author
       @setColor data.colorIndex
+    if data.plusAuthor?
+      @addPlusAuthor data.plusAuthor
 
   changeColor: (event) ->
     colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
@@ -66,6 +75,12 @@ class boardroom.views.Card extends Backbone.View
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, z}
 
+  incrementPlusCount: ->
+    plusAuthor = @model.get('board').get('user_id')
+    @addPlusAuthor plusAuthor
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, plusAuthor, z }
+
   delete: ->
     @socket.emit 'card.delete', @model.id
 
@@ -73,6 +88,14 @@ class boardroom.views.Card extends Backbone.View
     color = 2 if color == undefined
     @$el.removeClassMatching /color-\d+/g
     @$el.addClass "color-#{color}"
+
+  addPlusAuthor: (user) ->
+    avatar = boardroom.models.User.avatar user
+    if @$(".plus-authors img[title='#{user}']").length is 0
+      $plusCount = @$('.plus1 .plus-count')
+      plusCountValue = parseInt($plusCount.text()) || 0
+      $plusCount.text(plusCountValue+1)
+      @$('.plus-authors').append("<img class='avatar' src='#{avatar}' title='#{_.escape user}'/>")
 
   addAuthor: (user) ->
     avatar = boardroom.models.User.avatar user
@@ -153,6 +176,9 @@ class boardroom.views.Card extends Backbone.View
     if @model.has('authors')
       for author in @model.get('authors')
         @addAuthor author
+    if @model.has('plusAuthors')
+      for plusAuthor in @model.get('plusAuthors')
+        @addPlusAuthor plusAuthor
     if @model.get('focus')
       @$('textarea').focus()
     @
