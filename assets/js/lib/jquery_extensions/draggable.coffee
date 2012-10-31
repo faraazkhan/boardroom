@@ -31,6 +31,9 @@ $.fn.draggable = (opts) ->
       lastX = e.pageX
       lastY = e.pageY
 
+      pos = $this.position()
+      $('body').trigger 'drag', target: $this[0], x: pos.left, y: pos.top
+
       settings.onMouseMove e
       false
 

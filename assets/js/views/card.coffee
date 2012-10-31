@@ -181,7 +181,6 @@ class boardroom.views.Card extends Backbone.View
         z = @bringForward()
         @socket.emit 'card.update', { _id: @model.id, z }
       onMouseMove: =>
-        $('.board').trigger 'drag', _id: @model.id, x: @left(), y: @top()
         @socket.emit 'card.update',
           _id: @model.id
           x: @left()
@@ -189,19 +188,12 @@ class boardroom.views.Card extends Backbone.View
           author: @model.get('board').get('user_id')
 
   initializeDropStacking: ->
-    thresh = 50
-    $('.board').on 'drag', (event, data) =>
-      isHovering = (data) =>
-        return false if @model.id == data._id
-        @left() <= data.x < (@left() + thresh) and @top() <= data.y <= (@top() + thresh)
-
-      if isHovering(data)
-        if ! @$el.is '.stackable'
-          @$el.addClass 'stackable'
-      else
-        if @$el.is '.stackable'
-          @$el.removeClass 'stackable'
-
+    @$el.droppable
+      threshold: 50
+      onHover: (target) =>
+        @$el.addClass 'stackable' unless @$el.is 'stackable'
+      onBlur: (target) =>
+        @$el.removeClass 'stackable'
 
   render: ->
     @$el
