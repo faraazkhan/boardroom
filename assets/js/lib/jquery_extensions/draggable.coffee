@@ -9,6 +9,13 @@ $.fn.draggable = (opts) ->
     position : (dx, dy, x, y) -> left: x, top: y
   , opts
 
+  trigger = (name) ->
+    pos = $this.position()
+    $(window).trigger name,
+      target: $this[0]
+      x: pos.left
+      y: pos.top
+
   $this.on 'mousedown.draggable', (e) ->
     return true unless settings.isTarget(e.target)
 
@@ -31,14 +38,14 @@ $.fn.draggable = (opts) ->
       lastX = e.pageX
       lastY = e.pageY
 
-      pos = $this.position()
-      $('body').trigger 'drag', target: $this[0], x: pos.left, y: pos.top
-
+      trigger 'drag'
       settings.onMouseMove e
       false
 
     $(window).on 'mouseup.draggable', (e) ->
       $(window).off 'mousemove.draggable'
+      $(window).off 'mouseup.draggable'
+      trigger 'drop'
       settings.onMouseUp e
       false
 

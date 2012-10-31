@@ -33,6 +33,7 @@ class boardroom.views.Card extends Backbone.View
 
   initialize: (attributes) ->
     { @socket } = attributes
+    @$el.data 'view', @
     @initializeDraggable()
     @initializeDroppable()
     @cardLock = new boardroom.models.CardLock
@@ -181,11 +182,7 @@ class boardroom.views.Card extends Backbone.View
         z = @bringForward()
         @socket.emit 'card.update', { _id: @model.id, z }
       onMouseMove: =>
-        @socket.emit 'card.update',
-          _id: @model.id
-          x: @left()
-          y: @top()
-          author: @model.get('board').get('user_id')
+        @emitMove()
 
   initializeDroppable: ->
     @$el.droppable
@@ -194,6 +191,21 @@ class boardroom.views.Card extends Backbone.View
         @$el.addClass 'stackable' unless @$el.is 'stackable'
       onBlur: (target) =>
         @$el.removeClass 'stackable'
+      onDrop: (target) =>
+        $(target).data('view').snapTo @el
+        @$el.removeClass 'stackable'
+
+  snapTo: (target) ->
+    pos = $(target).position()
+    @moveTo x: pos.left + 10, y: pos.top + 20
+    @emitMove()
+
+  emitMove: () ->
+    @socket.emit 'card.update',
+      _id: @model.id
+      x: @left()
+      y: @top()
+      author: @model.get('board').get('user_id')
 
   render: ->
     @$el
