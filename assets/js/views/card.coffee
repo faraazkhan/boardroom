@@ -33,8 +33,8 @@ class boardroom.views.Card extends Backbone.View
 
   initialize: (attributes) ->
     { @socket } = attributes
-    @initializeDrag()
-    @initializeDropStacking()
+    @initializeDraggable()
+    @initializeDroppable()
     @cardLock = new boardroom.models.CardLock
     @cardLock.poll =>
       @hideNotice()
@@ -170,7 +170,7 @@ class boardroom.views.Card extends Backbone.View
     @$el.css 'z-index', newZ
     newZ
 
-  initializeDrag: ->
+  initializeDraggable: ->
     @$el.draggable
       isTarget: (target) ->
         return false if $(target).is 'textarea'
@@ -187,7 +187,7 @@ class boardroom.views.Card extends Backbone.View
           y: @top()
           author: @model.get('board').get('user_id')
 
-  initializeDropStacking: ->
+  initializeDroppable: ->
     @$el.droppable
       threshold: 50
       onHover: (target) =>
