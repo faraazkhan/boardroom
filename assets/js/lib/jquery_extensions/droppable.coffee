@@ -5,20 +5,30 @@ $.fn.droppable = (opts) ->
     threshold = 50
     onHover: (target) ->
     onBlur: (target) ->
+    onDrop: (target) ->
   , opts
 
-  $('body').on 'drag', (event, data) ->
+  hovering = false
+
+  isHovering = (data) ->
+    pos = $this.position()
+    pos.left <= data.x <= (pos.left + threshold) and pos.top <= data.y <= (pos.top + threshold)
+
+  $(window).on 'drag', (event, data) ->
     return if $this[0] == data.target
 
-    pos = $this.position()
-    hovering = (data) ->
-      pos.left <= data.x <= (pos.left + threshold) and pos.top <= data.y <= (pos.top + threshold)
-
-    if hovering(data)
+    if isHovering(data) and hovering == false
+      hovering = true
       settings.onHover data.target
-      #$this.addClass 'stackable' unless $this.is '.stackable'
-    else
+
+    if ! isHovering(data) and hovering == true
+      hovering = false
       settings.onBlur data.target
-      #$this.removeClass 'stackable' if $this.is '.stackable'
+
+  $(window).on 'drop', (event, data) ->
+    return if $this[0] == data.target
+
+    if isHovering(data)
+      settings.onDrop data.target
 
   $this
