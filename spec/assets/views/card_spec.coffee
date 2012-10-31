@@ -57,6 +57,20 @@ describe 'boardroom.views.Card', ->
         expect(args.text).toEqual ''
         expect(args.author).toEqual @board.get('user_id')
 
+    describe 'focusing text', ->
+      beforeEach ->
+        @z = sinon.spy()
+        @socket.on 'card.update', @z
+
+        event = $.Event 'focus'
+        @cardView
+          .$('textarea')
+          .trigger(event)
+
+      it 'emits a "focus" socket event', ->
+        console.log @cardView.$el.css('z-index')
+        expect(@z.called).toBeTruthy()
+
     describe 'deleting the card', ->
       beforeEach ->
         @delete = sinon.spy()

@@ -19,6 +19,7 @@ class boardroom.views.Card extends Backbone.View
   events:
     'click .color': 'changeColor'
     'keyup textarea': 'changeText'
+    'focus textarea': 'focusText'
     'click .delete': 'delete'
 
   initialize: (attributes) ->
@@ -60,6 +61,10 @@ class boardroom.views.Card extends Backbone.View
     @adjustTextarea()
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, text, z, author }
+
+  focusText: ->
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, z}
 
   delete: ->
     @socket.emit 'card.delete', @model.id
