@@ -3,14 +3,18 @@
     span.logo Bo
   .info (Double-click below to add a card)
   input#name(type="text", value="#{board.name}")
+  button#draw Draw
   include includes/user_info
 
+svg.draw-render(xmlns="http://www.w3.org/2000/svg", version="1.1")
 .board
   #connection-status-modal(style="display:none")
     #connection-status
+  .draw-pane
 
 script(type="text/javascript")
   var attributes = !{JSON.stringify(board)};
   var board = new boardroom.models.Board(attributes);
   var roomView = new boardroom.views.Room({ model: board });
   roomView.render();
+

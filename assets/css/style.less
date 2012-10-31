@@ -548,3 +548,41 @@ form#login {
     font-size: 18px;
   }
 }
+
+.draw-render {
+  position: absolute;
+  left: 0;
+  top: 48px;
+  height: 4000px;
+  width: 4000px;
+  z-index: 0;
+
+  circle {
+    fill: #fff;
+    radius: 17px;
+  }
+
+  path {
+    stroke: #fff;
+    stroke-width: 2px;
+    fill: none;
+  }
+}
+
+.draw-pane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 4000px;
+  width: 4000px;
+  display: none;
+  z-index: 2000;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  &:hover {
+    cursor: normal;
+  }
+}
