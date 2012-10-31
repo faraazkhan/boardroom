@@ -1,7 +1,7 @@
 { exec } = require 'child_process'
 
 task 'spec:client', 'Run all specs in spec/client', ->
-  exec 'NODE_ENV=test jasmine-headless-webkit', (error, stdout) ->
+  exec 'NODE_ENV=test jasmine-headless-webkit --color', (error, stdout) ->
     console.log stdout
     throw error if error
 
