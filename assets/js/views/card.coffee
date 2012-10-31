@@ -171,7 +171,7 @@ class boardroom.views.Card extends Backbone.View
     newZ
 
   initializeDrag: ->
-    @$el.followDrag
+    @$el.draggable
       isTarget: (target) ->
         return false if $(target).is 'textarea'
         return false if $(target).is '.color'
