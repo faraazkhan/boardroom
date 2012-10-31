@@ -15,6 +15,11 @@ DB.find = (colName, query, callback) ->
     col.find(query).toArray (error, items) ->
       callback error, items
 
+DB.insert = (colName, documents, callback) ->
+  withCollection colName, (error, col) ->
+    col.insert documents, { safe: true}, (error, docs) ->
+      callback error, docs
+
 DB.update = (colName, query, update, callback) ->
   withCollection colName, (error, col) ->
     col.update query, update, { safe: true, upsert: false, multi: true }, (error, num) ->
