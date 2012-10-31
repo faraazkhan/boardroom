@@ -118,22 +118,25 @@ img.avatar {
   -o-user-select: none;
   user-select: none;
   position:absolute;
+  padding: 1em 1em 32px 1em;
+
   background-color: #eea;
-  padding: 1em 1em .5em 1em;
   .card-background(#efff8c);
   .box-shadow(2px, 2px, 5px, #333);
 
   textarea {
-    font-family: 'Rosario', sans-serif;
-    font-size: 14px;
-    text-rendering: optimizeLegibility;
-    border: none;
-    background: none;
     padding: 0;
     margin: 0;
     width: 256px;
+
+    border: none;
+    background: none;
     outline: none;
     resize: none;
+
+    font-family: 'Rosario', sans-serif;
+    font-size: 14px;
+    text-rendering: optimizeLegibility;
   }
 
   img.delete {
@@ -145,12 +148,21 @@ img.avatar {
     cursor: pointer;
   }
 
+  .toolbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 22px;
+    padding: 5px;
+  }
+
   .colors {
     display: none;
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
+    float: right;
+    margin: 5px 10px 0 0;
     line-height: 12px;
+
     .color {
       display: inline-block;
       margin-left: 3px;
@@ -159,6 +171,44 @@ img.avatar {
       border: 1px solid rgba(64,64,64,0.67);
       box-sizing: border-box;
     }
+  }
+
+  .plus1 {
+    float: right;
+    height: 22px;
+
+    .btn {
+      display: none;
+      padding: 0 5px;
+      margin: 2px 7px 0 0;
+      float: left;
+      
+      color: #000;
+      .border-radius(5px);
+      background: -webkit-linear-gradient(top, #ddd 0%, #bbb 100%);
+      border: 1px solid #aaa;
+
+      &:hover {
+        background: -webkit-linear-gradient(top, #ffd 0%, #ddd 100%);
+      }
+    }
+
+    .plus-count {
+      float: left;
+      padding: 3px 0 0 0;
+      margin-right: 5px;
+
+      color: #000;
+      color: rgba(0,0,0,.5);
+
+      text-align: right;
+      font-weight: bold;
+    }
+
+  }
+
+  .plus-authors {
+    display: none;
   }
 
   .notice {
@@ -193,6 +243,7 @@ img.avatar {
 .card:hover .authors img { visibility: visible; }
 .card:hover img.delete { display: block; }
 .card:hover .colors { display: block; cursor: pointer;}
+.card:hover .plus1 .btn { display: block; }
 
 .card.i-wish:hover, .card.i-like:hover {
   .colors { display: none; }
