@@ -7,12 +7,13 @@ uniq = (array) ->
 
 exports.up = (next) ->
   query = [
-    { $project : { authors : 1 } }, 
-    { $unwind : "$authors" }, 
+    { $project : { authors : 1 } },
+    { $unwind : "$authors" },
     { $group : { _id : { id : "$_id", authors : "$authors" } , num : { $sum : 1 } } },
     { $match : { num : { $gt : 1 } } }
   ]
   DB.aggregate 'cards', query, (error, results) ->
+    return next() unless results
     ids = uniq ( result._id.id for result in results )
     return next() if ids.length == 0
     DB.find 'cards', { _id: { $in: ids } }, (error, cards) ->
