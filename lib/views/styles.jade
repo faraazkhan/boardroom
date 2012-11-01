@@ -1,0 +1,94 @@
+!!! 5
+html
+  head
+    != css('application')
+    style(type='text/css')
+      .card {
+        position: relative;
+        width: 256px;
+        float: left;
+        margin-bottom: 20px;
+        margin-left: 20px;
+      }
+      input,.btn {margin-right: 10px; float: left; }
+    link(href='http://fonts.googleapis.com/css?family=Lato:400,700|Inconsolata:400,700', rel='stylesheet', type='text/css')
+    title Boardroom - Real-time Reflection and Story Boarding
+  body
+    .container
+      #header
+        include includes/full_logo
+
+      section
+        h1 LATO, Our Header Font</h1>
+
+      section
+        h2 Inconsolata, Our subheading font
+
+      section
+        p
+          strong LATO, our text font.
+        p Folding@home is a distributed computing project for disease research that simulates protein folding, computational drug design, and other types of molecular dynamics. The project is powered by the idle processing resources of thousands of personal computers owned by volunteers who have installed the software on their systems. Its primary purpose is to determine the mechanisms of protein folding, which is the process by which proteins reach their final three-dimensional structure, and to examine the causes of protein misfolding. This is of significant academic interest with major implications for medical research into Alzheimer's disease, Huntington's disease, and many forms of cancer, among other diseases. Folding@home is developed and operated by the Pande laboratory at Stanford University, under the direction of Vijay Pande, and is shared by various scientific institutions and research laboratories across the world. The project has pioneered the use of GPUs, PlayStation 3s, and Message Passing Interface for distributed computing and scientific research. Folding@home is one of the world's fastest computing systems. Since its launch in 2000, it has assisted over 100 scientific research papers.
+
+      section
+        h4 COLOR PALETTE
+        .row
+          ul.span2.yellow
+            li.light #fbee83
+            li.mid #e7db79
+            li.dark #d6ca6f
+
+          ul.span2.red
+            li.light #eac2ae
+            li.mid #dab6a3
+            li.dark #c8a796
+
+          ul.span2.tan
+            li.light #ded6b7
+            li.mid #ccc5a8
+            li.dark #bab499
+
+          ul.span2.blue
+            li.light #bfd0dc
+            li.mid #afc0cb
+            li.dark #a0afb9
+
+          ul.span2.green
+            li.light #c0c5b0
+            li.mid #aeb3a0
+            li.dark #9ca190
+
+          ul.span2.gray
+            li.light #d4d4d4
+            li.mid #bcbcbc
+            li.dark #383a3d
+
+      section
+        h4 GRADIENTS & EFFECTS
+        .row
+          .card.yellow
+            .notice
+            textarea La tempête tropicale Alberto, en anglais Tropical Storm Alberto,
+            .authors
+          .card.red
+            textarea La tempête tropicale Alberto, en anglais Tropical Storm Alberto
+          .card.tan
+            textarea La tempête tropicale Alberto, en anglais Tropical Storm Alberto
+          .card.blue
+            textarea La tempête tropicale Alberto, en anglais Tropical Storm Alberto
+          .card.green
+            textarea La tempête tropicale Alberto, en anglais Tropical Storm Alberto
+
+
+      section
+        h4 BUTTONS, FORMS, LINKS, ETC...
+
+        form
+          fieldset
+            input(type="text", placeholder="enter a board title")
+            button.btn create
+          fieldset
+            input(type="text", value="zupah cool board")
+            input.btn(type="submit", value="create")
+          a(href='http://en.gravatar.com/site/login/') gravatar
+
+
