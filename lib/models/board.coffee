@@ -2,7 +2,7 @@
 Card = require "#{__dirname}/card"
 
 BoardSchema = new mongoose.Schema
-  name: String
+  name: { type: String, required: true }
   creator: String
   created: Date
   updated: Date

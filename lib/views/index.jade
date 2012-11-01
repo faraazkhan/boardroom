@@ -20,6 +20,8 @@
         | Connect to a board and take turns to post your
         | thoughts. Edit and group similar thoughts together.
     #boards
+      - if (flash)
+        .flash= flash.error
       h2 Here's what we're reflecting about!
       form(id='enter-board', method='post', action='/boards')
         input#board-name(type='text', name='name')

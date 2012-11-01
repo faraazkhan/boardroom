@@ -14,6 +14,7 @@ class HomeController extends ApplicationController
         user: request.session
         created: created.sort cmp
         collaborated: collaborated.sort cmp
+        flash: request.flash()
     catch error
       return @throw500 response, error
 

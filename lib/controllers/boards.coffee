@@ -9,8 +9,13 @@ class BoardsController extends ApplicationController
   create: (request, response) =>
     board = new Board request.body
     board.creator = request.session.user_id
-    board.sync.save()
-    response.redirect "/boards/#{board.id}"
+    try
+      board.sync.save()
+      response.redirect "/boards/#{board.id}"
+    catch error
+      # request.flash 'error', error.toString()
+      request.flash 'error', 'Could not create board'
+      response.redirect '/'
 
   show: (request, response) =>
     try
