@@ -1,5 +1,6 @@
 { mongoose, db } = require './db'
-Card = require "#{__dirname}/card"
+Populator = require "./populator"
+Card = require "./card"
 
 BoardSchema = new mongoose.Schema
   name: String
@@ -14,34 +15,19 @@ BoardSchema.pre 'save', (next) ->
 
 BoardSchema.statics =
   findById: (id, callback) ->
-    @findOne { _id: id }, @_decorate(callback)
+    @findOne { _id: id }, @populate(callback)
 
   createdBy: (user, callback) ->
-    @find { creator: user }, null, { sort: 'name' }, @_decorate(callback)
+    @find { creator: user }, null, { sort: 'name' }, @populate(callback)
 
   collaboratedBy: (user, callback) ->
     Card.find { authors: user }, (error, cards) =>
       boardIds = cards.map (card) ->
         card.boardId
-      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, @_decorate(callback)
+      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, @populate(callback)
 
-  _decorate: (callback) ->
-    return undefined unless callback?
-    (error, boards) ->
-      return callback error, boards unless boards?
-      if boards.length?
-        boardMap = {}
-        boardMap[board.id] = board for board in boards
-        boardIds = ( board.id for board in boards )
-        board.cards = [] for board in boards
-        Card.find { boardId: { $in: boardIds } }, (error, cards) ->
-          boardMap[card.boardId].cards.push card for card in cards
-          callback error, boards
-      else
-        board = boards
-        Card.find { boardId: board.id }, (error, cards) ->
-          board.cards = cards
-          callback error, board
+  populate: (callback) ->
+    new Populator('board', 'card').populate callback
 
 BoardSchema.methods =
   collaborators: ->
