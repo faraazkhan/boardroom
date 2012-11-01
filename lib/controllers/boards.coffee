@@ -3,6 +3,7 @@ Sockets = require './../sockets'
 ApplicationController = require './application'
 Board = require './../models/board'
 Card = require './../models/card'
+Path = require './../models/path'
 util = require 'util'
 
 class BoardsController extends ApplicationController
@@ -18,10 +19,12 @@ class BoardsController extends ApplicationController
       board = Board.sync.findById id
       return @throw404 response unless board?
       cards = Card.sync.findByBoardId board.id
+      paths = Path.sync.findByBoardId board.id
       board =
         _id: board.id
         name: board.name
         cards: cards
+        paths: paths
         users: Sockets.boards[board.name] || {}
         user_id: request.session.user_id
       response.render 'board',

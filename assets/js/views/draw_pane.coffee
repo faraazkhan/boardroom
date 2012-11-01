@@ -1,5 +1,6 @@
 class boardroom.views.DrawPane extends Backbone.View
   el: '.draw-pane'
+  UPDATE_DELAY: 300
 
   events:
     'mousedown': 'down'
@@ -8,9 +9,9 @@ class boardroom.views.DrawPane extends Backbone.View
     'mouseleave': 'up'
     'selectstart': -> false
 
-  initialize: ->
-    @stroke
-    @renderer = new boardroom.views.DrawRenderer
+  initialize: (attributes) ->
+    { @socket, @drawRenderer, @board } = attributes
+    @socket.on 'path.created', @created
 
   start: ->
     @$el.show()
@@ -19,18 +20,39 @@ class boardroom.views.DrawPane extends Backbone.View
     @up() if @stroke
     @$el.hide()
 
+  created: (path) =>
+    @id = path._id
+    if @stroke.length > 1
+      @update()
+
+  update: =>
+    @drawRenderer.updatePath {_id:@id, data:@stroke} if @id
+    if @updater || ! @id
+      return
+    else if (new Date().getTime() - @lastUpdate < @UPDATE_DELAY)
+      @updater = setTimeout @updateNow(@stroke), @UPDATE_DELAY - (new Date().getTime() - @lastUpdate)
+    else
+      @updateNow(@stroke)()
+
+  updateNow: (stroke) => =>
+    @socket.emit 'path.update', _id:@id, data: stroke
+    @lastUpdate = new Date().getTime()
+    @updater = null
+
+
   down: (e) ->
-    @stroke = []
-    @stroke.push( [e.offsetX, e.offsetY] )
-    @renderer.start @stroke
+    @id = null
+    @stroke = [[e.offsetX, e.offsetY]]
+    @socket.emit 'path.create', boardId:@board.get('_id'), data: @stroke
+    @lastUpdate = new Date().getTime()
 
   up: (e) ->
     if @stroke
       @stroke.push( [e.offsetX, e.offsetY] )
-      @renderer.commit @stroke
+      @update()
       @stroke = null
 
   move: (e) ->
     if @stroke
-      @stroke.push( [e.offsetX, e.offsetY] ) if @stroke
-      @renderer.draw @stroke
+      @stroke.push( [e.offsetX, e.offsetY] )
+      @update()

@@ -22,6 +22,7 @@ class Handler
     model = new @modelClass data
     model.save (error, card) =>
       throw error if error?
+      @socket.emit "#{@name}.created", model
       @socket.emit event, model
       @socket.broadcast.emit event, model
 

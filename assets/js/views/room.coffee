@@ -8,6 +8,16 @@ class boardroom.views.Room extends Backbone.View
       model: @model
       socket: @socket
 
+    @drawRenderer = new boardroom.views.DrawRenderer
+      model: @model
+      socket: @socket
+    @drawPane = new boardroom.views.DrawPane
+      board: @model
+      socket: @socket
+      drawRenderer: @drawRenderer
+    @drawButton = new boardroom.views.DrawButton
+      drawPane: @drawPane
+
   render: ->
     @headerView.render()
     @boardView.render()

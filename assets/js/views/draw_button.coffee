@@ -1,12 +1,12 @@
-class boardroom.views.Draw extends Backbone.View
+class boardroom.views.DrawButton extends Backbone.View
   el: '#draw'
 
   events:
     'click': 'toggleDrawMode'
 
   initialize: (attributes) ->
+    { @drawPane } = attributes
     @$el.data('drawing',false)
-    @drawPane = new boardroom.views.DrawPane
 
   toggleDrawMode: ->
     drawing = !@$el.data('drawing')

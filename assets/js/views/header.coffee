@@ -5,7 +5,6 @@ class boardroom.views.Header extends Backbone.View
     'keyup #name': 'changeBoardName'
 
   initialize: (attributes) ->
-    @headerView = new boardroom.views.Draw
     { @socket } = attributes
     @socket.on 'board.update', @onBoardUpdate
 
