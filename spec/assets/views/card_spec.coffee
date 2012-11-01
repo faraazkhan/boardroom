@@ -46,13 +46,13 @@ describe 'boardroom.views.Card', ->
           .click()
 
       it 'increments its plus count', ->
-        expect(@cardView.$('.plus1 .plus-count').text()).toBe('1')
+        expect(@cardView.$('.plus1 .plus-count').text()).toBe('+1')
 
       it 'emits a "card.update" socket event', ->
         expect(@plus1.called).toBeTruthy()
         [args] = @plus1.lastCall.args
         expect(args._id).toEqual @card.id
-        expect(args.plus_author).toEqual @board.get('user_id')
+        expect(args.plusAuthor).toEqual @board.get('user_id')
 
     describe 'entering text', ->
       beforeEach ->
@@ -86,7 +86,6 @@ describe 'boardroom.views.Card', ->
           .trigger(event)
 
       it 'emits a "focus" socket event', ->
-        console.log @cardView.$el.css('z-index')
         expect(@z.called).toBeTruthy()
 
     describe 'deleting the card', ->
