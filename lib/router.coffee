@@ -4,6 +4,7 @@ connectAssets = require 'connect-assets'
 fibrous = require 'fibrous'
 Sockets = require './sockets'
 HomeController = require './controllers/home'
+ContentsController = require './controllers/contents'
 SessionsController = require './controllers/sessions'
 BoardsController = require './controllers/boards'
 UsersController = require './controllers/users'
@@ -24,6 +25,9 @@ class Router
 
     homeController = new HomeController
     @app.get '/', @authenticate, homeController.index
+
+    contentsController = new ContentsController
+    @app.get '/styles', @authenticate, contentsController.styles
 
     sessionsController = new SessionsController
     @app.get '/login', sessionsController.new

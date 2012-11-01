@@ -1,0 +1,35 @@
+
+@secondaryColor: @yellowDark;
+
+.card {
+  cursor: move;
+  position:absolute;
+  padding: 1em 1em .5em 1em;
+  .box-shadow(2px 2px 5px @grayLight);
+  border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%);
+  border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+
+  textarea {
+    font-size: 12px;
+    line-height: 16px;
+    text-rendering: optimizeLegibility;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    resize: none;
+    width: @cardWidth;
+    color: @grayDark;
+    .box-shadow(none);
+  }
+
+  &.yellow { #gradient > .card2(@yellowMid, @yellowLight); }
+  &.red{ #gradient > .card2(@redMid, @redLight); }
+  &.tan { #gradient > .card2(@tanMid, @tanLight); }
+  &.blue { #gradient > .card2(@blueMid, @blueLight); }
+  &.green { #gradient > .card2(@greenMid, @greenLight); }
+
+
+
+}
