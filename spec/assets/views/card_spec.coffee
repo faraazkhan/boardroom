@@ -80,7 +80,7 @@ describe 'boardroom.views.Card', ->
         @z = sinon.spy()
         @socket.on 'card.update', @z
 
-        event = $.Event 'focus'
+        event = $.Event 'click'
         @cardView
           .$('textarea')
           .trigger(event)

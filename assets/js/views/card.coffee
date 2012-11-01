@@ -27,7 +27,7 @@ class boardroom.views.Card extends Backbone.View
   events:
     'click .color': 'changeColor'
     'keyup textarea': 'changeText'
-    'focus textarea': 'focusText'
+    'click textarea': 'focusText'
     'click .plus1 .btn': 'incrementPlusCount'
     'click .delete': 'delete'
 

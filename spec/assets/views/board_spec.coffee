@@ -127,28 +127,29 @@ describe 'boardroom.views.Board', ->
     beforeEach ->
       @spy = sinon.spy()
       @socket.on 'card.create', @spy
-      dblclick = new $.Event 'dblclick'
-      dblclick.pageX = 200
-      dblclick.pageY = 201
-      @boardView.$el.trigger dblclick
-
-    it 'emits a "card.create" socket event', ->
-      expect(@spy.called).toBeTruthy()
-
-    it 'creates the card at the mouse location', ->
-      call = @spy.firstCall
-      expect(call.args[0].x).toEqual 200 - 10
-      expect(call.args[0].y).toEqual 201 - 10
+      @dblclick = new $.Event 'dblclick'
+      @dblclick.pageX = 200
+      @dblclick.pageY = 201
 
     describe 'for the first card', ->
       beforeEach ->
         @boardView.cardViews = []
-        @spy = sinon.spy()
-        @socket.on 'card.create', @spy
-        dblclick = new $.Event 'dblclick'
-        dblclick.pageX = 200
-        dblclick.pageY = 201
-        @boardView.$el.trigger dblclick
+        @boardView.$el.trigger @dblclick
+
+      it 'emits a "card.create" socket event', ->
+        expect(@spy.called).toBeTruthy()
+
+      it 'creates the card at the mouse location', ->
+        call = @spy.firstCall
+        expect(call.args[0].x).toEqual 200 - 10
+        expect(call.args[0].y).toEqual 201 - 10
+
+    describe 'for the second card and beyond', ->
+      beforeEach ->
+        @boardView.$el.trigger @dblclick
+
+      it 'emits a "card.create" socket event', ->
+        expect(@spy.called).toBeTruthy()
 
       it 'creates the card at the mouse location', ->
         call = @spy.firstCall
