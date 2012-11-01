@@ -4,6 +4,7 @@ CardSchema = new mongoose.Schema
   boardId: String
   creator: String
   authors: Array
+  plusAuthors: Array
   x: Number
   y: Number
   z: Number
@@ -29,6 +30,8 @@ CardSchema.methods =
       @[attribute] = attributes[attribute]
     if attributes.author?
       @authors.push attributes.author unless attributes.author in @authors
+    if attributes.plusAuthor?
+      @plusAuthors.push attributes.plusAuthor unless attributes.plusAuthor in @plusAuthors
     @save (error, card) ->
       callback error, card
 
