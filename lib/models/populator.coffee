@@ -1,39 +1,51 @@
-Child = null
+Board = require './board'
+Group = require './group'
+Card  = require './card'
 
 class Populator
-  constructor: (parent, child) ->
-    Child = require "./#{child}"
-    @children = "#{child}s"
-    @fk = "#{parent}Id"
+  constructor: () ->
 
   populate: (callback) ->
     return undefined unless callback?
-    (error, parents) =>
-      return callback error, parents unless parents?
-      if parents.length?
-        @populateMany callback, parents
+    (error, boards) =>
+      return callback error, boards unless boards?
+      if boards.length?
+        @populateMany callback, boards
       else
-        @populateOne callback, parents
+        @populateOne callback, boards
 
-  populateMany: (callback, parents) ->
-    map = {}
-    map[parent.id] = parent for parent in parents
-    ids = ( parent.id for parent in parents )
-    parent[@children] = [] for parent in parents
-    query = {}
-    query[@fk] = { $in: ids }
-    Child.find query, (error, children) =>
-      for child in children
-        do (child) =>
-          parent = map[child[@fk]]
-          parent[@children].push child for child in children
-      callback error, parents
+  populateMany: (callback, boards) ->
+    count = 0
+    for board in boards
+      do (board) =>
+        @fillBoard board, (error, board) ->
+          return callback error if error?
+          count += 1
+          callback null, boards if count == boards.length
 
-  populateOne: (callback, parent) ->
-    query = {}
-    query[@fk] = parent.id
-    Child.find query, (error, children) =>
-      parent[@children] = children
-      callback error, parent
+  populateOne: (callback, board) ->
+    @fillBoard board, (error, board) ->
+      return callback error if error?
+      callback error, board
+
+  fillBoard: (board, callback) ->
+    Group.find { boardId: board.id }, (error, groups) =>
+      return callback error if error?
+      board.groups = []
+      return callback error, board if groups.length == 0
+      count = 0
+      for group in groups
+        do (group) =>
+          @fillGroup group, (error, group) ->
+            return callback error if error?
+            board.groups.push group
+            count += 1
+            callback null, board if count == groups.length
+
+  fillGroup: (group, callback) ->
+    Card.find { groupId: group.id }, (error, cards) ->
+      return callback error if error?
+      group.cards = cards
+      callback null, group
 
 module.exports = Populator

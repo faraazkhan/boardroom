@@ -19,7 +19,7 @@ for board in boards
     a(href='/boards/' + board._id)
       h4.title= board.name
       .note-count
-        span.count= board.cards.length
+        span.count= board.cards().length
         | &nbsp;notes,&nbsp
         span.count= board.collaborators().length
         | &nbsp;collaborators

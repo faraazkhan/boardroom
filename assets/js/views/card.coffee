@@ -149,9 +149,6 @@ class boardroom.views.Card extends Backbone.View
   hideNotice: ->
     @$('.notice').fadeOut 100
 
-  zIndex: ->
-    parseInt(@$el.css('z-index')) || 0
-
   left: ->
     @$el.position().left
 

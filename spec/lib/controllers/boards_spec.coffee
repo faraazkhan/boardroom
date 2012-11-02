@@ -1,4 +1,4 @@
-{ Factory, Board, Card, LoggedInRouter, request, jsdom, url, $ } =
+{ Factory, Board, LoggedInRouter, request, jsdom, url, $ } =
   require '../support/controller_test_support'
 
 describe 'BoardsController', ->
