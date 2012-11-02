@@ -2,7 +2,6 @@ require 'fibrous'
 Sockets = require './../sockets'
 ApplicationController = require './application'
 Board = require './../models/board'
-Card = require './../models/card'
 util = require 'util'
 
 class BoardsController extends ApplicationController
@@ -17,13 +16,10 @@ class BoardsController extends ApplicationController
       id = request.params.id
       board = Board.sync.findById id
       return @throw404 response unless board?
-      cards = Card.sync.findByBoardId board.id
-      board =
-        _id: board.id
-        name: board.name
-        cards: cards
-        users: Sockets.boards[board.name] || {}
-        user_id: request.session.user_id
+      board = board.toObject getters: true
+      board._id = board.id
+      board.users = Sockets.boards[board.name] || {}
+      board.user_id = request.session.user_id
       response.render 'board',
         board: board
         user: request.session
@@ -32,7 +28,7 @@ class BoardsController extends ApplicationController
 
   destroy: (request, response) =>
     board = Board.sync.findById request.params.id
-    board.sync.destroy()
+    board.sync.remove()
     response.redirect '/'
 
 module.exports = BoardsController

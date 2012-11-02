@@ -1,6 +1,6 @@
 class boardroom.views.Board extends Backbone.View
   el: '.board'
-  cardViews: []
+  groupViews: []
 
   events:
     'dblclick': 'requestNewCard'
@@ -8,7 +8,7 @@ class boardroom.views.Board extends Backbone.View
   initialize: (attributes) ->
     { @socket } = attributes
     @initializeSocketEventHandlers()
-    @initializeCards()
+    @initializeGroups()
 
   initializeSocketEventHandlers: ->
     @socket.on 'joined', @onJoined
@@ -16,13 +16,13 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'disconnect', @onDisconnect
     @socket.on 'reconnecting', @onReconnecting
     @socket.on 'reconnect', @onReconnect
-    @socket.on 'card.create', @onCardCreate
+    @socket.on 'group.create', @onGroupCreate
     @socket.on 'card.update', @onCardUpdate
     @socket.on 'card.delete', @onCardDelete
 
-  initializeCards: ->
-    for card in @model.get('cards')
-      @displayNewCard card
+  initializeGroups: ->
+    for group in @model.get('groups')
+      @displayNewGroup group
 
   displayStatus: (status) ->
     @$('#connection-status').html status
@@ -30,16 +30,17 @@ class boardroom.views.Board extends Backbone.View
     if status then modal.show() else modal.hide()
 
   findCardView: (id) ->
-    _.detect @cardViews, (cardView) ->
-      cardView.model.id is id
+    _.detect @groupViews, (groupView) ->
+      _.detect groupView.cardViews, (cardView) ->
+        cardView.model.id is id
 
   requestNewCard: (event) ->
     return unless event.target.className == 'board'
-    maxZ = if @cardViews.length
-        _.max(@cardViews, (view) -> view.zIndex()).zIndex()
+    maxZ = if @groupViews.length
+        _.max(@groupViews, (view) -> view.zIndex()).zIndex()
       else
         0
-    @socket.emit 'card.create',
+    @socket.emit 'group.create',
       boardId: @model.get('_id')
       creator: @model.get('user_id')
       x: parseInt (event.pageX - $(event.target).offset().left) - 10
@@ -47,23 +48,22 @@ class boardroom.views.Board extends Backbone.View
       z: maxZ + 1
       focus: true
 
-  displayNewCard: (data) ->
-    card = new boardroom.models.Card _.extend(data, board: @model)
-    cardView = new boardroom.views.Card
-      model: card
+  displayNewGroup: (data) ->
+    group = new boardroom.models.Group _.extend(data, board: @model)
+    groupView = new boardroom.views.Group
+      model: group
       socket: @socket
-    @$el.append cardView.render().el
-    cardView.adjustTextarea()
-    @cardViews.push cardView
+    @$el.append groupView.render().el
+    @groupViews.push groupView
 
   # --------- socket handlers ---------
+
+  onGroupCreate: (data) =>
+    @displayNewGroup data
 
   onCardUpdate: (data) =>
     cardView = @findCardView data._id
     cardView.update data
-
-  onCardCreate: (data) =>
-    @displayNewCard data
 
   onCardDelete: (id) =>
     cardView = @findCardView id

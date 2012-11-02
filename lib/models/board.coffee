@@ -1,6 +1,7 @@
 { mongoose, db } = require './db'
 Populator = require "./populator"
 Card = require "./card"
+Group = require "./group"
 
 BoardSchema = new mongoose.Schema
   name: String
@@ -8,10 +9,27 @@ BoardSchema = new mongoose.Schema
   created: Date
   updated: Date
 
+BoardSchema.virtual('groups').set (groups) ->
+  @vGroups = groups
+
+BoardSchema.virtual('groups').get () ->
+  @vGroups
+
 BoardSchema.pre 'save', (next) ->
   @created = new Date() unless @created?
   @updated = new Date()
   next()
+
+BoardSchema.pre 'remove', (next) ->
+  Group.findByBoardId @id, (error, groups) ->
+    next error if error?
+    next() if groups.length == 0
+    count = 0
+    for group in groups
+      do (group) ->
+        group.remove (error) ->
+          count += 1
+          next() if count == groups.length
 
 BoardSchema.statics =
   findById: (id, callback) ->
@@ -21,33 +39,30 @@ BoardSchema.statics =
     @find { creator: user }, null, { sort: 'name' }, @populate(callback)
 
   collaboratedBy: (user, callback) ->
-    Card.find { authors: user }, (error, cards) =>
-      boardIds = cards.map (card) ->
-        card.boardId
+    Group.collaboratedBy user, (error, groups) =>
+      return callback error, null if error?
+      boardIds = ( group.boardId for group in groups )
       @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, @populate(callback)
 
   populate: (callback) ->
-    new Populator('board', 'card').populate callback
+    new Populator().populate callback
 
 BoardSchema.methods =
   collaborators: ->
     collabs = []
     ( ( collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 ) ) \
-      for user in card.authors ) for card in @cards
+      for user in card.authors ) for card in @cards()
     collabs
+
+  cards: ->
+    cards = []
+    ( cards = cards.concat(group.cards) ) for group in @groups
+    cards
 
   lastUpdated: ->
     up = @updated
-    ( up = if up.getTime() > card.updated.getTime() then up else card.updated ) for card in @cards
+    up = ( if up.getTime() > card.updated.getTime() then up else card.updated ) for card in @cards()
     up
-
-  destroy: (callback) ->
-    @remove (error) =>
-      if (error)
-        callback(error)
-      else
-        Card.findByBoardId(@id).remove (error) ->
-          callback(error)
 
   updateAttributes: (attributes, callback) ->
     for attribute in ['name'] when attributes[attribute]?

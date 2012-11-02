@@ -1,4 +1,4 @@
-{ Factory, Board, Card } = require "../support/model_test_support"
+{ Factory, Board, Group, Card } = require "../support/model_test_support"
 
 describe 'board.Board', ->
   describe '.createdBy', ->
@@ -9,7 +9,8 @@ describe 'board.Board', ->
       boards = Board.sync.createdBy 'board-creator-1'
       expect(boards.length).toEqual 1
       expect(boards[0].name).toEqual 'board1'
-      expect(boards[0].cards.length).toEqual 1
+      expect(boards[0].groups.length).toEqual 1
+      expect(boards[0].groups[0].cards.length).toEqual 1
 
   describe '.collaboratedBy', ->
     beforeEach ->
@@ -25,7 +26,8 @@ describe 'board.Board', ->
   describe '#lastUpdated', ->
     beforeEach ->
       @board = Factory.sync 'board'
-      @card = Factory.sync 'card', boardId: @board.id
+      @group = Factory.sync 'group', boardId: @board.id
+      @card = Factory.sync 'card', groupId: @group.id
 
     it 'returns last updated of cards', ->
       @card.sync.save()
@@ -37,18 +39,24 @@ describe 'board.Board', ->
       board = Board.sync.findById @board.id
       expect(board.lastUpdated().getTime()).toEqual @board.updated.getTime()
 
-  describe '#destroy', ->
+  describe '#remove', ->
     beforeEach ->
       @board = Factory.sync 'board'
-      Factory.sync 'card', boardId: @board.id
-      Factory.sync 'card', boardId: @board.id
+      @group = Factory.sync 'group', boardId: @board.id
+      Factory.sync 'card', groupId: @group.id
+      Factory.sync 'card', groupId: @group.id
 
     it 'removes the board', ->
-      @board.sync.destroy()
+      @board.sync.remove()
       count = Board.sync.count {}
       expect(count).toEqual 0
 
+    it "removes the board's groups", ->
+      @board.sync.remove()
+      count = Group.sync.count {}
+      expect(count).toEqual 0
+
     it "removes the board's cards", ->
-      @board.sync.destroy()
+      @board.sync.remove()
       count = Card.sync.count {}
       expect(count).toEqual 0

@@ -1,13 +1,13 @@
-{ Factory, Board, Card } = require "../support/model_test_support"
+{ Factory, Card } = require "../support/model_test_support"
 
 describe 'card.Card', ->
-  describe '.findByBoardId', ->
+  describe '.findByGroupId', ->
     beforeEach ->
-      @board = Factory.sync 'board'
-      Factory.sync 'card', boardId: @board.id
+      @group = Factory.sync 'group'
+      Factory.sync 'card', groupId: @group.id
 
-    it 'finds all cards for the given board', ->
-      cards = Card.sync.findByBoardId @board.id
+    it 'finds all cards for the given group', ->
+      cards = Card.sync.findByGroupId @group.id
       expect(cards.length).toEqual 1
 
   describe '#updateAttributes', ->
@@ -17,15 +17,11 @@ describe 'card.Card', ->
 
       it 'updates its attributes', ->
         attributes =
-          x: @card.x + 1
-          y: @card.y + 1
           text: "#{@card.text}-updated"
           colorIndex: @card.colorIndex + 1
           deleted: ! @card.deleted
         @card.sync.updateAttributes attributes
         card = Card.sync.findById @card.id
-        expect(card.x).toEqual attributes.x
-        expect(card.y).toEqual attributes.y
         expect(card.text).toEqual attributes.text
         expect(card.colorIndex).toEqual attributes.colorIndex
         expect(card.deleted).toEqual attributes.deleted
