@@ -13,7 +13,7 @@ exports.up = (next) ->
     { $match : { num : { $gt : 1 } } }
   ]
   DB.aggregate 'cards', query, (error, results) ->
-    return next() unless results
+    return next() unless results?
     ids = uniq ( result._id.id for result in results )
     return next() if ids.length == 0
     DB.find 'cards', { _id: { $in: ids } }, (error, cards) ->
