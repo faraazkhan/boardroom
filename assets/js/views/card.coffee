@@ -34,8 +34,8 @@ class boardroom.views.Card extends Backbone.View
   initialize: (attributes) ->
     @$el.data 'view', @
     { @socket } = attributes
-    @initializeDraggable()
-    @initializeDroppable()
+    # @initializeDraggable()
+    # @initializeDroppable()
     @cardLock = new boardroom.models.CardLock
     @cardLock.poll =>
       @hideNotice()
@@ -79,6 +79,7 @@ class boardroom.views.Card extends Backbone.View
   focusText: ->
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, z}
+    @$('textarea').focus()
 
   incrementPlusCount: (e) ->
     e.preventDefault()
@@ -155,6 +156,9 @@ class boardroom.views.Card extends Backbone.View
   top: ->
     @$el.position().top
 
+  zIndex: ->
+    parseInt(@$el.css('z-index')) || 0
+
   bringForward: ->
     siblings = @$el.siblings '.card'
     return if siblings.length == 0
@@ -191,11 +195,6 @@ class boardroom.views.Card extends Backbone.View
       onDrop: (target) =>
         $(target).data('view').snapTo @el
         @$el.removeClass 'stackable'
-
-  snapTo: (target) ->
-    pos = $(target).position()
-    @moveTo x: pos.left + 10, y: pos.top + 20
-    @emitMove()
 
   emitMove: () ->
     @socket.emit 'card.update',
