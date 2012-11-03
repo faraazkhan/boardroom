@@ -40,6 +40,18 @@ GroupSchema.methods =
     @save (error, card) ->
       callback error, card
 
+  addCard: (newCard, callback)->
+      newCard.groupId = @id
+      newCard.save (error, card) =>
+        throw error if error?
+        newCards = []
+        for card in @cards
+          do (card) =>
+            newCards.push card if card.id isnt newCard.id
+        newCards.push newCard 
+        @cards = newCards
+
+
 Group = db.model 'Group', GroupSchema
 
 module.exports = Group

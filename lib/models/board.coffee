@@ -70,6 +70,16 @@ BoardSchema.methods =
     @save (error, card) ->
       callback error, card
 
+  mergeGroups: (parentGroupId, targetGroupId, callback) ->
+    parentGroup = targetGroup = null
+    for group in @groups
+      do(group) =>
+        parentGroup = group if parentGroupId is group.id
+        targetGroup = group if targetGroupId is group.id
+    for targetCard in targetGroup.cards
+      do(targetCard)->
+        parentGroup.addCard targetCard
+
 Board = db.model 'Board', BoardSchema
 
 module.exports = Board

@@ -116,24 +116,26 @@ describe 'boardroom.views.Board', ->
           cardView = @boardView.findView 1
           expect(cardView.$el).toHaveClass "color-0"
 
-    xdescribe 'move events', ->
+    describe 'move events', ->
       beforeEach ->
-        @card1 = { _id: 1, x: 100, y: 200 }
-        @group2 = {_id: 2, cards: [@card1]}
+        @card1 = { _id: 1}
+        @group2 = {_id: 2, x: 100, y: 200, cards: [@card1]}
         @socket.emit 'group.create', @group2
 
-        @card11 = { _id: 11, x: 400, y: 400 }
-        @group12 = {_id: 12, cards: [@card11]}
+        @card11 = { _id: 11 }
+        @group12 = {_id: 12, x: 400, y: 400, cards: [@card11]}
         @socket.emit 'group.create', @group12
 
       describe 'card.update (move)', ->
         beforeEach ->
-          move = { _id: @card11._id, x: 300, y: 300, user: 'user-1' }
-          @socket.emit 'card.update', move
+          move = { _id: @group12._id, x: 300, y: 300, user: 'user-1' }
+          @socket.emit 'group.update', move
 
-        it 'moves the card', ->
+        it 'moves the group', ->
           groupView = @boardView.findView(@group12._id)
-          expect(groupView.$el.css('left')).toEqual 300
+          console.log groupView.$el.position()
+          expect(groupView.$el.position().left).toEqual 300
+
 
         it 'locks the card to prevent other users from moving it', ->
           cardView = @boardView.findView 1
