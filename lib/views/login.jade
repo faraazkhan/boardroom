@@ -1,20 +1,15 @@
-#header
-  include includes/full_logo
-
-form#login(action='/login', method='post')
-  h1 Sign In
-  input#user_id(name='user_id')
-  button Login
-  .help
-    | Use your&nbsp;
-    a(href='http://en.gravatar.com/site/login/') gravatar
-    | &nbsp;email address OR your&nbsp;
-    a(href='http://twitter.com') twitter
-    | &nbsp;user (e.g.&nbsp;
-    a(href='http://twitter.com/carbonfive') @carbonfive
-    )
-
-script(type="text/javascript")
-  $(document).ready( function() {
-    $('#user_id').focus();
-  });
+!!! 5
+html
+  head
+    != css('application')
+    != css('home')
+    link(href='http://fonts.googleapis.com/css?family=Lato:400,700|Inconsolata:400,700', rel='stylesheet', type='text/css')
+    title Boardroom - Real-time Reflection and Story Boarding
+  body
+    #header
+      a.name(href="/") Boardroom
+    form(action='/login', method='post')
+      input#user_id(name='user_id', type='text', value='twitter username or gravatar email', defaultValue='twitter username or gravatar email')
+      button Get On Board
+      .rule
+      p Better than stickies<br/> on a wall

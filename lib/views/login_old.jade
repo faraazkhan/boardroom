@@ -1,0 +1,20 @@
+#header
+  include includes/full_logo
+
+form#login(action='/login', method='post')
+  h1 Sign In
+  input#user_id(name='user_id')
+  button Login
+  .help
+    | Use your&nbsp;
+    a(href='http://en.gravatar.com/site/login/') gravatar
+    | &nbsp;email address OR your&nbsp;
+    a(href='http://twitter.com') twitter
+    | &nbsp;user (e.g.&nbsp;
+    a(href='http://twitter.com/carbonfive') @carbonfive
+    )
+
+script(type="text/javascript")
+  $(document).ready( function() {
+    $('#user_id').focus();
+  });
