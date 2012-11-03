@@ -8,22 +8,29 @@ class boardroom.views.Group extends Backbone.View
   events: {}
 
   initialize: (attributes) ->
+    @$el.data 'view', @
     { @socket } = attributes
     @initializeCards()
 
   initializeCards: () ->
-    for card in @model.get('cards')
-      @displayNewCard card
+    cards = @model.get('cards')
+    @displayNewCard card for card in cards if cards
 
-  findCardView: (id) ->
-    _.detect @cardViews, (view) ->
-      view.model.id is id
+  findView: (id) ->
+    $("##{id}").data('view')
 
   zIndex: ->
     parseInt(@$el.css('z-index')) || 0
 
   displayNewCard: (data) ->
-    card = new boardroom.models.Card _.extend(data, group: @model)
+    bindings = 
+      'group': @model
+      'board': (@model.get 'board') 
+    if data.set? # check if data is a BackboneModel or not
+      data.set bindings
+      card = data
+    else 
+      card = new boardroom.models.Card _.extend(data, bindings)
     cardView = new boardroom.views.Card
       model: card
       socket: @socket

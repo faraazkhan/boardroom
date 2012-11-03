@@ -7,7 +7,9 @@ class HomeController extends ApplicationController
     try
       user = request.session.user_id
       created = Board.sync.createdBy user
-      collaborated = Board.sync.collaboratedBy user
+      # collaborated = Board.sync.collaboratedBy user
+      #  ^^^ +++ Temporaryly disabled: empty set is hanging up
+      collaborated = []
       cmp = (a, b) ->
         a.name.toLowerCase().localeCompare b.name.toLowerCase()
       response.render 'index',

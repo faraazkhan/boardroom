@@ -9,7 +9,7 @@ describe 'boardroom.views.Board', ->
     '''
     @socket = new io.Socket
     @board = new boardroom.models.Board
-      cards: [new boardroom.models.Card]
+      groups: [new boardroom.models.Group]
       users: {}
       user_id: 1
     @boardView = new boardroom.views.Board
@@ -24,7 +24,7 @@ describe 'boardroom.views.Board', ->
 
       it "adds the new user to the board's user list", ->
         users = @board.get 'users'
-        expect(users[@user.user_id]).toEqual @user
+        expect(users[@user.user_id]).toEqual @user        
 
     describe 'connect', ->
       beforeEach ->
@@ -69,15 +69,21 @@ describe 'boardroom.views.Board', ->
         expect(@boardView.$('#connection-status')).toBeEmpty()
         expect(@boardView.$('#connection-status-modal')).toBeHidden()
 
-    describe 'card.create', ->
+    describe 'group.create', ->
       beforeEach ->
         @cardCount = @boardView.$('.card').length
-        @socket.emit 'card.create', {}
+        @groupCount = @boardView.$('.group').length
+        g = 
+          cards: [{}, {}, {}]  # group has 3 cards
+        @socket.emit 'group.create', g
 
-      it 'displays the new card', ->
-        expect(@boardView.$('.card').length).toEqual @cardCount + 1
+      it 'displays the new group', ->
+        expect(@boardView.$('.group').length).toEqual @groupCount + 1
 
-    describe 'card.delete', ->
+      it 'displays the new cards in the group', ->
+        expect(@boardView.$('.card').length).toEqual @cardCount + 3
+
+    xdescribe 'card.delete', ->
       beforeEach ->
         @card = { _id: 1 }
         @cardCount = @boardView.$('.card').length
@@ -87,46 +93,56 @@ describe 'boardroom.views.Board', ->
       it 'removes the card', ->
         expect(@boardView.$('.card').length).toEqual @cardCount
 
-    describe 'card.update (move)', ->
+    describe 'update events', ->
       beforeEach ->
-        @card = { _id: 1, x: 100, y: 200 }
-        @socket.emit 'card.create', @card
+        @card = { _id: 1}
+        @group = {_id: 2, cards: [@card]}
+        @socket.emit 'group.create', @group
 
-        move = { _id: @card._id, x: 200, y: 200, user: 'user-1' }
-        @socket.emit 'card.update', move
+      describe 'card.update (text)', ->
+        beforeEach ->
+          @text = 'updated text'
+          @socket.emit 'card.update', { _id: @card._id, text: @text }
 
-      xit 'moves the card', ->
-        expect(@boardView.findCardView(@card._id).$el.css('left')).toEqual 200
+        it 'updates the card text', ->
+          cardView = @boardView.findView 1
+          expect(cardView.$('textarea')).toHaveValue(@text)
 
-      it 'locks the card to prevent other users from moving it', ->
-        cardView = @boardView.findCardView 1
-        expect(cardView.cardLock.lock_data).not.toBeUndefined()
+      describe 'card.update (color)', ->
+        beforeEach ->
+          @socket.emit 'card.update', { _id: @card._id, colorIndex: 0 }
 
-    describe 'card.update (text)', ->
+        it 'updates the card color', ->
+          cardView = @boardView.findView 1
+          expect(cardView.$el).toHaveClass "color-0"
+
+    xdescribe 'move events', ->
       beforeEach ->
-        @card = { _id: 1 }
-        @socket.emit 'card.create', @card
+        @card1 = { _id: 1, x: 100, y: 200 }
+        @group2 = {_id: 2, cards: [@card1]}
+        @socket.emit 'group.create', @group2
 
-        @text = 'updated text'
-        @socket.emit 'card.update', { _id: @card._id, text: @text }
+        @card11 = { _id: 11, x: 400, y: 400 }
+        @group12 = {_id: 12, cards: [@card11]}
+        @socket.emit 'group.create', @group12
 
-      it 'updates the card text', ->
-        cardView = @boardView.findCardView 1
-        expect(cardView.$('textarea')).toHaveValue(@text)
+      describe 'card.update (move)', ->
+        beforeEach ->
+          move = { _id: @card11._id, x: 300, y: 300, user: 'user-1' }
+          @socket.emit 'card.update', move
 
-    describe 'card.update (color)', ->
-      beforeEach ->
-        @card = { _id: 1 }
-        @socket.emit 'card.update', { _id: @card._id, colorIndex: 0 }
+        it 'moves the card', ->
+          groupView = @boardView.findView(@group12._id)
+          expect(groupView.$el.css('left')).toEqual 300
 
-      it 'updates the card color', ->
-        cardView = @boardView.findCardView 1
-        expect(cardView.$el).toHaveClass "color-0"
+        it 'locks the card to prevent other users from moving it', ->
+          cardView = @boardView.findView 1
+          expect(cardView.cardLock.lock_data).not.toBeUndefined()
 
   describe 'when double clicking the board', ->
     beforeEach ->
       @spy = sinon.spy()
-      @socket.on 'card.create', @spy
+      @socket.on 'group.create', @spy
       @dblclick = new $.Event 'dblclick'
       @dblclick.pageX = 200
       @dblclick.pageY = 201
@@ -136,10 +152,10 @@ describe 'boardroom.views.Board', ->
         @boardView.cardViews = []
         @boardView.$el.trigger @dblclick
 
-      it 'emits a "card.create" socket event', ->
+      it 'emits a "group.create" socket event', ->
         expect(@spy.called).toBeTruthy()
 
-      it 'creates the card at the mouse location', ->
+      it 'creates the group at the mouse location', ->
         call = @spy.firstCall
         expect(call.args[0].x).toEqual 200 - 10
         expect(call.args[0].y).toEqual 201 - 10
@@ -148,10 +164,10 @@ describe 'boardroom.views.Board', ->
       beforeEach ->
         @boardView.$el.trigger @dblclick
 
-      it 'emits a "card.create" socket event', ->
+      it 'emits a "group.create" socket event', ->
         expect(@spy.called).toBeTruthy()
 
-      it 'creates the card at the mouse location', ->
+      it 'creates the group at the mouse location', ->
         call = @spy.firstCall
         expect(call.args[0].x).toEqual 200 - 10
         expect(call.args[0].y).toEqual 201 - 10

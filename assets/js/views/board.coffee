@@ -6,6 +6,7 @@ class boardroom.views.Board extends Backbone.View
     'dblclick': 'requestNewCard'
 
   initialize: (attributes) ->
+    @$el.data 'view', @
     { @socket } = attributes
     @initializeSocketEventHandlers()
     @initializeGroups()
@@ -21,18 +22,16 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'card.delete', @onCardDelete
 
   initializeGroups: ->
-    for group in @model.get('groups')
-      @displayNewGroup group
+    groups = @model.get('groups')
+    @displayNewGroup group for group in groups if groups
 
   displayStatus: (status) ->
     @$('#connection-status').html status
     modal = @$('#connection-status-modal')
     if status then modal.show() else modal.hide()
 
-  findCardView: (id) ->
-    _.detect @groupViews, (groupView) ->
-      _.detect groupView.cardViews, (cardView) ->
-        cardView.model.id is id
+  findView: (id) ->
+    $("##{id}").data('view')
 
   requestNewCard: (event) ->
     return unless event.target.className == 'board'
@@ -49,7 +48,11 @@ class boardroom.views.Board extends Backbone.View
       focus: true
 
   displayNewGroup: (data) ->
-    group = new boardroom.models.Group _.extend(data, board: @model)
+    if data.set? # check if data is a BackboneModel or not
+      data.set 'board', @model
+      group = data 
+    else
+      group = new boardroom.models.Group _.extend(data, board: @model)
     groupView = new boardroom.views.Group
       model: group
       socket: @socket
@@ -62,11 +65,11 @@ class boardroom.views.Board extends Backbone.View
     @displayNewGroup data
 
   onCardUpdate: (data) =>
-    cardView = @findCardView data._id
+    cardView = @findView data._id
     cardView.update data
 
   onCardDelete: (id) =>
-    cardView = @findCardView id
+    cardView = @findView id
     cardView.remove()
 
   onConnect: =>
