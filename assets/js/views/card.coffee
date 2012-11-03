@@ -32,8 +32,8 @@ class boardroom.views.Card extends Backbone.View
     'click .delete': 'delete'
 
   initialize: (attributes) ->
-    { @socket } = attributes
     @$el.data 'view', @
+    { @socket } = attributes
     @initializeDraggable()
     @initializeDroppable()
     @cardLock = new boardroom.models.CardLock
