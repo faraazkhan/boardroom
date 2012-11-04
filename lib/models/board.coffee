@@ -70,15 +70,20 @@ BoardSchema.methods =
     @save (error, card) ->
       callback error, card
 
-  mergeGroups: (parentGroupId, targetGroupId, callback) ->
-    parentGroup = targetGroup = null
+  mergeGroups: (parentGroupId, otherGroupId, callback) ->
+    parentGroup = otherGroup = null
     for group in @groups
       do(group) =>
         parentGroup = group if parentGroupId is group.id
-        targetGroup = group if targetGroupId is group.id
-    for targetCard in targetGroup.cards
-      do(targetCard)->
-        parentGroup.addCard targetCard
+        otherGroup = group if otherGroupId is group.id
+    return callback (new Error "Group not found") unless parentGroup? and otherGroup?
+
+    for otherCard in otherGroup.cards # add otherCards into parentGroup
+      do(otherCard)->
+        parentGroup.addCard otherCard
+    Group.findById otherGroup.id, (error, model) =>
+      throw error if error?
+      model.remove (error) =>  # delete otherGroup
 
 Board = db.model 'Board', BoardSchema
 
