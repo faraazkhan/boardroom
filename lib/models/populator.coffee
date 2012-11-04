@@ -8,15 +8,15 @@ class Populator
   populate: (callback) ->
     return undefined unless callback?
     (error, boards) =>
-      if 'object' is typeof boards
+      if boards? and 'object' is typeof boards
         if boards._id? or (boards[0]? and !boards[1]?)
           @populateOne callback, boards
         else if boards[0]? and boards[1]?
           @populateMany callback, boards
         else
-          return callback error, []
+          return callback error, null
       else
-        return callback error, []
+        return callback error, null
 
   populateMany: (callback, boards) ->
     count = 0
