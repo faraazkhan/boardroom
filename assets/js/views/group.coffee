@@ -2,12 +2,19 @@ class boardroom.views.Group extends Backbone.View
   className: 'group'
   cardViews: []
 
+  template: _.template """
+    <div class='notice'></div>
+    <input type='text' class='name' value="<%=name%>" placeholder="Group"></input>
+  """
+
   attributes: ->
     id: @model.id
 
-  events: {}
+  events:
+    'keyup .name': 'changeGroupName'
 
   initialize: (attributes) ->
+    @render()
     @$el.data 'view', @
     { @socket } = attributes
     @initializeCards()
@@ -21,6 +28,42 @@ class boardroom.views.Group extends Backbone.View
     cards = @model.get('cards')
     @displayNewCard card for card in cards if cards
 
+  initializeDraggable: ->
+    @$el.draggable
+      isTarget: (target) ->
+        return false if $(target).is 'input'
+        return false if $(target).is '.color'
+        return false if $(target).is '.delete'
+        true
+      onMouseDown: =>
+        z = @bringForward()
+        @socket.emit 'group.update', { _id: @model.id, z }
+      onMouseMove: =>
+        @emitMove()
+
+  initializeDroppable: ->
+    @$el.droppable
+      threshold: 50
+      onHover: (target) =>
+        @$el.addClass 'stackable' unless @$el.is 'stackable'
+      onBlur: (target) =>
+        @$el.removeClass 'stackable'
+      onDrop: (target) =>
+        $(target).data('view').snapTo @
+        @$el.removeClass 'stackable'
+
+  eventsOff: ->
+    @$el.off 'mousedown'
+    @$el.off 'click'
+    @$el.off 'dblclick'
+
+  changeGroupName: (event) ->
+    isEnter = event.keyCode is 13
+    if isEnter
+      @$el.find('.name').blur()
+    else
+      @socket.emit 'group.update', _id: @model.get('_id'), name: @$el.find('.name').val()
+
   update: (data) =>
     if data.x?
       @moveTo x: data.x, y: data.y
@@ -28,6 +71,12 @@ class boardroom.views.Group extends Backbone.View
       @groupLock.lock 500
     if data.z?
       @$el.css 'z-index', data.z
+    if data.name?
+      console.log "updating data " + data.name
+      @$el.find('.name').val data.name
+
+  updateCards: (cards) =>
+    @displayNewCard card for card in cards
 
   findView: (id) ->
     $("##{id}").data('view')
@@ -68,47 +117,16 @@ class boardroom.views.Group extends Backbone.View
     @$el.css 'z-index', newZ
     newZ
 
-  initializeDraggable: ->
-    @$el.draggable
-      isTarget: (target) ->
-        return false if $(target).is 'textarea'
-        return false if $(target).is '.color'
-        return false if $(target).is '.delete'
-        true
-      onMouseDown: =>
-        z = @bringForward()
-        @socket.emit 'group.update', { _id: @model.id, z }
-      onMouseMove: =>
-        @emitMove()
-
-  initializeDroppable: ->
-    @$el.droppable
-      threshold: 50
-      onHover: (target) =>
-        @$el.addClass 'stackable' unless @$el.is 'stackable'
-      onBlur: (target) =>
-        @$el.removeClass 'stackable'
-      onDrop: (target) =>
-        $(target).data('view').snapTo @
-        @$el.removeClass 'stackable'
-
-  snapTo: (groupView) ->
-    cards = @model.get('cards')
-    for card in cards
-      do (card)->
-        groupView.displayNewCard card
-        # emit move card to neew group
-    boardModel = @model.get('board') 
-    console.log "snapTo!!!!!"
+  snapTo: (parentGroupView) ->
+    if 0==$('#'+parentGroupView.model.id).length
+      console.log "Can't drop onto a phantom!"
+      return # patch: draggable/dropable handlers still running but shouldn't be (after deleting another group)
+    boardModel = @model.get('board')
     @socket.emit 'board.merge-groups',
       _id: boardModel.id
-      parentGroupId: @model.id
-      otherGroupId: groupView.model.id
+      parentGroupId: parentGroupView.model.id
+      otherGroupId: @model.id
       author: boardModel.get('user_id')
-
-    # pos = $(target).position()
-    # @moveTo x: pos.left + 10, y: pos.top + 20
-    # @emitMove()
 
   emitMove: () ->
     @socket.emit 'group.update',
@@ -117,11 +135,18 @@ class boardroom.views.Group extends Backbone.View
       y: @top()
       author: @model.get('board').get('user_id')
 
+  displayGroupName: ()-> # show group name if more than 1 card in the group
+    if 1 < @$el.find('.card').length
+      @$el.find('.name').fadeIn('slow') 
+    else 
+      @$el.find('.name').hide()
+
   displayNewCard: (data) ->
+    return if !data or @$el.has("#"+ data._id).length
     bindings = 
       'group': @model
       'board': (@model.get 'board') 
-    if data.set? # check if data is a BackboneModel or not
+    if data.set? # check if we already have a BackboneModel
       data.set bindings
       card = data
     else 
@@ -129,14 +154,17 @@ class boardroom.views.Group extends Backbone.View
     cardView = new boardroom.views.Card
       model: card
       socket: @socket
-    @$el.append cardView.render().el
-    cardView.adjustTextarea()
+    @$el.append cardView.render().el # animate adding the new card 
+    setTimeout (=>cardView.adjustTextarea()), 88 # let the card render before adjusting text
     @cardViews.push cardView
+    @displayGroupName()
 
   render: ->
     @$el
+      .html(@template(@model.toJSON()))
       .css
         left: @model.get('x')
         top: @model.get('y')
         'z-index': @model.get('z')
+    @displayGroupName()
     @

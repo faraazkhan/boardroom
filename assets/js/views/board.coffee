@@ -19,6 +19,8 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'reconnect', @onReconnect
     @socket.on 'group.create', @onGroupCreate
     @socket.on 'group.update', @onGroupUpdate
+    @socket.on 'group.update-cards', @onGroupUpdateCards
+    @socket.on 'group.delete', @onGroupDelete
     @socket.on 'card.update', @onCardUpdate
     @socket.on 'card.delete', @onCardDelete
 
@@ -49,7 +51,7 @@ class boardroom.views.Board extends Backbone.View
       focus: true
 
   displayNewGroup: (data) ->
-    if data.set? # check if data is a BackboneModel or not
+    if data.set? # check if we already have a BackboneModel
       data.set 'board', @model
       group = data 
     else
@@ -57,7 +59,9 @@ class boardroom.views.Board extends Backbone.View
     groupView = new boardroom.views.Group
       model: group
       socket: @socket
-    @$el.append groupView.render().el
+    groupView.$el.hide() # animate adding the new group
+    @$el.append groupView.el
+    groupView.$el.slideDown('fast')
     @groupViews.push groupView
 
   # --------- socket handlers ---------
@@ -69,13 +73,23 @@ class boardroom.views.Board extends Backbone.View
     groupView = @findView data._id
     groupView.update data
 
+  onGroupUpdateCards: (data) =>
+    groupView = @findView data.groupId
+    groupView.updateCards data.cards if groupView
+
+  onGroupDelete: (id) =>
+    groupView = @findView id
+    groupView.eventsOff() # prevent further clicks and drops during animate the delete
+    groupView.$el.slideUp 'fast', ()-> groupView.$el.remove()
+
   onCardUpdate: (data) =>
     cardView = @findView data._id
     cardView.update data
 
   onCardDelete: (id) =>
     cardView = @findView id
-    cardView.remove()
+    cardView.eventsOff() # prevent further clicks and drops during animate the delete
+    cardView.$el.slideUp 'fast', ()-> cardView.$el.remove()
 
   onConnect: =>
     @socket.emit 'join', user_id: @model.get('user_id')

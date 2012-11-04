@@ -32,6 +32,7 @@ class Handler
         throw error if error?
         @socket.broadcast.emit event, data
 
+  afterDelete: (model) => # post delete hook
   handleDelete: (event, id) =>
     @modelClass.findById id, (error, model) =>
       throw error if error?
@@ -39,5 +40,6 @@ class Handler
         throw error if error?
         @socket.emit event, id
         @socket.broadcast.emit event, id
+        @afterDelete(model)
 
 module.exports = Handler

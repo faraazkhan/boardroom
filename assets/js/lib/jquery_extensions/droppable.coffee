@@ -18,6 +18,7 @@ $.fn.droppable = (opts) ->
     return if $this[0] == data.target
 
     if isHovering(data) and hovering == false
+      console.log "hovering"  # here to notice phantom group: to trigger: merge a group1 into a group0, then hover group0 to top left of board
       hovering = true
       settings.onHover data.target
 

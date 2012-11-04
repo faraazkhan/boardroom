@@ -1,26 +1,26 @@
 class boardroom.views.Card extends Backbone.View
   className: 'card'
 
-  template: _.template("<img class='delete' src='/images/delete.png'/>
-                        <div class='notice'></div>
-                        <div class='plus-authors'></div>
-                        <div class='toolbar'>
-                          <div class='plus1'>
-                            <a class='btn' href='#'>+1</a>
-                            <span class='plus-count'></span>
-                          </div>
-                          <div class='colors'>
-                            <span class='color color-0'></span>
-                            <span class='color color-1'></span>
-                            <span class='color color-2'></span>
-                            <span class='color color-3'></span>
-                            <span class='color color-4'></span>
-                          </div>
-                          <div class='authors'></div>
-                        </div>
-                        <textarea><%= text %></textarea>
-                        ")
-
+  template: _.template """
+    <img class='delete' src='/images/delete.png'/>
+    <div class='notice'></div>
+    <div class='plus-authors'></div>
+    <div class='toolbar'>
+      <div class='plus1'>
+        <a class='btn' href='#'>+1</a>
+        <span class='plus-count'></span>
+      </div>
+      <div class='colors'>
+        <span class='color color-0'></span>
+        <span class='color color-1'></span>
+        <span class='color color-2'></span>
+        <span class='color color-3'></span>
+        <span class='color color-4'></span>
+      </div>
+      <div class='authors'></div>
+    </div>
+    <textarea><%= text %></textarea>
+  """
   attributes: ->
     id: @model.id
 
@@ -40,6 +40,11 @@ class boardroom.views.Card extends Backbone.View
     @cardLock.poll =>
       @hideNotice()
       @enableEditing()
+
+  eventsOff: ->
+    @$el.off 'mousedown'
+    @$el.off 'click'
+    @$el.off 'dblclick'
 
   update: (data) =>
     if data.x?
