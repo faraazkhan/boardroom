@@ -16,7 +16,6 @@ class boardroom.views.Group extends Backbone.View
     @groupLock = new boardroom.models.CardLock
     @groupLock.poll =>
       @hideNotice()
-      @enableEditing()
 
   initializeCards: () ->
     cards = @model.get('cards')
@@ -100,10 +99,11 @@ class boardroom.views.Group extends Backbone.View
         groupView.displayNewCard card
         # emit move card to neew group
     boardModel = @model.get('board') 
+    console.log "snapTo!!!!!"
     @socket.emit 'board.merge-groups',
       _id: boardModel.id
       parentGroupId: @model.id
-      targetGroupId: groupView.model.id
+      otherGroupId: groupView.model.id
       author: boardModel.get('user_id')
 
     # pos = $(target).position()

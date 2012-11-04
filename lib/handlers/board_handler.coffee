@@ -13,10 +13,7 @@ class BoardHandler extends Handler
   handleMergeGroups: (event, data) =>
     Board.findById data._id, (error, boardModel) =>
       throw error if error?
-      console.log boardModel
-      boardModel.mergeGroups data.parentGroupId, data.targetGroupId, (error, result) =>
+      boardModel.mergeGroups data.parentGroupId, data.otherGroupId, (error, parentGroup) =>
         throw error if error?
-        console.log result
-      #   @socket.broadcast.emit event, data
 
 module.exports = BoardHandler

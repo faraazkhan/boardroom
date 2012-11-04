@@ -18,6 +18,7 @@ class boardroom.views.Board extends Backbone.View
     @socket.on 'reconnecting', @onReconnecting
     @socket.on 'reconnect', @onReconnect
     @socket.on 'group.create', @onGroupCreate
+    @socket.on 'group.update', @onGroupUpdate
     @socket.on 'card.update', @onCardUpdate
     @socket.on 'card.delete', @onCardDelete
 
@@ -63,6 +64,10 @@ class boardroom.views.Board extends Backbone.View
 
   onGroupCreate: (data) =>
     @displayNewGroup data
+
+  onGroupUpdate: (data) =>
+    groupView = @findView data._id
+    groupView.update data
 
   onCardUpdate: (data) =>
     cardView = @findView data._id
