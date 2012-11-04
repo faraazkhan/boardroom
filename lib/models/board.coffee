@@ -23,7 +23,7 @@ BoardSchema.pre 'save', (next) ->
 BoardSchema.pre 'remove', (next) ->
   Group.findByBoardId @id, (error, groups) ->
     next error if error?
-    next() if groups.length == 0
+    return next() if !groups || groups.length == 0
     count = 0
     for group in groups
       do (group) ->
@@ -56,7 +56,7 @@ BoardSchema.methods =
 
   cards: ->
     cards = []
-    ( cards = cards.concat(group.cards) ) for group in @groups
+    ( cards = cards.concat(group.cards) ) for group in @groups if @groups?
     cards
 
   lastUpdated: ->
