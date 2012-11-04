@@ -72,7 +72,6 @@ class boardroom.views.Group extends Backbone.View
     if data.z?
       @$el.css 'z-index', data.z
     if data.name?
-      console.log "updating data " + data.name
       @$el.find('.name').val data.name
 
   updateCards: (cards) =>
