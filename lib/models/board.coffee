@@ -76,14 +76,14 @@ BoardSchema.methods =
       do(group) =>
         parentGroup = group if parentGroupId is group.id
         otherGroup = group if otherGroupId is group.id
-    return callback (new Error "Group not found") unless parentGroup? and otherGroup?
+    return callback (new Error "Parent group not found") unless parentGroup?
+    return callback (new Error "Other group not found") unless otherGroup?
 
     for otherCard in otherGroup.cards # add otherCards into parentGroup
       do(otherCard)->
-        parentGroup.addCard otherCard
-    Group.findById otherGroup.id, (error, model) =>
-      throw error if error?
-      model.remove (error) =>  # delete otherGroup
+        parentGroup.addCard otherCard 
+    Group.findById otherGroup.id, (error, model) => model.remove (error) if model? # delete otherGroup
+    Group.findById parentGroup.id, callback
 
 Board = db.model 'Board', BoardSchema
 

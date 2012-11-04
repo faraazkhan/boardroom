@@ -41,6 +41,11 @@ class boardroom.views.Card extends Backbone.View
       @hideNotice()
       @enableEditing()
 
+  eventsOff: ->
+    @$el.off 'mousedown'
+    @$el.off 'click'
+    @$el.off 'dblclick'
+
   update: (data) =>
     if data.x?
       @moveTo x: data.x, y: data.y
