@@ -1,0 +1,169 @@
+
+@secondaryColor: @yellowDark;
+
+.card {
+  cursor: move;
+  position:absolute;
+  padding: 1em 1em .5em 1em;
+  .box-shadow(2px 2px 5px @grayLight);
+  .user-select(none);
+  border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%);
+  border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+
+  textarea {
+    font-size: 12px;
+    line-height: 16px;
+    text-rendering: optimizeLegibility;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+    outline: none;
+    resize: none;
+    width: @cardWidth;
+    color: @grayDark;
+    .box-shadow(none);
+  }
+
+  .delete {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: none;
+    font-size: 26px;
+    line-height: 12px;
+    padding: 3px 4px 5px 4px;
+    cursor: pointer;
+  }
+
+  .toolbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 22px;
+    padding: 5px;
+    display: none;
+  }
+
+  .colors {
+    display: none;
+    float: right;
+    margin: 5px 10px 0 0;
+    line-height: 12px;
+
+    .color {
+      display: inline-block;
+      margin-left: 3px;
+      width: 12px;
+      height: 12px;
+      border: 1px solid rgba(64,64,64,0.67);
+      box-sizing: border-box;
+    }
+  }
+
+  .plus1 {
+    float: right;
+    font-size: 11px;
+    line-height: 12px;
+    padding: 2px 3px 3px 3px;
+    margin-top: 0px;
+    a {
+      text-decoration: none;
+    }
+
+    .btn {
+      display: none;
+      padding: 0 5px;
+      margin: -2px 2px 0 0;
+      float: left;
+      color: #000;
+      padding: @paddingMini;
+      font-size: @fontSizeMini;
+      .border-radius(@borderRadiusSmall);
+      .box-shadow(0 0 0 rgba(0,0,0,0.5));
+    }
+
+    .plus-count {
+      float: right;
+      padding: 3px 0 0 0;
+      margin-right: 5px;
+
+      color: #000;
+      color: rgba(0,0,0,.5);
+
+      text-align: right;
+      font-weight: bold;
+    }
+
+  }
+
+  .plus-authors {
+    display: none;
+  }
+
+  .notice {
+    position: absolute;
+    top: -2.5em;
+    text-align: center;
+    left: 0;
+    opacity: 0.7;
+    width: 100%;
+
+    img {
+      margin-right: 0.5em;
+      .box-shadow(2px 2px 3px rgba(0,0,0,0.5));
+    }
+
+    span {
+      vertical-align: super;
+      text-shadow: 2px 2px 2px rgba(0, 0, 0, .4);
+    }
+  }
+
+  .authors {
+    height: 22px;
+
+    img {
+      visibility: hidden;
+      margin-right: 0.5em;
+    }
+  }
+}
+.card:hover .toolbar { display: block; }
+.card:hover .authors img { visibility: visible; }
+.card:hover .delete { display: block; }
+.card:hover .colors { display: block; cursor: pointer;}
+.card:hover .plus1 .btn { display: block; }
+
+.group-intent-target:before {
+  content:"\a0";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  top: 26px; // 36 - 10 padding
+  left: 5px; // 15 - 10 padding
+  background-color: rgba(0,0,0,0.33);
+}
+
+.stack-name {
+  cursor: pointer;
+}
+
+.stack-name, .stack-name-edit {
+  position: absolute;
+  box-sizing: border-box;
+  width: 286px;
+  height: 16px;
+  color: white;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+.stack-name-edit {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
