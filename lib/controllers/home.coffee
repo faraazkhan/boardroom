@@ -6,8 +6,8 @@ class HomeController extends ApplicationController
   index: (request, response) =>
     try
       user = request.session.user_id
-      created = Board.sync.createdBy user
-      collaborated = Board.sync.collaboratedBy user
+      created = (Board.sync.createdBy user) || []
+      collaborated = (Board.sync.collaboratedBy user) || []
       cmp = (a, b) ->
         a.name.toLowerCase().localeCompare b.name.toLowerCase()
       response.render 'index',

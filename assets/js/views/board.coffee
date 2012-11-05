@@ -1,9 +1,9 @@
-class boardroom.views.Board extends Backbone.View
+class boardroom.views.Board extends boardroom.views.Base
   el: '.board'
   groupViews: []
 
   events:
-    'dblclick': 'requestNewCard'
+    'dblclick': 'hiRequestNewCard'
 
   initialize: (attributes) ->
     @$el.data 'view', @
@@ -28,27 +28,13 @@ class boardroom.views.Board extends Backbone.View
     groups = @model.get('groups')
     @displayNewGroup group for group in groups if groups
 
+  ###
+  --------- render ---------
+  ###
   displayStatus: (status) ->
     @$('#connection-status').html status
     modal = @$('#connection-status-modal')
     if status then modal.show() else modal.hide()
-
-  findView: (id) ->
-    $("##{id}").data('view')
-
-  requestNewCard: (event) ->
-    return unless event.target.className == 'board'
-    maxZ = if @groupViews.length
-        _.max(@groupViews, (view) -> view.zIndex()).zIndex()
-      else
-        0
-    @socket.emit 'group.create',
-      boardId: @model.get('_id')
-      creator: @model.get('user_id')
-      x: parseInt (event.pageX - $(event.target).offset().left) - 10
-      y: parseInt (event.pageY - $(event.target).offset().top)  - 10
-      z: maxZ + 1
-      focus: true
 
   displayNewGroup: (data) ->
     if data.set? # check if we already have a BackboneModel
@@ -64,8 +50,28 @@ class boardroom.views.Board extends Backbone.View
     groupView.$el.slideDown('fast')
     @groupViews.push groupView
 
-  # --------- socket handlers ---------
+  ###
+  --------- human interaction event handlers ---------
+  ###
+  hiRequestNewCard: (event) ->
+    return unless event.target.className == 'board'
+    maxZ = if @groupViews.length
+        _.max(@groupViews, (view) -> view.zIndex()).zIndex()
+      else
+        0
+    @socket.emit 'group.create',
+      boardId: @model.get('_id')
+      creator: @model.get('user_id')
+      x: parseInt (event.pageX - $(event.target).offset().left) - 10
+      y: parseInt (event.pageY - $(event.target).offset().top)  - 10
+      z: maxZ + 1
+      focus: true
 
+
+
+  ###
+  --------- socket handlers ---------
+  ###
   onGroupCreate: (data) =>
     @displayNewGroup data
 
