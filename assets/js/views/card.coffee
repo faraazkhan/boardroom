@@ -1,4 +1,4 @@
-class boardroom.views.Card extends Backbone.View
+class boardroom.views.Card extends boardroom.views.Base
   className: 'card'
 
   template: _.template """
@@ -24,39 +24,52 @@ class boardroom.views.Card extends Backbone.View
   attributes: ->
     id: @model.id
 
-  events:
-    'click .color': 'changeColor'
-    'keyup textarea': 'changeText'
-    'click textarea': 'focusText'
-    'click .plus1 .btn': 'incrementPlusCount'
-    'click .delete': 'delete'
+  events: # human interaction event
+    'click .color': 'hiChangeColor'
+    'keyup textarea': 'hiChangeText'
+    'click textarea': 'hiFocusText'
+    'click .plus1 .btn': 'hiIncrementPlusCount'
+    'click .delete': 'hiDelete'
 
   initialize: (attributes) ->
-    @$el.data 'view', @
-    { @socket } = attributes
-    # @initializeDraggable()
-    # @initializeDroppable()
-    @cardLock = new boardroom.models.CardLock
-    @cardLock.poll =>
-      @hideNotice()
-      @enableEditing()
+    super attributes
+    # @initializeDraggable() +++ TODO: drag cards to re-order, pop out of a group, etc
 
-  eventsOff: ->
-    @$el.off 'mousedown'
-    @$el.off 'click'
-    @$el.off 'dblclick'
+  onLockPoll: ()=>
+    @enableEditing 'textarea'
+
+  ###
+  --------- render ---------
+  ###
+  render: ->
+    @$el
+      .html(@template(@model.toJSON()))
+      .css
+        left: @model.get('x')
+        top: @model.get('y')
+        'z-index': @model.get('z')
+    @setColor @model.get('colorIndex')
+    if @model.has('authors')
+      for author in @model.get('authors')
+        @addAuthor author
+    if @model.has('plusAuthors')
+      for plusAuthor in @model.get('plusAuthors')
+        @addPlusAuthor plusAuthor
+    if @model.get('focus')
+      @$('textarea').focus()
+    @
 
   update: (data) =>
     if data.x?
       @moveTo x: data.x, y: data.y
       @showNotice user: data.author, message: data.author
-      @cardLock.lock 500
+      @authorLock.lock 500
     if data.z?
       @$el.css 'z-index', data.z
     if data.text?
-      @disableEditing data.text
+      @disableEditing 'textarea', data.text
       @showNotice user: data.author, message: "#{data.author} is typing..."
-      @cardLock.lock()
+      @authorLock.lock()
       @addAuthor data.author
       @adjustTextarea()
     if data.colorIndex?
@@ -64,37 +77,6 @@ class boardroom.views.Card extends Backbone.View
       @setColor data.colorIndex
     if data.plusAuthor?
       @addPlusAuthor data.plusAuthor
-
-  changeColor: (event) ->
-    colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
-    author = @model.get('board').get('user_id')
-    @setColor colorIndex
-    @addAuthor author
-    z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
-
-  changeText: ->
-    text = @$('textarea').val()
-    author = @model.get('board').get('user_id')
-    @addAuthor author
-    @adjustTextarea()
-    z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, text, z, author }
-
-  focusText: ->
-    z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, z}
-    @$('textarea').focus()
-
-  incrementPlusCount: (e) ->
-    e.preventDefault()
-    plusAuthor = @model.get('board').get('user_id')
-    @addPlusAuthor plusAuthor
-    z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, plusAuthor, z }
-
-  delete: ->
-    @socket.emit 'card.delete', @model.id
 
   setColor: (color) ->
     color = 2 if color == undefined
@@ -138,90 +120,33 @@ class boardroom.views.Card extends Backbone.View
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
 
-  showNotice: ({ user, message }) =>
-    @$('.notice')
-      .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
-      .show()
+  ###
+  --------- human interaction event handlers ---------  
+  ###
+  hiChangeColor: (event) ->
+    colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
+    author = @model.get('board').get('user_id')
+    @setColor colorIndex
+    @addAuthor author
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
 
-  enableEditing: ->
-    @$('textarea').removeAttr 'disabled'
+  hiChangeText: ->
+    text = @$('textarea').val()
+    author = @model.get('board').get('user_id')
+    @addAuthor author
+    @adjustTextarea()
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, text, z, author }
 
-  disableEditing: (text) ->
-    @$('textarea').val(text).attr('disabled', 'disabled')
+  hiFocusText: ->
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, z}
+    @$('textarea').focus()
 
-  moveTo: ({x, y}) ->
-    @$el.css { left: x, top: y }
-
-  hideNotice: ->
-    @$('.notice').fadeOut 100
-
-  left: ->
-    @$el.position().left
-
-  top: ->
-    @$el.position().top
-
-  zIndex: ->
-    parseInt(@$el.css('z-index')) || 0
-
-  bringForward: ->
-    siblings = @$el.siblings '.card'
-    return if siblings.length == 0
-
-    allZs = _.map siblings, (sibling) ->
-      parseInt($(sibling).css('z-index')) || 0
-    maxZ = _.max allZs
-    return if @zIndex() > maxZ
-
-    newZ = maxZ + 1
-    @$el.css 'z-index', newZ
-    newZ
-
-  initializeDraggable: ->
-    @$el.draggable
-      isTarget: (target) ->
-        return false if $(target).is 'textarea'
-        return false if $(target).is '.color'
-        return false if $(target).is '.delete'
-        true
-      onMouseDown: =>
-        z = @bringForward()
-        @socket.emit 'card.update', { _id: @model.id, z }
-      onMouseMove: =>
-        @emitMove()
-
-  initializeDroppable: ->
-    @$el.droppable
-      threshold: 50
-      onHover: (target) =>
-        @$el.addClass 'stackable' unless @$el.is 'stackable'
-      onBlur: (target) =>
-        @$el.removeClass 'stackable'
-      onDrop: (target) =>
-        $(target).data('view').snapTo @el
-        @$el.removeClass 'stackable'
-
-  emitMove: () ->
-    @socket.emit 'card.update',
-      _id: @model.id
-      x: @left()
-      y: @top()
-      author: @model.get('board').get('user_id')
-
-  render: ->
-    @$el
-      .html(@template(@model.toJSON()))
-      .css
-        left: @model.get('x')
-        top: @model.get('y')
-        'z-index': @model.get('z')
-    @setColor @model.get('colorIndex')
-    if @model.has('authors')
-      for author in @model.get('authors')
-        @addAuthor author
-    if @model.has('plusAuthors')
-      for plusAuthor in @model.get('plusAuthors')
-        @addPlusAuthor plusAuthor
-    if @model.get('focus')
-      @$('textarea').focus()
-    @
+  hiIncrementPlusCount: (e) ->
+    e.preventDefault()
+    plusAuthor = @model.get('board').get('user_id')
+    @addPlusAuthor plusAuthor
+    z = @bringForward()
+    @socket.emit 'card.update', { _id: @model.id, plusAuthor, z }

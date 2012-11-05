@@ -1,4 +1,4 @@
-class boardroom.views.Group extends Backbone.View
+class boardroom.views.Group extends boardroom.views.Base
   className: 'group'
   cardViews: []
 
@@ -11,18 +11,17 @@ class boardroom.views.Group extends Backbone.View
     id: @model.id
 
   events:
-    'keyup .name': 'changeGroupName'
+    'keyup .name': 'hiChangeGroupName'
 
   initialize: (attributes) ->
+    super attributes
     @render()
-    @$el.data 'view', @
-    { @socket } = attributes
     @initializeCards()
     @initializeDraggable()
     @initializeDroppable()
-    @groupLock = new boardroom.models.CardLock
-    @groupLock.poll =>
-      @hideNotice()
+
+  onLockPoll: ()=>
+    @enableEditing '.name'
 
   initializeCards: () ->
     cards = @model.get('cards')
@@ -52,93 +51,39 @@ class boardroom.views.Group extends Backbone.View
         $(target).data('view').snapTo @
         @$el.removeClass 'stackable'
 
-  eventsOff: ->
-    @$el.off 'mousedown'
-    @$el.off 'click'
-    @$el.off 'dblclick'
-
-  changeGroupName: (event) ->
-    isEnter = event.keyCode is 13
-    if isEnter
-      @$el.find('.name').blur()
-    else
-      @socket.emit 'group.update', _id: @model.get('_id'), name: @$el.find('.name').val()
+  ###
+  --------- render ---------
+  ###
+  render: ->
+    @$el
+      .html(@template(@model.toJSON()))
+      .css
+        left: @model.get('x')
+        top: @model.get('y')
+        'z-index': @model.get('z')
+    @displayGroupName()
+    @
 
   update: (data) =>
     if data.x?
       @moveTo x: data.x, y: data.y
       @showNotice user: data.author, message: data.author
-      @groupLock.lock 500
+      @authorLock.lock 500
     if data.z?
       @$el.css 'z-index', data.z
     if data.name?
-      @$el.find('.name').val data.name
+      @disableEditing '.name', data.name
+      @authorLock.lock()
+      @$('.name').val data.name
 
   updateCards: (cards) =>
     @displayNewCard card for card in cards
 
-  findView: (id) ->
-    $("##{id}").data('view')
-
-  zIndex: ->
-    parseInt(@$el.css('z-index')) || 0
-
-  delete: ->
-    @socket.emit 'group.delete', @model.id
-
-  showNotice: ({ user, message }) =>
-    @$('.notice')
-      .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
-      .show()
-
-  moveTo: ({x, y}) ->
-    @$el.css { left: x, top: y }
-
-  hideNotice: ->
-    @$('.notice').fadeOut 100
-
-  left: ->
-    @$el.position().left
-
-  top: ->
-    @$el.position().top
-
-  bringForward: ->
-    siblings = @$el.siblings ".#{@className}"
-    return if siblings.length == 0
-
-    allZs = _.map siblings, (sibling) ->
-      parseInt($(sibling).css('z-index')) || 0
-    maxZ = _.max allZs
-    return if @zIndex() > maxZ
-
-    newZ = maxZ + 1
-    @$el.css 'z-index', newZ
-    newZ
-
-  snapTo: (parentGroupView) ->
-    if 0==$('#'+parentGroupView.model.id).length
-      console.log "Can't drop onto a phantom!"
-      return # patch: draggable/dropable handlers still running but shouldn't be (after deleting another group)
-    boardModel = @model.get('board')
-    @socket.emit 'board.merge-groups',
-      _id: boardModel.id
-      parentGroupId: parentGroupView.model.id
-      otherGroupId: @model.id
-      author: boardModel.get('user_id')
-
-  emitMove: () ->
-    @socket.emit 'group.update',
-      _id: @model.id
-      x: @left()
-      y: @top()
-      author: @model.get('board').get('user_id')
-
   displayGroupName: ()-> # show group name if more than 1 card in the group
-    if 1 < @$el.find('.card').length
-      @$el.find('.name').fadeIn('slow') 
+    if 1 < @$('.card').length
+      @$('.name').fadeIn('slow') 
     else 
-      @$el.find('.name').hide()
+      @$('.name').hide()
 
   displayNewCard: (data) ->
     return if !data or @$el.has("#"+ data._id).length
@@ -158,12 +103,23 @@ class boardroom.views.Group extends Backbone.View
     @cardViews.push cardView
     @displayGroupName()
 
-  render: ->
-    @$el
-      .html(@template(@model.toJSON()))
-      .css
-        left: @model.get('x')
-        top: @model.get('y')
-        'z-index': @model.get('z')
-    @displayGroupName()
-    @
+  snapTo: (parentGroupView) ->
+    if 0==$('#'+parentGroupView.model.id).length
+      console.log "Can't drop onto a phantom!"
+      return # patch: draggable/dropable handlers still running but shouldn't be (after deleting another group)
+    boardModel = @model.get('board')
+    @socket.emit 'board.merge-groups',
+      _id: boardModel.id
+      parentGroupId: parentGroupView.model.id
+      otherGroupId: @model.id
+      author: boardModel.get('user_id')
+
+  ###
+  --------- human interaction event handlers ---------  
+  ###
+  hiChangeGroupName: (event) ->
+    isEnter = event.keyCode is 13
+    if isEnter
+      @$('.name').blur()
+    else
+      @socket.emit 'group.update', _id: @model.get('_id'), name: @$('.name').val()
