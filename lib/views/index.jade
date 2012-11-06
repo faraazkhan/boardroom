@@ -35,5 +35,40 @@
           include includes/board_list
 
 script(type="text/javascript")
-  var boardList = new boardroom.views.BoardList();
-  boardList.render();
+  $(function() {
+    
+    randomizeBackgroundImage();
+    addInputActivity();
+  });
+
+  function addInputActivity() {
+
+      $('input[type="text"]').focus(function() {
+          
+          var that = this;
+          if(that.value == that.defaultValue) {
+              that.value = '';
+          } else {
+              // chrome fix for .select(), ensure we call after mouseUp event fires
+              setTimeout(function() { console.log('here'); that.select(); }, 10);
+          }
+      });
+
+      $('input[type="text"]').blur(function() {
+          console.log(this.defaultValue);
+          if(this.value == '') {
+              this.value = this.defaultValue;
+          }
+      });
+  }
+
+  function randomizeBackgroundImage() {
+      var random = Math.floor(Math.random()*5 + 1);
+      var bodyBackgroundClassPrefix = "background_";
+      var bodyBackgroundClass = bodyBackgroundClassPrefix + random;
+
+      $("body").removeClass(function(index, cssClass) {
+          var matches = cssClass.match(/background_\d/) || [];
+          return matches.join(' ');
+      }).addClass(bodyBackgroundClass);
+  }

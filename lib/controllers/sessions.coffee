@@ -2,7 +2,7 @@ ApplicationController = require './application'
 
 class SessionsController extends ApplicationController
   new: (request, response) ->
-    response.render 'login'
+    response.render 'login', {layout: false}
 
   create: (request, response) ->
     redirect_url = request.session?.post_auth_url ? '/'
