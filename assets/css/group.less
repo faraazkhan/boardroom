@@ -1,0 +1,35 @@
+.group {
+  position: absolute;
+  padding: 4px 8px 8px 7px;
+  border: transparent 1px solid;
+  background-color: transparent;
+  .border-radius(4px);
+  .user-select(none);
+  .move-smoothly();
+  .transition(background-color 500ms);
+  &:hover, &.stackable {
+    border: #222 1px solid;
+    background: transparent url('/images/dark_checkers.png') repeat 0 0;
+    .box-shadow(2px 2px 5px #333); 
+    input {
+      color: #FFF;
+    }
+  }
+  &.stackable {
+    background-color: rgba(88,208,88,0.28);
+    border: 1px dotted white;
+  }
+  .card {
+    margin-top: 6px;
+  }
+  input {
+    border: none;
+    color: #222;
+    font-size: 14px;
+    text-shadow: 0px 1px 1px white;
+    padding: .25em .5em;
+    margin: 0;
+    background-color: transparent;
+    width: 250px;
+  }
+}

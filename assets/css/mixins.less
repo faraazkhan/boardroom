@@ -298,6 +298,19 @@
   -o-transition-delay: @transition-delay;
   transition-delay: @transition-delay;
 }
+.move-smoothly() {
+  -webkit-transition: left, top, width, height;
+  -moz-transition: left, top, width, height;
+  -ms-transition: left, top, width, height;
+  -o-transition: left, top, width, height;
+  transition: left, top, width, height;
+
+  -webkit-transition-duration: 50ms;
+  -moz-transition-duration: 50ms;
+  -ms-transition-duration: 50ms;
+  -o-transition-duration: 50ms;
+  transition-duration: 50ms;
+}
 
 // Transformations
 .rotate(@degrees) {

@@ -1,25 +1,25 @@
 class boardroom.views.Card extends boardroom.views.Base
   className: 'card'
-
-  template: _.template("<span class='delete'>&times;</span>
-                        <div class='notice'></div>
-                        <div class='plus-authors'></div>
-                        <div class='toolbar'>
-                          <div class='plus1'>
-                            <a class='btn' href='#'>+1</a>
-                            <span class='plus-count'></span>
-                          </div>
-                          <div class='colors'>
-                            <span class='color color-0'></span>
-                            <span class='color color-1'></span>
-                            <span class='color color-2'></span>
-                            <span class='color color-3'></span>
-                            <span class='color color-4'></span>
-                          </div>
-                          <div class='authors'></div>
-                        </div>
-                        <textarea><%= text %></textarea>
-                        ")
+  template: _.template """
+    <span class='delete'>&times;</span>
+    <div class='notice'></div>
+    <div class='plus-authors'></div>
+    <div class='toolbar'>
+      <div class='plus1'>
+        <a class='btn' href='#'>+1</a>
+        <span class='plus-count'></span>
+      </div>
+      <div class='colors'>
+        <span class='color color-0'></span>
+        <span class='color color-1'></span>
+        <span class='color color-2'></span>
+        <span class='color color-3'></span>
+        <span class='color color-4'></span>
+      </div>
+      <div class='authors'></div>
+    </div>
+    <textarea><%= text %></textarea>
+  """
 
   attributes: ->
     id: @model.id
