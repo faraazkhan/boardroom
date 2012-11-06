@@ -30,7 +30,7 @@ class boardroom.views.Group extends boardroom.views.Base
   initializeDraggable: ->
     @$el.draggable
       isTarget: (target) ->
-        return false if $(target).is 'input'
+        # return false if $(target).is 'input'
         return false if $(target).is '.color'
         return false if $(target).is '.delete'
         true
