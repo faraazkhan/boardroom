@@ -29,6 +29,20 @@
   -o-transition: @property @duration;
 }
 
+.move-smoothly() {
+  -webkit-transition: left, top, width, height;
+  -moz-transition: left, top, width, height;
+  -ms-transition: left, top, width, height;
+  -o-transition: left, top, width, height;
+  transition: left, top, width, height;
+
+  -webkit-transition-duration: 50ms;
+  -moz-transition-duration: 50ms;
+  -ms-transition-duration: 50ms;
+  -o-transition-duration: 50ms;
+  transition-duration: 50ms;
+}
+
 .user-select(@value) {
   -webkit-user-select: @value;
   -khtml-user-select: @value;
@@ -127,6 +141,8 @@ img.avatar {
   background-color: transparent;
   .border-radius(4px);
   .user-select(none);
+  .move-smoothly();
+  .transition(background-color, 500ms);
   &:hover, &.stackable {
     border: #222 1px solid;
     background-color: rgba(255,255,255,0.28);
@@ -152,14 +168,14 @@ img.avatar {
 
 .card {
   cursor: move;
-  .user-select(none);
   position:relative;
   padding: 1em 1em 32px 1em;
 
   background-color: #eea;
+  .user-select(none);
   .card-background(#efff8c);
   .box-shadow(2px, 2px, 5px, #333);
-
+  .move-smoothly();
   textarea {
     padding: 0;
     margin: 0;
