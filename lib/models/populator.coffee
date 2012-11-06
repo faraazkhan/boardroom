@@ -7,11 +7,11 @@ class Populator
 
   populate: (callback, cardinality="*") ->
     return undefined unless callback? 
-    (error, boards) =>
+    (error, boardCursor) =>
       if 1 is cardinality
-        @populateOne callback, boards
+        @populateOne callback, boardCursor
       else
-        @populateMany callback, boards
+        @populateMany callback, boardCursor
 
   populateMany: (callback, boards) ->
     return callback null, [] unless boards?
