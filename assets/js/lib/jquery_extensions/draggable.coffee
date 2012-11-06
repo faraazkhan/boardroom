@@ -50,6 +50,6 @@ $.fn.draggable = (opts) ->
       false
 
     settings.onMouseDown e
-    false
+    true
 
   $this
