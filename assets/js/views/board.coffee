@@ -67,8 +67,6 @@ class boardroom.views.Board extends boardroom.views.Base
       z: maxZ + 1
       focus: true
 
-
-
   ###
   --------- socket handlers ---------
   ###

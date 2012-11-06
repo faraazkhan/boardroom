@@ -18,7 +18,6 @@ class boardroom.views.Header extends Backbone.View
     else
       @socket.emit 'board.update', _id: @model.get('_id'), name: @$('#name').val()
 
-
   ###
   --------- socket handlers ---------
   ###
