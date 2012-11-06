@@ -1,18 +1,56 @@
-.yellow, .yellow .light {background-color : @yellowLight;}
-.yellow .mid {background-color : @yellowMid;}
-.yellow .dark {background-color : @yellowDark;}
-.red, .red .light { background-color : @redLight;}
-.red .mid { background-color : @redMid;}
-.red .dark { background-color : @redDark;}
+.card.color-0 {
+  .delete { color: @tanDark; background-color: @tanMid;}
+  .plus1 a { background-color: @tanLight; &:hover {color: @tanDark}}
+  .toolbar { color: @tanDark; background-color: @tanMid;}
+}
 .tan, .tan .light { background-color : @tanLight;}
 .tan .mid { background-color : @tanMid;}
 .tan .dark { background-color : @tanDark;}
+
+.card.color-1 {
+  .delete { color: @redDark; background-color: @redMid;}
+  .plus1 a { background-color: @redLight; &:hover {color: @redDark}}
+  .toolbar { color: @redDark; background-color: @redMid;}
+}
+.red, .red .light { background-color : @redLight;}
+.red .mid { background-color : @redMid;}
+.red .dark { background-color : @redDark;}
+
+.card.color-2 {
+  .delete { color: @yellowDark; background-color: @yellowMid;}
+  .plus1 a { background-color: @yellowLight; &:hover {color: @yellowDark}}
+  .toolbar { color: @yellowDark; background-color: @yellowMid;}
+}
+.yellow, .yellow .light {background-color : @yellowLight;}
+.yellow .mid {background-color : @yellowMid;}
+.yellow .dark {background-color : @yellowDark;}
+
+.card.color-3 {
+  .delete { color: @blueDark; background-color: @blueMid;}
+  .plus1 a { background-color: @blueLight; &:hover {color: @blueDark}}
+  .toolbar { color: @blueDark; background-color: @blueMid;}
+}
 .blue, .blue .light { background-color : @blueLight;}
 .blue .mid { background-color : @blueMid;}
 .blue .dark { background-color : @blueDark;}
+
+.card.color-4 {
+  .delete { color: @greenDark; background-color: @greenMid;}
+  .plus1 a { background-color: @greenLight; &:hover {color: @greenDark}}
+  .toolbar { color: @greenDark; background-color: @greenMid;}
+}
 .green, .green .light { background-color : @greenLight;}
 .green .mid { background-color : @greenMid;}
 .green .dark { background-color : @greenDark;}
+
+
 .gray, .gray .light { background-color : @grayLight;}
 .gray .mid { background-color : @grayMid;}
 .gray .dark { background-color : @grayDark; color: @grayLight;}
+
+.color-0 { #gradient > .card(@tanMid, @tanLight); }
+.color-1 { #gradient > .card(@redMid, @redLight); }
+.color-2 { #gradient > .card(@yellowMid, @yellowLight); }
+.color-3 { #gradient > .card(@blueMid, @blueLight); }
+.color-4 { #gradient > .card(@greenMid, @greenLight); }
+

@@ -1,35 +1,38 @@
 #header
   include includes/full_logo
   include includes/user_info
-#main-content
-  #home
-    #promotional
-      .note
-        h2 Let's Reflect Together!
-        ol
-          li Create or login to board
-          li Post your thoughts in real-time
-          li Edit and group each other's thoughts
-          li Discuss what you find!
-      .general
-        h3 Why Reflect?
-        | Reflection and retrospective meetings allow you to look back 
-        | at your shared experiences, discover common desires, and apply
-        | them to future work.
-        h3 How to Reflect?
-        | Connect to a board and take turns to post your
-        | thoughts. Edit and group similar thoughts together.
-    #boards
-      h2 Here's what we're reflecting about!
-      form(id='enter-board', method='post', action='/boards')
-        input#board-name(type='text', name='name')
-        button create board
-      ul.created
-        boards = created
-        include includes/board_list
-      ul.collaborated
-        boards = collaborated
-        include includes/board_list
+#main-content.container
+  .row
+    #home
+      #promotional.span3
+        .note
+          h2 Let's Reflect Together!
+          ol
+            li Create or login to board
+            li Post your thoughts in real-time
+            li Edit and group each other's thoughts
+            li Discuss what you find!
+        .general
+          h3 Why Reflect?
+          | Reflection and retrospective meetings allow you to look back
+          | at your shared experiences, discover common desires, and apply
+          | them to future work.
+          h3 How to Reflect?
+          | Connect to a board and take turns to post your
+          | thoughts. Edit and group similar thoughts together.
+      #boards.span8
+        form(id='enter-board', method='post', action='/boards')
+          fieldset.span8
+            input#board-name(type='text', name='name')
+            button(class='btn') get a board
+        h4 CREATED
+        ul.created.span8
+          boards = created
+          include includes/board_list
+        H4 COLLABORATED
+        ul.collaborated.span8
+          boards = collaborated
+          include includes/board_list
 
 script(type="text/javascript")
   var boardList = new boardroom.views.BoardList();

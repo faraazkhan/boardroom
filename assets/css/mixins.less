@@ -4,18 +4,36 @@
 
 // APPLICATION
 // --------------------------------------------------
+//.card-background(@c) {
+//  background: @c;
+//  @c0: hsl(hue(spin(@c, -8)), 66%, 66%);
+//  @c1: hsl(hue(@c), 100%, 77%);
+//  @c2: hsl(hue(@c), 100%, 77%);
+//  @c3: hsl(hue(@c), 77%, 81%);
+//  background: -webkit-linear-gradient(top, @c0 0%, @c1 33%, @c2 78%, @c3 100%);
+//  background: -moz-linear-gradient(top, @c0 0%, @c1 33%, @c2 78%, @c3 100%);
+//  background: linear-gradient(top, @c0 0%, @c1 33%, @c2 78%, @c3 100%);
+//  border: 1px solid @c0;
+//}
+
 .card-background(@c) {
-  background: @c;
   @c0: hsl(hue(spin(@c, -8)), 66%, 66%);
   @c1: hsl(hue(@c), 100%, 77%);
   @c2: hsl(hue(@c), 100%, 77%);
   @c3: hsl(hue(@c), 77%, 81%);
+
   background: -webkit-linear-gradient(top, @c0 0%, @c1 33%, @c2 78%, @c3 100%);
   background: -moz-linear-gradient(top, @c0 0%, @c1 33%, @c2 78%, @c3 100%);
   background: linear-gradient(top, @c0 0%, @c1 33%, @c2 78%, @c3 100%);
-  border: 1px solid @c0;
+  border: none;
 }
 
+.timestamp {
+  position: absolute;
+  bottom: 5px;
+  font-size: 11px;
+  font-style: italic;
+}
 
 // UTILITY MIXINS
 // --------------------------------------------------
@@ -475,13 +493,7 @@
     background-image: -o-linear-gradient(@angle, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
     background-image: linear-gradient(@angle, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
   }
-  .card(@startColor: #555, @endColor: #333) {
-    background: @endColor;
-    background: -moz-linear-gradient(top, @startColor 0, @endColor 20px);
-    background: -webkit-gradient(linear, 0 0, 0 20px, from(@startColor), to(@endColor));
-    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",argb(@startColor),argb(@endColor))); // IE9 and down
-  }
-  .card2(@startColor: #555, @endColor: #333, @gradientSize: 20px) {
+  .card(@startColor: #555, @endColor: #333, @gradientSize: 20px) {
     background-color: mix(@startColor, @endColor, @gradientSize);
     background-image: -moz-linear-gradient(top, @startColor 0, @endColor @gradientSize); // FF 3.6+
     background-image: -webkit-gradient(linear, 0 0, 0 @gradientSize, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+

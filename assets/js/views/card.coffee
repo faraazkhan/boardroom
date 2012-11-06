@@ -1,7 +1,7 @@
 class boardroom.views.Card extends Backbone.View
   className: 'card'
 
-  template: _.template("<img class='delete' src='/images/delete.png'/>
+  template: _.template("<span class='delete'>&times;</span>
                         <div class='notice'></div>
                         <div class='plus-authors'></div>
                         <div class='toolbar'>
