@@ -9,11 +9,11 @@ BoardSchema = new mongoose.Schema
   created: Date
   updated: Date
 
-BoardSchema.virtual('groups').set (groups) ->
-  @vGroups = groups
+BoardSchema.virtual('groups').get () -> @vGroups
+BoardSchema.virtual('groups').set (groups) -> @vGroups = groups
 
-BoardSchema.virtual('groups').get () ->
-  @vGroups
+BoardSchema.virtual('cards').get () -> @vCards
+BoardSchema.virtual('cards').set (cards) -> @vCards = cards
 
 BoardSchema.pre 'save', (next) ->
   @created = new Date() unless @created?
@@ -33,35 +33,33 @@ BoardSchema.pre 'remove', (next) ->
 
 BoardSchema.statics =
   findById: (id, callback) ->
-    @findOne { _id: id }, @populate(callback)
+    @findOne { _id: id }, @populateOne(callback)
 
   createdBy: (user, callback) ->
-    @find { creator: user }, null, { sort: 'name' }, @populate(callback)
+    @find { creator: user }, null, { sort: 'name' }, @populateMany(callback)
 
   collaboratedBy: (user, callback) ->
     Group.collaboratedBy user, (error, groups) =>
       return callback error, null if error?
       boardIds = ( group.boardId for group in groups )
-      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, @populate(callback)
+      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, @populateMany(callback)
 
-  populate: (callback) ->
-    new Populator().populate callback
+  populateOne: (callback) ->
+    new Populator().populate callback, 1
+
+  populateMany: (callback) ->
+    new Populator().populate callback, "*"
 
 BoardSchema.methods =
   collaborators: ->
     collabs = []
     ( ( collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 ) ) \
-      for user in card.authors ) for card in @cards()
+      for user in card.authors ) for card in @cards
     collabs
-
-  cards: ->
-    cards = []
-    ( cards = cards.concat(group.cards) ) for group in @groups if @groups?
-    cards
 
   lastUpdated: ->
     up = @updated
-    up = ( if up.getTime() > card.updated.getTime() then up else card.updated ) for card in @cards()
+    up = ( if up.getTime() > card.updated.getTime() then up else card.updated ) for card in @cards
     up
 
   updateAttributes: (attributes, callback) ->

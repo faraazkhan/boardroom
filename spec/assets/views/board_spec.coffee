@@ -125,21 +125,21 @@ describe 'boardroom.views.Board', ->
         @card11 = { _id: 11 }
         @group12 = {_id: 12, x: 400, y: 400, cards: [@card11]}
         @socket.emit 'group.create', @group12
+        groupView = @boardView.findView(@group12._id)
 
-      describe 'card.update (move)', ->
+      describe 'groups.update (move)', ->
         beforeEach ->
           move = { _id: @group12._id, x: 300, y: 300, user: 'user-1' }
           @socket.emit 'group.update', move
 
         it 'moves the group', ->
           groupView = @boardView.findView(@group12._id)
-          console.log groupView.$el.position()
           expect(groupView.$el.position().left).toEqual 300
 
 
         it 'locks the card to prevent other users from moving it', ->
-          cardView = @boardView.findView 1
-          expect(cardView.cardLock.lock_data).not.toBeUndefined()
+          groupView = @boardView.findView 12
+          expect(groupView.authorLock.lock_data).not.toBeUndefined()
 
   describe 'when double clicking the board', ->
     beforeEach ->

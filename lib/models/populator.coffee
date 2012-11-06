@@ -5,20 +5,16 @@ Card  = require './card'
 class Populator
   constructor: () ->
 
-  populate: (callback) ->
-    return undefined unless callback?
+  populate: (callback, cardinality="*") ->
+    return undefined unless callback? 
     (error, boards) =>
-      if boards? and 'object' is typeof boards
-        if boards._id? or (boards[0]? and !boards[1]?)
-          @populateOne callback, boards
-        else if boards[0]? and boards[1]?
-          @populateMany callback, boards
-        else
-          return callback error, null
+      if 1 is cardinality
+        @populateOne callback, boards
       else
-        return callback error, null
+        @populateMany callback, boards
 
   populateMany: (callback, boards) ->
+    return callback null, [] unless boards?
     count = 0
     for board in boards
       do (board) =>
@@ -28,6 +24,7 @@ class Populator
           callback null, boards if count == boards.length
 
   populateOne: (callback, board) ->
+    return callback null, null unless board?
     @fillBoard board, (error, board) ->
       return callback error if error?
       callback error, board
@@ -36,6 +33,7 @@ class Populator
     Group.find { boardId: board.id }, (error, groups) =>
       return callback error if error?
       board.groups = []
+      board.cards = []
       return callback error, board if groups.length == 0
       count = 0
       for group in groups
@@ -44,7 +42,9 @@ class Populator
             return callback error if error?
             board.groups.push group
             count += 1
-            callback null, board if count == groups.length
+            if count == groups.length
+              ( board.cards = board.cards.concat(group.cards) ) for group in board.groups if board.groups?
+              callback null, board 
 
   fillGroup: (group, callback) ->
     Card.find { groupId: group.id }, (error, cards) ->
