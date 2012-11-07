@@ -25,11 +25,14 @@
           fieldset
             input#board-name(type='text', name='name')
             button(class='btn') get a board
-        h4 OWNER
-        ul.created.span8
-          boards = created
-          include includes/board_list
-        H4 COLLABORATOR
-        ul.collaborated.span8
-          boards = collaborated
-          include includes/board_list
+        
+        - if (created.length)
+          h4 OWNER
+          ul.created.span8
+            boards = created
+            include includes/board_list
+        - if (collaborated.length)
+          h4 COLLABORATOR
+          ul.collaborated.span8
+            boards = collaborated
+            include includes/board_list
