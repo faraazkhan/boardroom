@@ -26,19 +26,29 @@ body {
   }
   
   #name {
+  
     border: none;
+    color: @grayLight;
+    
     background-color: transparent;
     .box-shadow(inset 0 0 0 transparent);
-    position: absolute;
+  
+    margin-top: -7px;
+    height: 27px;
+    padding: 0;
+    width: 80%;
+  
     text-align: center;
-    width: 100%;
-    color: @grayLight;
     font-size: 24px;
-    line-height: 46px;
-    height: 50px;
   }
   
-  .info { display: inline; font-size: 10px;}
+  .info { 
+    position: absolute;
+    font-size: 12px;
+    margin-left: 10px;
+    margin-top: 8px;
+    font-family: @fontSub;
+  }
   
   #user-info {
     position: absolute;
