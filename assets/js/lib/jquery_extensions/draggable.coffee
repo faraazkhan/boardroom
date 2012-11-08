@@ -10,14 +10,17 @@ $.fn.draggable = (opts) ->
   , opts
 
   trigger = (name) ->
-    pos = $this.position()
+    offset = $this.offset()
     $(window).trigger name,
       target: $this[0]
-      x: pos.left
-      y: pos.top
+      x: offset.left
+      y: offset.top
 
   $this.on 'mousedown.draggable', (e) ->
     return true unless settings.isTarget(e.target)
+    e.stopPropagation()
+    view = $this.data 'view'
+    view.restingOffset = $this.offset() if view?
 
     origX = lastX = e.pageX
     origY = lastY = e.pageY

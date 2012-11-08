@@ -42,7 +42,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initializeDroppable: ->
     @$el.droppable
-      threshold: 50
+      threshold: 88
       onHover: (target) =>
         @$el.addClass 'stackable' unless @$el.is 'stackable'
       onBlur: (target) =>

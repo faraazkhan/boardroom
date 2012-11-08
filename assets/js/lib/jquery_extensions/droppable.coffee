@@ -2,7 +2,7 @@ $.fn.droppable = (opts) ->
   $this = this
 
   settings = $.extend true,
-    threshold = 88
+    threshold: 50
     onHover: (target) ->
     onBlur: (target) ->
     onDrop: (target) ->
@@ -11,8 +11,9 @@ $.fn.droppable = (opts) ->
   hovering = false
 
   isHovering = (data) ->
-    pos = $this.position()
-    (pos.left - threshold) <= data.x <= (pos.left + threshold) and (pos.top - threshold) <= data.y <= (pos.top + threshold)
+    threshold = settings.threshold
+    offset = $this.offset()
+    (offset.left - threshold) <= data.x <= (offset.left + threshold) and (offset.top - threshold) <= data.y <= (offset.top + threshold)
 
   $(window).on 'drag', (event, data) ->
     return if $this[0] == data.target

@@ -3,6 +3,7 @@ class boardroom.views.Base extends Backbone.View
   initialize: (attributes) ->
     @$el.data 'view', @
     { @socket } = attributes
+    @restingOffset = { left: 0, top: 0 }
     @authorLock = new boardroom.models.CardLock
     @authorLock.poll =>
       @hideNotice()
@@ -44,16 +45,16 @@ class boardroom.views.Base extends Backbone.View
       .show()
 
   moveTo: ({x, y}) ->
-    @$el.css { left: x, top: y }
+    @$el.offset { left: x, top: y }
 
   hideNotice: ->
     @$('.notice').fadeOut 100
 
   left: ->
-    @$el.position().left
+    @$el.offset().left
 
   top: ->
-    @$el.position().top
+    @$el.offset().top
 
   zIndex: ->
     parseInt(@$el.css('z-index')) || 0
