@@ -59,8 +59,9 @@ class boardroom.views.Card extends boardroom.views.Base
         @emitMove()
 
   ###
-  --------- render ---------
+      render
   ###
+
   render: ->
     @$el
       .html(@template(@model.toJSON()))
@@ -146,8 +147,9 @@ class boardroom.views.Card extends boardroom.views.Base
 
 
   ###
-  --------- human interaction event handlers ---------  
+      human interaction event handlers
   ###
+
   hiChangeColor: (event) ->
     colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
     author = @model.get('board').get('user_id')
@@ -180,10 +182,10 @@ class boardroom.views.Card extends boardroom.views.Base
     if parentGroupView is @groupView
       @moveBackToRestingSpot()
       return
-    @boardView.moveCardIntoGroup @sourcePath, parentGroupView.sourcePath
+    @boardView.switchGroups @sourcePath, parentGroupView.sourcePath
 
-  hiDropOnToBoard: (event, boardView) -> # noop
-    # @boardView.moveCardOutOfGroup @model, @coordinateInBoard()
-    @boardView.createNewGroup @coordinateInContainer(boardView)
-    @deleteMe()
+  hiDropOnToBoard: (event, boardView) ->
+    @boardView.ungroupCard @sourcePath, @coordinateInBoard()
+    # @boardView.createNewGroup @coordinateInContainer(boardView)
+    # @deleteMe()
 

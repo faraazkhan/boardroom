@@ -29,8 +29,6 @@ class boardroom.views.Group extends boardroom.views.Base
       boardId: @boardView.model.id
       groupId: @model.id
 
-
-
   initializeCards: () ->
     cards = @model.get('cards')
     @displayNewCard card for card in cards if cards
@@ -60,8 +58,9 @@ class boardroom.views.Group extends boardroom.views.Base
         @$el.removeClass 'stackable'
 
   ###
-  --------- render ---------
+      render
   ###
+
   render: ->
     @$el
       .html(@template(@model.toJSON()))
@@ -114,8 +113,9 @@ class boardroom.views.Group extends boardroom.views.Base
     @displayGroupName()
 
   ###
-  --------- human interaction event handlers ---------  
+      human interaction event handlers
   ###
+
   hiChangeGroupName: (event) ->
     isEnter = event.keyCode is 13
     if isEnter
@@ -128,7 +128,7 @@ class boardroom.views.Group extends boardroom.views.Base
       console.log "Can't drop onto a phantom!"
       return # patch: draggable/dropable handlers still running but shouldn't be (after deleting another group)
     boardModel = @model.get('board')
-    @socket.emit 'board.merge-groups',
+    @socket.emit 'board.group.merge',
       _id: boardModel.id
       parentGroupId: parentGroupView.model.id
       otherGroupId: @model.id

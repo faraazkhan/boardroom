@@ -9,8 +9,9 @@ class boardroom.views.Header extends Backbone.View
     @socket.on 'board.update', @onBoardUpdate
 
   ###
-  --------- human interaction event handlers ---------  
+      human interaction event handlers
   ###
+
   hiChangeBoardName: (event) ->
     isEnter = event.keyCode is 13
     if isEnter
@@ -18,9 +19,10 @@ class boardroom.views.Header extends Backbone.View
     else
       @socket.emit 'board.update', _id: @model.get('_id'), name: @$('#name').val()
 
-  ###
-  --------- socket handlers ---------
-  ###
+    ###
+        socket handlers
+    ###
+
   onBoardUpdate: (data) =>
     @$('#name').val data.name
 

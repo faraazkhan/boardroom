@@ -15,7 +15,7 @@ class boardroom.views.Base extends Backbone.View
     throw "initializeSourcePath() not defined!" #template and hook
 
   ###
-  Convenience
+      util
   ###
   sourcePath: ()-> throw "sourcPath() not defined!"  # template and hook
 
@@ -73,11 +73,12 @@ class boardroom.views.Base extends Backbone.View
 
   coordinateInBoard: () ->
     boardView = @boardView || $('.board').data('view')
-    coordinateInContainer boardView
+    @coordinateInContainer boardView
 
   ###
-  render handlers
+      render
   ###
+
   showNotice: ({ user, message }) =>
     @$('.notice')
       .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
@@ -112,21 +113,24 @@ class boardroom.views.Base extends Backbone.View
     newZ
 
   ###
-  services
+      services
   ###
+
   deleteMe: ()->
     @socket.emit "#{@className}.delete", @model.id
 
   ###
-  human interaction event handlers
+      human interaction event handlers
   ###
+
   hiDeleteMe: ()->
     @deleteMe()
 
 
   ###
-  debug
+      debug
   ###
+
   $debug: ()->
     unless @$debugEl
       e = """

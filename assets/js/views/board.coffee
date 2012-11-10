@@ -51,7 +51,7 @@ class boardroom.views.Board extends boardroom.views.Base
     boardId: @model.id
 
   ###
-  --------- render ---------
+      render
   ###
 
   displayStatus: (status) ->
@@ -75,39 +75,51 @@ class boardroom.views.Board extends boardroom.views.Base
     @groupViews.push groupView
 
   ###
-  --------- service calls ---------
+      utils
+  ###
+
+  maxZ: ()->
+    return  _.max(@groupViews, (view) -> view.zIndex()).zIndex() if @groupViews.length
+    0
+
+  ###
+      service calls
   ###
 
   createNewGroup: ({x, y})->
-    maxZ = if @groupViews.length
-        _.max(@groupViews, (view) -> view.zIndex()).zIndex()
-      else
-        0
+    z = @maxZ()
     @socket.emit 'group.create',
       boardId: @model.get('_id')
       creator: @model.get('user_id')
       x: x - 10
       y: y - 10
-      z: maxZ + 1
+      z: z + 1
       focus: true
 
-  moveCardIntoGroup: (cardSourcePath, newGroupSourcePath)->
-    @socket.emit 'board.move-card',
-      boardId: @model.get('_id')
-      creator: @model.get('user_id')
+  switchGroups: (cardSourcePath, newGroupSourcePath)->
+    @socket.emit 'board.card.switch-groups',
       cardSourcePath: cardSourcePath
       newGroupSourcePath: newGroupSourcePath
 
+  ungroupCard: (cardSourcePath, newCoordinate) ->
+    z = @maxZ()
+    @socket.emit 'board.card.ungroup',
+      cardSourcePath: cardSourcePath
+      x: newCoordinate.x - 10
+      y: newCoordinate.y - 10
+      z: z + 1
+
   ###
-  --------- human interaction event handlers ---------
+      human interaction event handlers
   ###
   hiRequestNewCard: (event) ->
     return unless event.target.className == 'board'
     @createNewGroup @coordinateOfEvent (event)
 
   ###
-  --------- socket handlers ---------
+      socket handlers
   ###
+
   onGroupCreate: (data) =>
     @displayNewGroup data
 
