@@ -29,16 +29,21 @@ class boardroom.views.Card extends boardroom.views.Base
     'keyup textarea': 'hiChangeText'
     'click textarea': 'hiFocusText'
     'click .plus1 .btn': 'hiIncrementPlusCount'
-    'click .delete': 'hiDelete'
+    'click .delete': 'hiDeleteMe'
 
   initialize: (attributes) ->
-    super attributes
     { @groupView, @boardView } = attributes
+    super attributes
     @initializeDraggable()
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
 
+  initializeSourcePath: ()->
+    @sourcePath = 
+      boardId: @boardView.model.id
+      groupId: @groupView.model.id
+      cardId: @model.id
 
   initializeDraggable: ->
     @$el.draggable
@@ -175,7 +180,7 @@ class boardroom.views.Card extends boardroom.views.Base
     if parentGroupView is @groupView
       @moveBackToRestingSpot()
       return
-    # @boardView.moveCardIntoGroup @model, parentGroupView.model, 0
+    @boardView.moveCardIntoGroup @sourcePath, parentGroupView.sourcePath
 
   hiDropOnToBoard: (event, boardView) -> # noop
     # @boardView.moveCardOutOfGroup @model, @coordinateInBoard()

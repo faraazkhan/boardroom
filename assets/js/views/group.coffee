@@ -14,8 +14,8 @@ class boardroom.views.Group extends boardroom.views.Base
     'keyup .name': 'hiChangeGroupName'
 
   initialize: (attributes) ->
-    super attributes
     { @boardView } = attributes
+    super attributes
     @render()
     @initializeCards()
     @initializeDraggable()
@@ -23,6 +23,13 @@ class boardroom.views.Group extends boardroom.views.Base
 
   onLockPoll: ()=>
     @enableEditing '.name'
+
+  initializeSourcePath: ()->
+    @sourcePath = 
+      boardId: @boardView.model.id
+      groupId: @model.id
+
+
 
   initializeCards: () ->
     cards = @model.get('cards')

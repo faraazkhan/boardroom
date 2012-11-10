@@ -3,18 +3,22 @@ class boardroom.views.Base extends Backbone.View
   initialize: (attributes) ->
     @$el.data 'view', @
     { @socket } = attributes
+    @initializeSourcePath()
     @restingOffset = { left: 0, top: 0 }
     @authorLock = new boardroom.models.CardLock
     @authorLock.poll =>
       @hideNotice()
       @onLockPoll()      
 
-  onLockPoll: ()=>
-    # template and hook
+  onLockPoll: ()=> # template and hook
+  initializeSourcePath: ()->
+    throw "initializeSourcePath() not defined!" #template and hook
 
   ###
   Convenience
   ###
+  sourcePath: ()-> throw "sourcPath() not defined!"  # template and hook
+
   findView: (id) ->
     $("##{id}").data('view')
 
@@ -25,9 +29,7 @@ class boardroom.views.Base extends Backbone.View
     @$(selector).val(text).attr('disabled', 'disabled')
 
   eventsOff: ->
-    @$el.off 'mousedown'
-    @$el.off 'click'
-    @$el.off 'dblclick'
+    # @$el.off()
 
   emitMove: () ->
     @socket.emit "#{@className}.update",
@@ -35,18 +37,6 @@ class boardroom.views.Base extends Backbone.View
       x: @left()
       y: @top()
       author: @model.get('board').get('user_id')
-
-  # xPosition: (item, $target) ->
-  #   $target = $(item.target) unless $target?
-  #   return 0 unless item? and $target?
-  #   x = parseInt (item.pageX - $target.offset().left)
-  # yPosition: (item, $target) ->
-  #   $target = $(item.target) unless $target?
-  #   return 0 unless item? and $target?
-  #   y = parseInt (item.pageY - $target.offset().top)
-
-  # eventPositionX: (event) -> (xPosition event, @$el)
-  # eventPositionY: (event) -> (yPosition event, @$el)
 
   containsPoint: (coordinate) ->
     c = @$el.offset()
@@ -130,7 +120,7 @@ class boardroom.views.Base extends Backbone.View
   ###
   human interaction event handlers
   ###
-  hiDelete: ()->
+  hiDeleteMe: ()->
     @deleteMe()
 
 

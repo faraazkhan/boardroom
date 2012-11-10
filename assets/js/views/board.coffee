@@ -12,6 +12,10 @@ class boardroom.views.Board extends boardroom.views.Base
     @initializeGroups()
     @initializeDroppable()
 
+  initializeSourcePath: ()->
+    @sourcePath = 
+      boardId: @model.id
+
   initializeSocketEventHandlers: ->
     @socket.on 'joined', @onJoined
     @socket.on 'connect', @onConnect
@@ -42,6 +46,9 @@ class boardroom.views.Board extends boardroom.views.Base
       shouldBlockHover: (coordinate) =>
         (return true if group.containsPoint(coordinate)) for group in @groupViews
         return false
+
+  sourcePath: ()-> 
+    boardId: @model.id
 
   ###
   --------- render ---------
@@ -83,6 +90,13 @@ class boardroom.views.Board extends boardroom.views.Base
       y: y - 10
       z: maxZ + 1
       focus: true
+
+  moveCardIntoGroup: (cardSourcePath, newGroupSourcePath)->
+    @socket.emit 'board.move-card',
+      boardId: @model.get('_id')
+      creator: @model.get('user_id')
+      cardSourcePath: cardSourcePath
+      newGroupSourcePath: newGroupSourcePath
 
   ###
   --------- human interaction event handlers ---------
