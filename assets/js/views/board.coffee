@@ -1,15 +1,16 @@
 class boardroom.views.Board extends boardroom.views.Base
   el: '.board'
+  className: 'board'
   groupViews: []
 
   events:
     'dblclick': 'hiRequestNewCard'
 
   initialize: (attributes) ->
-    @$el.data 'view', @
-    { @socket } = attributes
+    super attributes
     @initializeSocketEventHandlers()
     @initializeGroups()
+    @initializeDroppable()
 
   initializeSocketEventHandlers: ->
     @socket.on 'joined', @onJoined
@@ -28,9 +29,24 @@ class boardroom.views.Board extends boardroom.views.Base
     groups = @model.get('groups')
     @displayNewGroup group for group in groups if groups
 
+  initializeDroppable: ->
+    @$el.droppable
+      threshold: Math.max @$el.height(), @$el.width()
+      onHover: (event, target) =>
+        @$el.addClass 'stackable' unless @$el.is 'stackable'
+      onBlur: (event, target) =>
+        @$el.removeClass 'stackable'
+      onDrop: (mouseEvent, target) =>
+        $(target).data('view').hiDropOnToBoard mouseEvent, @
+        @$el.removeClass 'stackable'
+      shouldBlockHover: (coordinate) =>
+        (return true if group.containsPoint(coordinate)) for group in @groupViews
+        return false
+
   ###
   --------- render ---------
   ###
+
   displayStatus: (status) ->
     @$('#connection-status').html status
     modal = @$('#connection-status-modal')
@@ -44,6 +60,7 @@ class boardroom.views.Board extends boardroom.views.Base
       group = new boardroom.models.Group _.extend(data, board: @model)
     groupView = new boardroom.views.Group
       model: group
+      boardView: @
       socket: @socket
     groupView.$el.hide() # animate adding the new group
     @$el.append groupView.el
@@ -51,10 +68,10 @@ class boardroom.views.Board extends boardroom.views.Base
     @groupViews.push groupView
 
   ###
-  --------- human interaction event handlers ---------
+  --------- service calls ---------
   ###
-  hiRequestNewCard: (event) ->
-    return unless event.target.className == 'board'
+
+  createNewGroup: ({x, y})->
     maxZ = if @groupViews.length
         _.max(@groupViews, (view) -> view.zIndex()).zIndex()
       else
@@ -62,10 +79,17 @@ class boardroom.views.Board extends boardroom.views.Base
     @socket.emit 'group.create',
       boardId: @model.get('_id')
       creator: @model.get('user_id')
-      x: parseInt (event.pageX - $(event.target).offset().left) - 10
-      y: parseInt (event.pageY - $(event.target).offset().top)  - 10
+      x: x - 10
+      y: y - 10
       z: maxZ + 1
       focus: true
+
+  ###
+  --------- human interaction event handlers ---------
+  ###
+  hiRequestNewCard: (event) ->
+    return unless event.target.className == 'board'
+    @createNewGroup @coordinateOfEvent (event)
 
   ###
   --------- socket handlers ---------

@@ -33,10 +33,25 @@ class boardroom.views.Card extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
-    # @initializeDraggable() +++ TODO: drag cards to re-order, pop out of a group, etc
+    { @groupView, @boardView } = attributes
+    @initializeDraggable()
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
+
+
+  initializeDraggable: ->
+    @$el.draggable
+      isTarget: (target) ->
+        # return false if $(target).is 'input'
+        return false if $(target).is '.color'
+        return false if $(target).is '.delete'
+        true
+      onMouseDown: =>
+        z = @bringForward()
+        @socket.emit 'card.update', { _id: @model.id, z }
+      onMouseMove: =>
+        @emitMove()
 
   ###
   --------- render ---------
@@ -120,6 +135,11 @@ class boardroom.views.Card extends boardroom.views.Base
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
 
+  moveBackToRestingSpot: () ->
+    @$el.css('left', @restingSpot.left)
+    @$el.css('top', @restingSpot.top)
+
+
   ###
   --------- human interaction event handlers ---------  
   ###
@@ -150,3 +170,15 @@ class boardroom.views.Card extends boardroom.views.Base
     @addPlusAuthor plusAuthor
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, plusAuthor, z }
+
+  hiDropOnToGroup: (event, parentGroupView) ->
+    if parentGroupView is @groupView
+      @moveBackToRestingSpot()
+      return
+    # @boardView.moveCardIntoGroup @model, parentGroupView.model, 0
+
+  hiDropOnToBoard: (event, boardView) -> # noop
+    # @boardView.moveCardOutOfGroup @model, @coordinateInBoard()
+    @boardView.createNewGroup @coordinateInContainer(boardView)
+    @deleteMe()
+

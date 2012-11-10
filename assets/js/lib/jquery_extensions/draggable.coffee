@@ -1,5 +1,6 @@
 $.fn.draggable = (opts) ->
   $this = this
+  @isDragging = false
 
   settings = $.extend true,
     onMouseMove : () ->
@@ -9,18 +10,22 @@ $.fn.draggable = (opts) ->
     position : (dx, dy, x, y) -> left: x, top: y
   , opts
 
-  trigger = (name) ->
+  trigger = (name, mouseEvent) ->
     offset = $this.offset()
     $(window).trigger name,
       target: $this[0]
+      mouseEvent: mouseEvent
       x: offset.left
       y: offset.top
 
   $this.on 'mousedown.draggable', (e) ->
-    return true unless settings.isTarget(e.target)
+    @isDragging = false
     e.stopPropagation()
+    return true unless settings.isTarget(e.target)
     view = $this.data 'view'
-    view.restingOffset = $this.offset() if view?
+    view.restingSpot = 
+      left: view.$el.css('left')
+      top:  view.$el.css('top')
 
     origX = lastX = e.pageX
     origY = lastY = e.pageY
@@ -28,6 +33,8 @@ $.fn.draggable = (opts) ->
     origTop = $this.offset().top
 
     $(window).on 'mousemove.draggable', (e) ->
+      $('.board').data('view').debugShowMouse(e)
+      @isDragging = true
       deltaX = e.pageX - origX
       deltaY = e.pageY - origY
 
@@ -46,11 +53,15 @@ $.fn.draggable = (opts) ->
       false
 
     $(window).on 'mouseup.draggable', (e) ->
+      $('.board').data('view').debugShowMouse(e)
+      e.stopPropagation()
       $(window).off 'mousemove.draggable'
       $(window).off 'mouseup.draggable'
-      trigger 'drop'
-      settings.onMouseUp e
-      false
+      if @isDragging
+        settings.onMouseUp e
+        trigger 'drop', e
+      @isDragging = false
+      true
 
     settings.onMouseDown e
     true

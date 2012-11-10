@@ -15,6 +15,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
+    { @boardView } = attributes
     @render()
     @initializeCards()
     @initializeDraggable()
@@ -43,12 +44,12 @@ class boardroom.views.Group extends boardroom.views.Base
   initializeDroppable: ->
     @$el.droppable
       threshold: 88
-      onHover: (target) =>
+      onHover: (event, target) =>
         @$el.addClass 'stackable' unless @$el.is 'stackable'
-      onBlur: (target) =>
+      onBlur: (event, target) =>
         @$el.removeClass 'stackable'
-      onDrop: (target) =>
-        $(target).data('view').snapTo @
+      onDrop: (event, target) =>
+        $(target).data('view').hiDropOnToGroup event, @
         @$el.removeClass 'stackable'
 
   ###
@@ -97,22 +98,13 @@ class boardroom.views.Group extends boardroom.views.Base
       card = new boardroom.models.Card _.extend(data, bindings)
     cardView = new boardroom.views.Card
       model: card
+      groupView: @
+      boardView: @boardView
       socket: @socket
     @$el.append cardView.render().el # animate adding the new card 
     setTimeout (=>cardView.adjustTextarea()), 88 # let the card render before adjusting text
     @cardViews.push cardView
     @displayGroupName()
-
-  snapTo: (parentGroupView) ->
-    if 0==$('#'+parentGroupView.model.id).length
-      console.log "Can't drop onto a phantom!"
-      return # patch: draggable/dropable handlers still running but shouldn't be (after deleting another group)
-    boardModel = @model.get('board')
-    @socket.emit 'board.merge-groups',
-      _id: boardModel.id
-      parentGroupId: parentGroupView.model.id
-      otherGroupId: @model.id
-      author: boardModel.get('user_id')
 
   ###
   --------- human interaction event handlers ---------  
@@ -123,3 +115,16 @@ class boardroom.views.Group extends boardroom.views.Base
       @$('.name').blur()
     else
       @socket.emit 'group.update', _id: @model.get('_id'), name: @$('.name').val()
+
+  hiDropOnToGroup: (event, parentGroupView) ->
+    if 0==$('#'+parentGroupView.model.id).length
+      console.log "Can't drop onto a phantom!"
+      return # patch: draggable/dropable handlers still running but shouldn't be (after deleting another group)
+    boardModel = @model.get('board')
+    @socket.emit 'board.merge-groups',
+      _id: boardModel.id
+      parentGroupId: parentGroupView.model.id
+      otherGroupId: @model.id
+      author: boardModel.get('user_id')
+
+  hiDropOnToBoard: (event, boardView) -> # noop group can move freely on a board
