@@ -29,7 +29,7 @@ class boardroom.views.Base extends Backbone.View
     @$(selector).val(text).attr('disabled', 'disabled')
 
   eventsOff: ->
-    # @$el.off()
+    @$el.off()
 
   emitMove: () ->
     @socket.emit "#{@className}.update",
@@ -75,6 +75,11 @@ class boardroom.views.Base extends Backbone.View
     boardView = @boardView || $('.board').data('view')
     @coordinateInContainer boardView
 
+  resizeHTML: ()->
+    $('body').width($(document).width()+12) if $('body').width() isnt $(document).width()
+    $('body').height($(document).height()-100)
+    console.log $('.board').offset().top
+
   ###
       render
   ###
@@ -85,7 +90,10 @@ class boardroom.views.Base extends Backbone.View
       .show()
 
   moveTo: ({x, y}) ->
-    @$el.offset { left: x, top: y }
+    left: (Math.max x, (@boardView.left() + 12) ) # provide 12px left margin 
+    top:  (Math.max y, (@boardView.top()  + 12) )   # provide 12px top margin 
+    @$el.offset { left: left, top: top }
+    @resizeHTML()
 
   hideNotice: ->
     @$('.notice').fadeOut 100
@@ -95,6 +103,12 @@ class boardroom.views.Base extends Backbone.View
 
   top: ->
     @$el.offset().top
+
+  right: ->
+    @left() + @$el.width()
+
+  bottom: ->
+    @top() + @$el.height()
 
   zIndex: ->
     parseInt(@$el.css('z-index')) || 0

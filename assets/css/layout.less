@@ -16,6 +16,12 @@ body {
   padding: 14px;
   border-bottom: 2px solid @blueLight;
   
+  .user-select(none);
+  .info {
+    float: left;
+    margin-top: 5px;
+    margin-right: 50px;
+  }
   .title {
     color: @yellowMid;
     text-decoration: none;
@@ -48,6 +54,7 @@ body {
     margin-left: 10px;
     margin-top: 8px;
     font-family: @fontSub;
+    .user-select(none);
   }
   
   #user-info {
@@ -58,11 +65,12 @@ body {
     padding-right: 18px;
     font-size: 10px;
     line-height: 14px;
+    .user-select(none);
     img.avatar {
       margin: 5px;
       float: left;
     }
-
+    
     a {
       float: left;
       color: @grayLight;
@@ -91,12 +99,12 @@ div.user {
 }
 
 .board {
+  position: relative;
+  border: 2px solid purple;
   height: 100%;
   padding: 20px 0;
-  position: relative;
+  .user-select(none);
   &.stackable {
-    background-color: rgba(88,208,88,0.28);
-    border: 1px dotted white;
   }
 }
 

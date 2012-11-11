@@ -3,6 +3,8 @@ $.fn.draggable = (opts) ->
   @isDragging = false
 
   settings = $.extend true,
+    minX: 30
+    minY: 12
     onMouseMove : () ->
     onMouseUp : () ->
     onMouseDown : () ->
@@ -33,13 +35,15 @@ $.fn.draggable = (opts) ->
     origTop = $this.offset().top
 
     $(window).on 'mousemove.draggable', (e) ->
-      $('.board').data('view').debugShowMouse(e)
       @isDragging = true
       deltaX = e.pageX - origX
       deltaY = e.pageY - origY
 
       offsetX = origLeft + deltaX
-      offsetY = origTop  + deltaY
+      offsetX = Math.max [offsetX, settings.minX]...
+
+      offsetY = origTop + deltaY
+      offsetY = Math.max [offsetY, settings.minY]...
 
       offset = settings.position deltaX, deltaY, offsetX, offsetY, e
 
@@ -53,7 +57,6 @@ $.fn.draggable = (opts) ->
       false
 
     $(window).on 'mouseup.draggable', (e) ->
-      $('.board').data('view').debugShowMouse(e)
       e.stopPropagation()
       $(window).off 'mousemove.draggable'
       $(window).off 'mouseup.draggable'

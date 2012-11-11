@@ -11,6 +11,8 @@ class boardroom.views.Board extends boardroom.views.Base
     @initializeSocketEventHandlers()
     @initializeGroups()
     @initializeDroppable()
+    @resizeHTML()
+    $(window).resize => @resizeHTML()
 
   initializeSourcePath: ()->
     @sourcePath = 
@@ -73,6 +75,7 @@ class boardroom.views.Board extends boardroom.views.Base
     @$el.append groupView.el
     groupView.$el.slideDown('fast')
     @groupViews.push groupView
+    @resizeHTML()
 
   ###
       utils

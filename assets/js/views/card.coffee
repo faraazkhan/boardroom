@@ -47,12 +47,15 @@ class boardroom.views.Card extends boardroom.views.Base
 
   initializeDraggable: ->
     @$el.draggable
-      isTarget: (target) ->
+      minX: @boardView.left() + 12
+      minY: @boardView.top()  + 12
+      isTarget: (target) =>
         # return false if $(target).is 'input'
-        return false if $(target).is '.color'
+        # return false if $(target).is '.color'
         return false if $(target).is '.delete'
         true
       onMouseDown: =>
+        @groupView.bringForward()
         z = @bringForward()
         @socket.emit 'card.update', { _id: @model.id, z }
       onMouseMove: =>
@@ -86,6 +89,7 @@ class boardroom.views.Card extends boardroom.views.Base
       @showNotice user: data.author, message: data.author
       @authorLock.lock 500
     if data.z?
+      @groupView.bringForward() if data.z > @$el.css 'z-index'
       @$el.css 'z-index', data.z
     if data.text?
       @disableEditing 'textarea', data.text
@@ -182,9 +186,13 @@ class boardroom.views.Card extends boardroom.views.Base
     if parentGroupView is @groupView
       @moveBackToRestingSpot()
       return
+    @eventsOff()
+    @groupView.eventsOff() if @groupView.cardViews.length is 1
     @boardView.switchGroups @sourcePath, parentGroupView.sourcePath
 
   hiDropOnToBoard: (event, boardView) ->
+    @eventsOff()
+    @groupView.eventsOff() if @groupView.cardViews.length is 1
     @boardView.ungroupCard @sourcePath, @coordinateInBoard()
     # @boardView.createNewGroup @coordinateInContainer(boardView)
     # @deleteMe()

@@ -3,6 +3,7 @@ class boardroom.views.Group extends boardroom.views.Base
   cardViews: []
 
   template: _.template """
+    <div class="background"></div>
     <div class='notice'></div>
     <input type='text' class='name' value="<%=name%>" placeholder="Group"></input>
   """
@@ -35,6 +36,8 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initializeDraggable: ->
     @$el.draggable
+      minX: @boardView.left() + 12
+      minY: @boardView.top()  + 12
       isTarget: (target) ->
         # return false if $(target).is 'input'
         return false if $(target).is '.color'
@@ -45,6 +48,7 @@ class boardroom.views.Group extends boardroom.views.Base
         @socket.emit 'group.update', { _id: @model.id, z }
       onMouseMove: =>
         @emitMove()
+        @resizeHTML()
 
   initializeDroppable: ->
     @$el.droppable
@@ -127,6 +131,7 @@ class boardroom.views.Group extends boardroom.views.Base
     if 0==$('#'+parentGroupView.model.id).length
       console.log "Can't drop onto a phantom!"
       return # patch: draggable/dropable handlers still running but shouldn't be (after deleting another group)
+    @eventsOff()
     boardModel = @model.get('board')
     @socket.emit 'board.group.merge',
       _id: boardModel.id
