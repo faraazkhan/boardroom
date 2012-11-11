@@ -14,7 +14,7 @@ class Populator
         @populateMany callback, boardCursor
 
   populateMany: (callback, boards) ->
-    return callback null, [] unless boards?
+    return (callback null, []) unless boards? and 0 isnt boards?.length
     count = 0
     for board in boards
       do (board) =>

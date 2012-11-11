@@ -28,7 +28,7 @@ class BoardsController extends ApplicationController
 
   destroy: (request, response) =>
     board = Board.sync.findById request.params.id
-    board.sync.remove()
+    board.sync.remove() if board?
     response.redirect '/'
 
 module.exports = BoardsController
