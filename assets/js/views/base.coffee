@@ -153,7 +153,8 @@ class boardroom.views.Base extends Backbone.View
       human interaction event handlers
   ###
 
-  hiDeleteMe: ()->
+  hiDeleteMe: (event)->
+    event.stopPropagation()
     @deleteMe()
 
   ###

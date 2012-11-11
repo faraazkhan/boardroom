@@ -59,7 +59,7 @@ class boardroom.views.Group extends boardroom.views.Base
         @emitAddIndicator cssClass:'stackable'
       onBlur: (event, target) =>
         @removeIndicator cssClass:'stackable'
-        @emitRemove Indicator cssClass:'stackable'
+        @emitRemoveIndicator cssClass:'stackable'
       onDrop: (event, target) =>
         $(target).data('view').hiDropOnToGroup event, @
         @$el.removeClass 'stackable'
@@ -92,12 +92,13 @@ class boardroom.views.Group extends boardroom.views.Base
 
   updateCards: (cards) =>
     @displayNewCard card for card in cards
+    @displayGroupName(500)
 
   displayGroupName: ()-> # show group name if more than 1 card in the group
     if 1 < @$('.card').length
-      @$('.name').fadeIn('slow') 
-    else 
-      @$('.name').hide()
+      @$('.name').delay(400).fadeIn('slow').find('input').focus() unless @$('.name').is(':visible')
+    else
+      @$('.name').delay(400).hide()
 
   displayNewCard: (data) ->
     return if !data or @$el.has("#"+ data._id).length
@@ -134,6 +135,7 @@ class boardroom.views.Group extends boardroom.views.Base
       @socket.emit 'group.update', _id: @model.get('_id'), name: @$('.name').val()
 
   hiRequestNewCard: (event) ->
+    event.stopPropagation()
     @socket.emit 'group.card.create',
       sourcePath: @sourcePath
       creator: @boardView.model.get('user_id')

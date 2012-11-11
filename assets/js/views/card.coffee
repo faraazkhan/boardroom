@@ -154,6 +154,7 @@ class boardroom.views.Card extends boardroom.views.Base
   ###
 
   hiChangeColor: (event) ->
+    event.stopPropagation()
     colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
     author = @model.get('board').get('user_id')
     @setColor colorIndex
@@ -161,7 +162,7 @@ class boardroom.views.Card extends boardroom.views.Base
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
 
-  hiChangeText: ->
+  hiChangeText: (event)->
     text = @$('textarea').val()
     author = @model.get('board').get('user_id')
     @addAuthor author
@@ -169,12 +170,13 @@ class boardroom.views.Card extends boardroom.views.Base
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, text, z, author }
 
-  hiFocusText: ->
+  hiFocusText: (event)->
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, z}
     @$('textarea').focus()
 
   hiIncrementPlusCount: (e) ->
+    e.stopPropagation()
     e.preventDefault()
     plusAuthor = @model.get('board').get('user_id')
     @addPlusAuthor plusAuthor
@@ -182,6 +184,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @socket.emit 'card.update', { _id: @model.id, plusAuthor, z }
 
   hiDropOnToGroup: (event, parentGroupView) ->
+    event.stopPropagation()
     if parentGroupView is @groupView
       @moveBackToRestingSpot()
       return
@@ -190,6 +193,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @boardView.switchGroups @sourcePath, parentGroupView.sourcePath
 
   hiDropOnToBoard: (event, boardView) ->
+    event.stopPropagation()
     @eventsOff()
     @groupView.eventsOff() if @groupView.cardViews.length is 1
     @boardView.ungroupCard @sourcePath, @coordinateInBoard()

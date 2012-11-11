@@ -127,34 +127,36 @@ class boardroom.views.Board extends boardroom.views.Base
 
   onAddIndicator: (data) =>
     view = @findView data._id
-    view.addIndicator data
+    view.addIndicator data if view?
 
   onRemoveIndicator: (data) =>
     view = @findView data._id
-    view.removeIndicator data
+    view.removeIndicator data if view?
 
   onGroupCreate: (data) =>
     @displayNewGroup data
 
   onGroupUpdate: (data) =>
     groupView = @findView data._id
-    groupView.update data
+    groupView.update data if groupView?
 
   onGroupUpdateCards: (data) =>
     groupView = @findView data.groupId
-    groupView.updateCards data.cards if groupView
+    groupView.updateCards data.cards if groupView?
 
   onGroupDelete: (id) =>
     groupView = @findView id
+    return unless groupView?
     groupView.eventsOff() # prevent further clicks and drops during animate the delete
     groupView.$el.slideUp 'fast', ()-> groupView.$el.remove()
 
   onCardUpdate: (data) =>
     cardView = @findView data._id
-    cardView.update data
+    cardView.update data if cardView?
 
   onCardDelete: (id) =>
     cardView = @findView id
+    return unless cardView?
     cardView.eventsOff() # prevent further clicks and drops during animate the delete
     cardView.$el.slideUp 'fast', ()-> cardView.$el.remove()
 
