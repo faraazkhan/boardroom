@@ -78,7 +78,6 @@ class boardroom.views.Base extends Backbone.View
   resizeHTML: ()->
     $('body').width($(document).width()+12) if $('body').width() isnt $(document).width()
     $('body').height($(document).height()-100)
-    console.log $('.board').offset().top
 
   ###
       render

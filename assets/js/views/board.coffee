@@ -73,7 +73,7 @@ class boardroom.views.Board extends boardroom.views.Base
       socket: @socket
     groupView.$el.hide() # animate adding the new group
     @$el.append groupView.el
-    groupView.$el.slideDown('fast')
+    groupView.$el.slideDown 'fast', ()-> groupView.$el.css 'overflow', 'visible'
     @groupViews.push groupView
     @resizeHTML()
 
