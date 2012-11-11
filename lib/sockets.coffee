@@ -2,6 +2,7 @@ sockets = require 'socket.io'
 CardHandler = require './handlers/card_handler'
 GroupHandler = require './handlers/group_handler'
 BoardHandler = require './handlers/board_handler'
+ViewHandler = require './handlers/view_handler'
 
 class Sockets
   @boards: {}
@@ -11,7 +12,7 @@ class Sockets
       @createBoard boardId
 
   @createBoard: (boardId) ->
-    handlers = [ CardHandler, GroupHandler, BoardHandler ]
+    handlers = [ CardHandler, GroupHandler, BoardHandler, ViewHandler]
     @users = {}
 
     boardNamespace = @io

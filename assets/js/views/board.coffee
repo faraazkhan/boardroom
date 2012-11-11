@@ -30,6 +30,8 @@ class boardroom.views.Board extends boardroom.views.Base
     @socket.on 'group.delete', @onGroupDelete
     @socket.on 'card.update', @onCardUpdate
     @socket.on 'card.delete', @onCardDelete
+    @socket.on 'view.add-indicator', @onAddIndicator
+    @socket.on 'view.remove-indicator', @onRemoveIndicator
 
   initializeGroups: ->
     groups = @model.get('groups')
@@ -122,6 +124,14 @@ class boardroom.views.Board extends boardroom.views.Base
   ###
       socket handlers
   ###
+
+  onAddIndicator: (data) =>
+    view = @findView data._id
+    view.addIndicator data
+
+  onRemoveIndicator: (data) =>
+    view = @findView data._id
+    view.removeIndicator data
 
   onGroupCreate: (data) =>
     @displayNewGroup data

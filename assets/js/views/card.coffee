@@ -60,6 +60,9 @@ class boardroom.views.Card extends boardroom.views.Base
         @socket.emit 'card.update', { _id: @model.id, z }
       onMouseMove: =>
         @emitMove()
+      onMouseUp: =>
+        nothingToDropOnto = => @moveBackToRestingSpot() if (@$el? and @$el.is(':visible'))
+        setTimeout nothingToDropOnto, 1200 # move back if nothing picks up the drop
 
   ###
       render
@@ -144,10 +147,6 @@ class boardroom.views.Card extends boardroom.views.Base
     $card.removeClass 'i-wish i-like'
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
-
-  moveBackToRestingSpot: () ->
-    @$el.css('left', @restingSpot.left)
-    @$el.css('top', @restingSpot.top)
 
 
   ###

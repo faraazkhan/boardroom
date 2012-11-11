@@ -54,9 +54,11 @@ class boardroom.views.Group extends boardroom.views.Base
     @$el.droppable
       threshold: 88
       onHover: (event, target) =>
-        @$el.addClass 'stackable' unless @$el.is 'stackable'
+        @addIndicator cssClass:'stackable'
+        @emitAddIndicator cssClass:'stackable'
       onBlur: (event, target) =>
-        @$el.removeClass 'stackable'
+        @removeIndicator cssClass:'stackable'
+        @emitRemoveIndicator cssClass:'stackable'
       onDrop: (event, target) =>
         $(target).data('view').hiDropOnToGroup event, @
         @$el.removeClass 'stackable'

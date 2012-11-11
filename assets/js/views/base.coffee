@@ -4,7 +4,7 @@ class boardroom.views.Base extends Backbone.View
     @$el.data 'view', @
     { @socket } = attributes
     @initializeSourcePath()
-    @restingOffset = { left: 0, top: 0 }
+    @restingSpot = { left: 0, top: 0 }
     @authorLock = new boardroom.models.CardLock
     @authorLock.poll =>
       @hideNotice()
@@ -30,13 +30,6 @@ class boardroom.views.Base extends Backbone.View
 
   eventsOff: ->
     @$el.off()
-
-  emitMove: () ->
-    @socket.emit "#{@className}.update",
-      _id: @model.id
-      x: @left()
-      y: @top()
-      author: @model.get('board').get('user_id')
 
   containsPoint: (coordinate) ->
     c = @$el.offset()
@@ -88,11 +81,24 @@ class boardroom.views.Base extends Backbone.View
       .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
       .show()
 
-  moveTo: ({x, y}) ->
-    left: (Math.max x, (@boardView.left() + 12) ) # provide 12px left margin 
-    top:  (Math.max y, (@boardView.top()  + 12) )   # provide 12px top margin 
-    @$el.offset { left: left, top: top }
+  moveTo: ({x, y}) ->    
+    if isNaN(Number(x)) or isNaN(Number(y))
+      @$el.css {left: x, top: y}
+    else # move to x, y but preserve 12px of margin 
+      left = (Math.max x, (@boardView.left() + 12) )  # decouple from boardView!
+      top = (Math.max y, (@boardView.top()  + 12) ) # decouple from boardView!
+      @$el.offset { left: left, top: top }
     @resizeHTML()
+
+  addIndicator: ({selector, cssClass, emit}) ->
+    return unless cssClass
+    $dom = if selector? then @$(selector) else @$el
+    $dom.addClass cssClass unless $dom.is cssClass
+
+  removeIndicator: ({selector, cssClass, emit}) ->
+    return unless cssClass
+    $dom = if selector? then @$(selector) else @$el
+    $dom.removeClass cssClass
 
   hideNotice: ->
     @$('.notice').fadeOut 100
@@ -125,6 +131,17 @@ class boardroom.views.Base extends Backbone.View
     @$el.css 'z-index', newZ
     newZ
 
+  moveBackToRestingSpot: () ->
+    @socket.emit "#{@className}.update",
+      _id: @model.id
+      x: @restingSpot.left # resting spot may use auto (so do not @emitMove())
+      y: @restingSpot.top
+      author: @model.get('board').get('user_id')
+    properties = 
+      left: @restingSpot.left
+      top: @restingSpot.top
+    @$el.css properties
+
   ###
       services
   ###
@@ -138,6 +155,29 @@ class boardroom.views.Base extends Backbone.View
 
   hiDeleteMe: ()->
     @deleteMe()
+
+  ###
+      messages
+  ###
+
+  emitMove: () ->
+    @socket.emit "#{@className}.update",
+      _id: @model.id
+      x: @left()
+      y: @top()
+      author: @model.get('board').get('user_id')
+
+  emitAddIndicator: ({selector, cssClass, emit}) ->
+    @socket.emit "view.add-indicator",
+      _id: @model.id
+      selector: selector
+      cssClass: cssClass
+
+  emitRemoveIndicator: ({selector, cssClass, emit}) ->
+    @socket.emit "view.remove-indicator",
+      _id: @model.id
+      selector: selector
+      cssClass: cssClass
 
 
   ###
