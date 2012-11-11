@@ -13,6 +13,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   events:
     'keyup .name': 'hiChangeGroupName'
+    'dblclick':    'hiRequestNewCard'
 
   initialize: (attributes) ->
     { @boardView } = attributes
@@ -58,7 +59,7 @@ class boardroom.views.Group extends boardroom.views.Base
         @emitAddIndicator cssClass:'stackable'
       onBlur: (event, target) =>
         @removeIndicator cssClass:'stackable'
-        @emitRemoveIndicator cssClass:'stackable'
+        @emitRemove Indicator cssClass:'stackable'
       onDrop: (event, target) =>
         $(target).data('view').hiDropOnToGroup event, @
         @$el.removeClass 'stackable'
@@ -113,10 +114,13 @@ class boardroom.views.Group extends boardroom.views.Base
       groupView: @
       boardView: @boardView
       socket: @socket
-    @$el.append cardView.render().el # animate adding the new card 
+    cardView.$el.hide() # animate adding the new card
+    @$el.append cardView.render().el
+    cardView.$el.slideDown 'fast'
     setTimeout (=>cardView.adjustTextarea()), 88 # let the card render before adjusting text
     @cardViews.push cardView
     @displayGroupName()
+    @resizeHTML()
 
   ###
       human interaction event handlers
@@ -128,6 +132,12 @@ class boardroom.views.Group extends boardroom.views.Base
       @$('.name').blur()
     else
       @socket.emit 'group.update', _id: @model.get('_id'), name: @$('.name').val()
+
+  hiRequestNewCard: (event) ->
+    @socket.emit 'group.card.create',
+      sourcePath: @sourcePath
+      creator: @boardView.model.get('user_id')
+      focus: true
 
   hiDropOnToGroup: (event, parentGroupView) ->
     if 0==$('#'+parentGroupView.model.id).length
