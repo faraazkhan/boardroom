@@ -148,7 +148,8 @@ class boardroom.views.Board extends boardroom.views.Base
     groupView = @findView id
     return unless groupView?
     groupView.eventsOff() # prevent further clicks and drops during animate the delete
-    groupView.$el.slideUp 'fast', ()-> groupView.$el.remove()
+    groupView.$el.slideUp 'fast', ()->
+      groupView.destroy()
 
   onCardUpdate: (data) =>
     cardView = @findView data._id
@@ -158,7 +159,8 @@ class boardroom.views.Board extends boardroom.views.Base
     cardView = @findView id
     return unless cardView?
     cardView.eventsOff() # prevent further clicks and drops during animate the delete
-    cardView.$el.slideUp 'fast', ()-> cardView.$el.remove()
+    cardView.$el.slideUp 'fast', ()-> 
+      cardView.destroy()
 
   onConnect: =>
     @socket.emit 'join', user_id: @model.get('user_id')

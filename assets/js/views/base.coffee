@@ -72,6 +72,12 @@ class boardroom.views.Base extends Backbone.View
     $('body').width($(document).width()+12) if $('body').width() isnt $(document).width()
     $('body').height($(document).height()-100)
 
+  destroy: () ->
+    @eventsOff()
+    @unbind()
+    @$el.remove()
+    @remove()
+
   ###
       render
   ###
