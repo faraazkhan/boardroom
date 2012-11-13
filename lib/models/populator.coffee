@@ -26,7 +26,7 @@ class Populator
       for child in children
         do (child) =>
           parent = map[child[@fk]]
-          parent[@children].push child for child in children
+          parent[@children].push child
       callback error, parents
 
   populateOne: (callback, parent) ->
