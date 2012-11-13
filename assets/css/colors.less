@@ -43,7 +43,6 @@
 .green .mid { background-color : @greenMid;}
 .green .dark { background-color : @greenDark;}
 
-
 .gray, .gray .light { background-color : @grayLight;}
 .gray .mid { background-color : @grayMid;}
 .gray .dark { background-color : @grayDark; color: @grayLight;}
@@ -54,3 +53,22 @@
 .color-3 { #gradient > .card(@blueMid, @blueLight); }
 .color-4 { #gradient > .card(@greenMid, @greenLight); }
 
+.card.i-wish:hover, .card.i-like:hover {
+  .colors { display: none; }
+}
+
+.card.i-wish {
+  @c: #FF7F00;
+  .card-background(@c);
+  .delete { background-color: hsl(hue(@c), 100%, 77%); color: hsl(hue(spin(@c, -8)), 66%, 66%);}
+  .plus1 a { background-color: hsl(hue(@c), 100%, 77%); &:hover {color: @blueDark}}
+  .toolbar { background-color: hsl(hue(spin(@c, -8)), 66%, 66%);}
+}
+
+.card.i-like {
+  @c: green;
+  .card-background(@c);
+  .delete { background-color: hsl(hue(@c), 100%, 77%); color: hsl(hue(spin(@c, -8)), 66%, 66%);}
+  .plus1 a { background-color: hsl(hue(@c), 100%, 77%); &:hover {color: @blueDark}}
+  .toolbar { background-color: hsl(hue(spin(@c, -8)), 66%, 66%);}
+}
