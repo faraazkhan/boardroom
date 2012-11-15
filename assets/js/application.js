@@ -5,4 +5,5 @@
 //= require './boardroom'
 //= require_tree './lib'
 //= require_tree './models'
+//= require './views/base.coffee'
 //= require_tree './views'
