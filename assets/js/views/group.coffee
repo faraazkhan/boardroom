@@ -75,7 +75,7 @@ class boardroom.views.Group extends boardroom.views.Base
         left: @model.get('x')
         top: @model.get('y')
         'z-index': @model.get('z')
-    @displayGroupName()
+    @updateGroup()
     @
 
   update: (data) =>
@@ -92,13 +92,15 @@ class boardroom.views.Group extends boardroom.views.Base
 
   updateCards: (cards) =>
     @displayNewCard card for card in cards
-    @displayGroupName(500)
+    @updateGroup()
 
-  displayGroupName: ()-> # show group name if more than 1 card in the group
+  updateGroup: ()-> # show group name if more than 1 card in the group
     if 1 < @$('.card').length
       @$('.name').delay(400).fadeIn('slow').find('input').focus() unless @$('.name').is(':visible')
+      @$el.toggleClass('multi-card', true).toggleClass('single-card', false)
     else
       @$('.name').delay(400).hide()
+      @$el.toggleClass('multi-card', false).toggleClass('single-card', true)
 
   displayNewCard: (data) ->
     return if !data or @$el.has("#"+ data._id).length
@@ -120,7 +122,7 @@ class boardroom.views.Group extends boardroom.views.Base
     cardView.$el.slideDown 'fast'
     setTimeout (=>cardView.adjustTextarea()), 88 # let the card render before adjusting text
     @cardViews.push cardView
-    @displayGroupName()
+    @updateGroup()
     @resizeHTML()
 
   ###

@@ -161,6 +161,7 @@ class boardroom.views.Board extends boardroom.views.Base
     cardView.eventsOff() # prevent further clicks and drops during animate the delete
     cardView.$el.slideUp 'fast', ()-> 
       cardView.destroy()
+      cardView.groupView.updateGroup()
 
   onConnect: =>
     @socket.emit 'join', user_id: @model.get('user_id')
