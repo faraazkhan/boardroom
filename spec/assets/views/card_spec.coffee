@@ -8,6 +8,14 @@ describe 'boardroom.views.Card', ->
       @socket = new io.Socket
       @board = new boardroom.models.Board
         user_id: 1
+      boardView = new boardroom.views.Board
+        model: @board
+        socket: @socket
+      group = new boardroom.models.Group
+      groupView = new boardroom.views.Group
+        model: group
+        socket: @socket
+        boardView: boardView
       @card = new boardroom.models.Card
         id: 2
         board: @board
@@ -15,6 +23,8 @@ describe 'boardroom.views.Card', ->
       @cardView = new boardroom.views.Card
         model: @card
         socket: @socket
+        groupView: groupView
+        boardView: boardView
       @cardView.render()
 
     describe 'clicking a color', ->

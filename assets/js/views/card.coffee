@@ -40,7 +40,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @enableEditing 'textarea'
 
   initializeSourcePath: ()->
-    @sourcePath = 
+    @sourcePath =
       boardId: @boardView.model.id
       groupId: @groupView.model.id
       cardId: @model.id

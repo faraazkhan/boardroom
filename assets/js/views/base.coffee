@@ -8,7 +8,7 @@ class boardroom.views.Base extends Backbone.View
     @authorLock = new boardroom.models.CardLock
     @authorLock.poll =>
       @hideNotice()
-      @onLockPoll()      
+      @onLockPoll()
 
   onLockPoll: ()=> # template and hook
   initializeSourcePath: ()->
@@ -110,10 +110,10 @@ class boardroom.views.Base extends Backbone.View
     @$('.notice').fadeOut 100
 
   left: ->
-    @$el.offset().left
+    @$el.offset()?.left || 0
 
   top: ->
-    @$el.offset().top
+    @$el.offset()?.top || 0
 
   right: ->
     @left() + @$el.width()
