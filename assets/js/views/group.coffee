@@ -5,7 +5,7 @@ class boardroom.views.Group extends boardroom.views.Base
   template: _.template """
     <div class="background"></div>
     <div class='notice'></div>
-    <input type='text' class='name' value="<%=name%>" placeholder="Group"></input>
+    <input type='text' class='name' value="<%=name%>" placeholder="group name"></input>
   """
 
   attributes: ->
@@ -18,6 +18,7 @@ class boardroom.views.Group extends boardroom.views.Base
   initialize: (attributes) ->
     { @boardView } = attributes
     super attributes
+    @model.set('name', '') unless @model.get('name')
     @render()
     @initializeCards()
     @initializeDraggable()
