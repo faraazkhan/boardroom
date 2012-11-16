@@ -1,4 +1,4 @@
 set :branch, 'development'
 set :deploy_to, '/var/apps/boardroom/acceptance'
 set :node_env, 'acceptance'
-set :node_port, 1338
+set :app_environment, 'PORT=1338'
