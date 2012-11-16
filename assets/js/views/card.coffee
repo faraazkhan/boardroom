@@ -120,7 +120,7 @@ class boardroom.views.Card extends boardroom.views.Base
       plusCountValue = parseInt($plusCount.text()) || 0
 
       $plusCount.text("+#{plusCountValue+1}")
-      $plusAuthors.append("<img class='avatar' src='#{avatar}' title='#{_.escape user}'/>")
+      $plusAuthors.append("<img class='avatar' src='#{avatar}' title='#{_.escape author}'/>")
 
       plusAuthors = []
       for avatar in $plusAuthors.find('img')
