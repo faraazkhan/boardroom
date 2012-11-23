@@ -683,7 +683,7 @@ legend + .control-group {
 }
 
 //BUTTONS
-.btn {
+.btn, .delete-btn {
   display: inline-block;
   .ie7-inline-block();
   padding: 4px 12px;
@@ -714,6 +714,7 @@ legend + .control-group {
 //    .transition(background-position .1s linear);
   }
 
+
 // Focus state for keyboard and accessibility
   &:focus {
     .tab-focus();
@@ -728,6 +729,7 @@ legend + .control-group {
     outline: 0;
     .box-shadow(~"inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)");
   }
+
 
 // Disabled state
   &.disabled,
@@ -746,6 +748,24 @@ legend + .control-group {
   font-size: @fontSizeMini;
   .border-radius(@borderRadiusSmall);
 }
+
+//delete button
+.delete-btn {
+  .opacity(25);
+  .btn-mini();
+  .circular();
+  font-weight: bold;
+  color: @grayDark;
+  border: 1px solid transparent;
+  background-color: transparent;
+  &:hover {
+    .opacity(100);
+    color: Red;
+    border: 1px solid transparent;
+    background-color: transparent;
+  }
+}
+
 
 fieldset {
   .btn,input {
