@@ -1,4 +1,5 @@
 .group {
+  .transition-smoothly();
   position: absolute;
   cursor: move;
   padding: 4px 8px 8px 7px;
@@ -6,44 +7,11 @@
   .border-radius(4px);
   .box-shadow(2px 2px 5px #999); 
   .user-select(none);
-  .transition-smoothly();
-  .background {
-    .border-radius(2px);
-    z-index: -1;
-    position: absolute;
-    .transition(opacity 400ms);
-    top:0;
-    left:0;
-    width: 100%;
-    height:100%;
-    background: transparent url('/images/dark_checkers.png') repeat 0 0;
-    .opacity(100);
-  }
-  &:hover, &.stackable {
-    border: #777 2px solid;
-    .box-shadow(2px 2px 5px #777); 
-    input {
-      color: #D4D4D4;
-      text-shadow: none
-    }
-    .background {
-      .opacity(100);
-    }
-  }
-  &.stackable {
-    .background {
-      .opacity(100);
-    }
-    border: 2px solid #282;
-  }
-  &.single-card {
-    border-color: transparent;
-    .box-shadow(none); 
-    .background {
-      background: none;
-    }
+  .card {
+    margin-bottom: 6px;
   }
   input {
+    .transition-smoothly();
     .user-select(text);
     border: none;
     color: @yellowMid;
@@ -55,7 +23,40 @@
     width: 250px;
     .placeholder(white);
   }
-  .card {
-    margin-top: 6px;
+  .background {
+    .transition-smoothly();
+    .border-radius(2px);
+    z-index: -1;
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height:100%;
+    background: transparent url('/images/dark_checkers.png') repeat 0 0;
+    .opacity(100);
+  }
+  &:hover, &.stackable {
+    border: #777 2px solid;
+    .box-shadow(2px 2px 5px #777); 
+    input {
+      color: #222;
+      text-shadow: none
+    }
+    .background {
+      .opacity(20);
+    }
+  }
+  &.stackable {
+    .background {
+      .opacity(20);
+    }
+    border: 2px solid #282;
+  }
+  &.single-card {
+    border-color: transparent;
+    .box-shadow(none); 
+    .background {
+      background: none;
+    }
   }
 }

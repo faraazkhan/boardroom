@@ -311,6 +311,14 @@
   transition-duration: @transition-duration;
 } 
 
+.transition-timing-function(@transition-timing-function) {
+  -webkit-transition-timing-function: @transition-timing-function;
+  -moz-transition-timing-function: @transition-timing-function;
+  -o-transition-timing-function: @transition-timing-function;
+  transition-timing-function: @transition-timing-function;
+} 
+
+
 .transition-delay(@transition-delay) {
   -webkit-transition-delay: @transition-delay;
   -moz-transition-delay: @transition-delay;
@@ -319,17 +327,20 @@
 } 
 .move-smoothly() {
   .transition-property(~"left, top, width, height");
-  .transition-duration(~"800ms, 800ms, 800ms, 800ms");
+  .transition-duration(~"80ms, 80ms, 80ms, 80ms");
+  .transition-timing-function('linear, linear, linear, linear')
 }
 
 .change-color-smoothly(){
-  .transition-property(~"color, background-color");
-  .transition-duration(~"750ms, 750ms");
+  .transition-property(~"color, background-color, opacity");
+  .transition-duration(~"80ms, 250ms, 250ms");
+  .transition-timing-function('ease-out, ease-in, ease-in')
 }
 
 .transition-smoothly() {
-  .transition-property(~"left, top, width, height, color, background-color");
-  .transition-duration(~"30ms, 30ms, 30ms, 30ms, 150ms, 150ms");
+  .transition-property(~"left, top, width, height, color, background-color, opacity");
+  .transition-duration(~"80ms, 80ms, 80ms, 80ms, 80ms, 250ms, 250ms");
+  .transition-timing-function('linear, linear, linear, linear, ease-out, ease-in, ease-in')
 }
 
 // Transformations
