@@ -452,8 +452,9 @@
 
 // Opacity
 .opacity(@opacity) {
-  opacity: @opacity / 100;
+  zoom: 1;
   filter: ~"alpha(opacity=@{opacity})";
+  opacity: @opacity / 100;
 }
 
 

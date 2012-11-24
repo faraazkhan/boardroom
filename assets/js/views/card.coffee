@@ -1,9 +1,12 @@
 class boardroom.views.Card extends boardroom.views.Base
   className: 'card'
   template: _.template """
-    <span class='delete-btn'>&times;</span>
-    <div class='notice'></div>
-    <div class='plus-authors'></div>
+    <div class='header-bar'>
+      <span class='notice'></span>
+      <span class='delete-btn'>&times;</span>
+      <div class='plus-authors'></div>
+    </div>
+    <textarea><%= text %></textarea>
     <div class='toolbar'>
       <div class='plus1'>
         <a class='btn' href='#'>+1</a>
@@ -18,7 +21,6 @@ class boardroom.views.Card extends boardroom.views.Base
       </div>
       <div class='authors'></div>
     </div>
-    <textarea><%= text %></textarea>
   """
 
   attributes: ->
@@ -63,7 +65,7 @@ class boardroom.views.Card extends boardroom.views.Base
         @emitMove()
       onMouseUp: =>
         nothingToDropOnto = => @moveBackToRestingSpot() if (@$el? and @$el.is(':visible'))
-        setTimeout nothingToDropOnto, 1200 # move back if nothing picks up the drop
+        setTimeout nothingToDropOnto, 350 # move back if nothing picks up the drop
         @$el.css('cursor', 'auto')
 
   ###
@@ -139,9 +141,7 @@ class boardroom.views.Card extends boardroom.views.Base
 
   adjustTextarea: ->
     $textarea = @$ 'textarea'
-    $textarea.css 'height', 'auto'
-    if $textarea.innerHeight() < $textarea[0].scrollHeight
-      $textarea.css 'height', $textarea[0].scrollHeight + 14
+    $textarea.autosize()
     @analyzeText $textarea
 
   analyzeText: ($textarea) ->
