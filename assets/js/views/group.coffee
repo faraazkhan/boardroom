@@ -109,6 +109,9 @@ class boardroom.views.Group extends boardroom.views.Base
       @$('.name').delay(400).hide()
       @$el.addClass('single-card') unless @$el.is('single-card')
 
+  cardCount: ()->
+    @$('.card').length # +++ count subViews, not DOM elements after viewrefactoring
+
   displayNewCard: (data) ->
     return if !data or @$el.has("#"+ data._id).length
     bindings = 

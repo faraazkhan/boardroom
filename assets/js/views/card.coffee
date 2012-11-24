@@ -56,6 +56,9 @@ class boardroom.views.Card extends boardroom.views.Base
         # return false if $(target).is '.color'
         return false if $(target).is '.delete'
         true
+      isOkToDrag: () => 
+        # dont allow card to drag if its the only one in its group (allow the group to drag)
+        1 < @groupView.cardCount()
       onMouseDown: =>
         @groupView.bringForward()
         z = @bringForward()
@@ -67,6 +70,12 @@ class boardroom.views.Card extends boardroom.views.Base
         nothingToDropOnto = => @moveBackToRestingSpot() if (@$el? and @$el.is(':visible'))
         setTimeout nothingToDropOnto, 350 # move back if nothing picks up the drop
         @$el.css('cursor', 'auto')
+      startedDragging:()=>
+        @$el.addClass('dragging')
+        console.log 'started dragging'
+      stoppedDragging: ()=>
+        @$el.removeClass('dragging')
+        console.log 'ended dragging'
 
   ###
       render

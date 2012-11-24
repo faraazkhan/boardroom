@@ -8,6 +8,9 @@ $.fn.draggable = (opts) ->
     onMouseMove : () ->
     onMouseUp : () ->
     onMouseDown : () ->
+    startedDragging : () -> 
+    stoppedDragging : () -> 
+    isOkToDrag : () -> true
     isTarget : (target) -> true
     position : (dx, dy, x, y) -> left: x, top: y
   , opts
@@ -21,6 +24,8 @@ $.fn.draggable = (opts) ->
       y: offset.top
 
   $this.on 'mousedown.draggable', (e) ->
+    return true unless settings.isOkToDrag()
+
     @isDragging = false
     e.stopPropagation()
     return true unless settings.isTarget(e.target)
@@ -35,6 +40,7 @@ $.fn.draggable = (opts) ->
     origTop = $this.offset().top
 
     $(window).on 'mousemove.draggable', (e) ->
+      settings.startedDragging() unless @isDragging
       @isDragging = true
       deltaX = e.pageX - origX
       deltaY = e.pageY - origY
@@ -62,7 +68,9 @@ $.fn.draggable = (opts) ->
       $(window).off 'mouseup.draggable'
       if @isDragging
         settings.onMouseUp e
+        settings.stoppedDragging()
         trigger 'drop', e
+
       @isDragging = false
       true
 
