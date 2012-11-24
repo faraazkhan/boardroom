@@ -26,14 +26,14 @@
     .user-select(text);
   }
 
-  .delete {
+  .delete-btn {
     position: absolute;
-    right: 0;
+    right: 3px;
     top: 0;
     display: none;
-    font-size: 26px;
-    line-height: 12px;
-    padding: 3px 4px 5px 4px;
+    font-size: 20px;
+    line-height: 20px;
+    padding: 0;
     cursor: pointer;
   }
 
@@ -124,7 +124,7 @@
 
   .authors {
     height: 22px;
-
+    overflow: scroll;
     img {
       visibility: hidden;
       margin-right: 0.5em;
@@ -133,7 +133,7 @@
 }
 .card:hover .toolbar { display: block; }
 .card:hover .authors img { visibility: visible; }
-.card:hover .delete { display: block; }
+.card:hover .delete-btn { display: block; }
 .card:hover .colors { display: block; cursor: pointer;}
 .card:hover .plus1 .btn { display: block; }
 
