@@ -78,6 +78,9 @@ class boardroom.views.Board extends boardroom.views.Base
     groupView.$el.slideDown 'fast', ()-> groupView.$el.css 'overflow', 'visible'
     @groupViews.push groupView
     @resizeHTML()
+    # set the focus if group was just created by this user
+    card = groupView.model?.get('cards')?[0]
+    @findView(card?._id)?.$('textarea').focus() if @model.get('user_id') is card?.creator
 
   ###
       utils
@@ -119,7 +122,7 @@ class boardroom.views.Board extends boardroom.views.Base
   ###
   hiRequestNewCard: (event) ->
     return unless event.target.className == 'board'
-    @createNewGroup @coordinateOfEvent (event)
+    @createNewGroup (@coordinateOfEvent event)
 
   ###
       socket handlers
