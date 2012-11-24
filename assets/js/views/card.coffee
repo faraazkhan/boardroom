@@ -29,7 +29,7 @@ class boardroom.views.Card extends boardroom.views.Base
     'keyup textarea': 'hiChangeText'
     'click textarea': 'hiFocusText'
     'click .plus1 .btn': 'hiIncrementPlusCount'
-    'click .delete': 'hiDeleteMe'
+    'click .delete-btn': 'hiDeleteMe'
 
   initialize: (attributes) ->
     { @groupView, @boardView } = attributes
@@ -58,11 +58,13 @@ class boardroom.views.Card extends boardroom.views.Base
         @groupView.bringForward()
         z = @bringForward()
         @socket.emit 'card.update', { _id: @model.id, z }
+        @$el.css('cursor', 'pointer')
       onMouseMove: =>
         @emitMove()
       onMouseUp: =>
         nothingToDropOnto = => @moveBackToRestingSpot() if (@$el? and @$el.is(':visible'))
         setTimeout nothingToDropOnto, 1200 # move back if nothing picks up the drop
+        @$el.css('cursor', 'auto')
 
   ###
       render

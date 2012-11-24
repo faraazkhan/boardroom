@@ -102,12 +102,12 @@ class boardroom.views.Group extends boardroom.views.Base
     @updateGroup()
 
   updateGroup: ()-> # unstyle the group if there is only 1 card
-    @$el.removeClass('single-card')
     if 1 < @$('.card').length
       @$('.name').delay(400).fadeIn('slow').find('input').focus() unless @$('.name').is(':visible')
+      @$el.removeClass('single-card')
     else
       @$('.name').delay(400).hide()
-      @$el.addClass('single-card')
+      @$el.addClass('single-card') unless @$el.is('single-card')
 
   displayNewCard: (data) ->
     return if !data or @$el.has("#"+ data._id).length
