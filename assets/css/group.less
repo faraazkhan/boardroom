@@ -17,11 +17,11 @@
     width: 100%;
     height:100%;
     background: transparent url('/images/dark_checkers.png') repeat 0 0;
-    .opacity(30);
+    .opacity(100);
   }
   &:hover, &.stackable {
-    border: #222 2px solid;
-    .box-shadow(2px 2px 5px #333); 
+    border: #777 2px solid;
+    .box-shadow(2px 2px 5px #777); 
     input {
       color: #D4D4D4;
       text-shadow: none
@@ -46,9 +46,9 @@
   input {
     .user-select(text);
     border: none;
-    color: #222;
+    color: @yellowMid;
     font-size: 14px;
-    text-shadow: 0px 1px 1px white;
+    font-weight: normal;
     padding: .25em .5em;
     margin: 0;
     background-color: transparent;
