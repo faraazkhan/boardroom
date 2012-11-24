@@ -2,15 +2,15 @@ class boardroom.views.Card extends boardroom.views.Base
   className: 'card'
   template: _.template """
     <div class='header-bar'>
-      <span class='notice'></span>
       <span class='delete-btn'>&times;</span>
+      <span class='notice'></span>
       <div class='plus-authors'></div>
     </div>
     <textarea><%= text %></textarea>
     <div class='toolbar'>
       <div class='plus1'>
-        <a class='btn' href='#'>+1</a>
         <span class='plus-count'></span>
+        <a class='btn' href='#'>+1</a>
       </div>
       <div class='colors'>
         <span class='color color-0'></span>
