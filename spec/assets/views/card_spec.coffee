@@ -56,7 +56,7 @@ describe 'boardroom.views.Card', ->
           .click()
 
       it 'increments its plus count', ->
-        expect(@cardView.$('.plus1 .plus-count').text()).toBe('+1')
+        expect(@cardView.$('.plus-count').text()).toBe('+1')
 
       it 'emits a "card.update" socket event', ->
         expect(@plus1.called).toBeTruthy()
