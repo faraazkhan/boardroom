@@ -134,6 +134,8 @@ class boardroom.views.Group extends boardroom.views.Base
     @cardViews.push cardView
     @updateGroup()
     @resizeHTML()
+    # set the focus if card was just created by this user
+    cardView.$('textarea').focus() if cardView.model.get('user_id') is card?.creator
 
   ###
       human interaction event handlers
