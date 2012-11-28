@@ -13,11 +13,13 @@ body {
 
 
 #header {
+  position: relative;
   color: @grayLight;
   height: 30px;
   min-width: 800px;
   padding: 15px;
   border-bottom: 2px solid @blueLight;
+  text-align:center;
   
   .user-select(none);
   .info {
@@ -26,6 +28,8 @@ body {
     margin-right: 50px;
   }
   .title {
+    position: absolute;
+    left :14px;
     color: @yellowMid;
     text-decoration: none;
     line-height: 30px;
@@ -37,7 +41,6 @@ body {
   #name {
     border: none;
     color: @grayLight;
-    
     background-color: transparent;
     .box-shadow(inset 0 0 0 transparent);
     height: 30px;
@@ -63,7 +66,7 @@ body {
     position: absolute;
     right: 0;
     top: 0;
-    margin-top: 10px;
+    margin-top: 14px;
     padding-right: 20px;
     font-size: 10px;
     line-height: 14px;
