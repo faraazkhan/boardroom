@@ -7,19 +7,21 @@ class boardroom.views.Card extends boardroom.views.Base
       <div class='plus-authors'></div>
     </div>
     <textarea><%= text %></textarea>
-    <div class='plus-count'></div>
-    <div class='toolbar'>
-      <div class='plus1'>
-        <a class='btn' href='#'>+1</a>
+    <div class='footer'>
+      <div class='plus-count'></div>
+      <div class='toolbar'>
+        <div class='plus1'>
+          <a class='btn' href='#'>+1</a>
+        </div>
+        <div class='colors'>
+          <span class='color color-0'></span>
+          <span class='color color-1'></span>
+          <span class='color color-2'></span>
+          <span class='color color-3'></span>
+          <span class='color color-4'></span>
+        </div>
+        <div class='authors'></div>
       </div>
-      <div class='colors'>
-        <span class='color color-0'></span>
-        <span class='color color-1'></span>
-        <span class='color color-2'></span>
-        <span class='color color-3'></span>
-        <span class='color color-4'></span>
-      </div>
-      <div class='authors'></div>
     </div>
   """
 
