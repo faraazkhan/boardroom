@@ -69,8 +69,11 @@ class boardroom.views.Base extends Backbone.View
     @coordinateInContainer boardView
 
   resizeHTML: ()->
-    $('body').width($(document).width()+12) if $('body').width() isnt $(document).width()
-    $('body').height($(document).height()-100)
+    #+++ TODO - this is not working right!
+    width =  Math.max ( $(document).width()  ),  ( parseInt $('body').css('min-width') )
+    height = Math.max ( -100 + $(document).height() ),  ( parseInt $('body').css('min-height') )
+    $('body').width(width) if $('body').width() isnt $(document).width()
+    $('body').height(height)
 
   destroy: () ->
     @eventsOff()

@@ -7,13 +7,16 @@ body {
   height: 100%;
   margin: 0;
   padding: none;
+  min-width: 800px;
+  min-heigth: 800px;
 }
 
 
 #header {
   color: @grayLight;
-  height: 22px;
-  padding: 14px;
+  height: 30px;
+  min-width: 800px;
+  padding: 15px;
   border-bottom: 2px solid @blueLight;
   
   .user-select(none);
@@ -25,30 +28,26 @@ body {
   .title {
     color: @yellowMid;
     text-decoration: none;
-    
+    line-height: 30px;
     font-size: 30px;
     text-shadow: -1px -1px 2px rgba(0, 0, 0, 0.6);
     text-transform: uppercase;
   }
   
   #name {
-  
     border: none;
     color: @grayLight;
     
     background-color: transparent;
     .box-shadow(inset 0 0 0 transparent);
-  
-    margin-top: -7px;
-    height: 27px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 18px;
     padding: 0;
-    width: 80%;
-  
     text-align: center;
-    font-size: 24px;
-    line-height: 46px;
-    height: 50px;
-    margin-left: -200px;
+    margin: 0px 20px;
+    width: 55%;
+    vertical-align: top;
   }
   
   .info { 
@@ -64,19 +63,45 @@ body {
     position: absolute;
     right: 0;
     top: 0;
-    margin-top: 9px;
-    padding-right: 18px;
+    margin-top: 10px;
+    padding-right: 20px;
     font-size: 10px;
     line-height: 14px;
     .user-select(none);
-    img.avatar {
-      margin: 5px;
-      float: left;
+    .help {
+      float:left;
+      line-height: 30px;
+      font-size: 16px;
+      margin: 0px 8px;
     }
-
-    a {
+    img.avatar {
       float: left;
-      color: @grayLight;
+      width: 30px;
+      height: 30px;
+      margin: 0px 8px;
+    }
+    .user {
+      .user-id{
+        line-height: 12px;
+        font-size: 12px;
+        margin: 0px 0px 7px 0px;
+      }
+      .logout {
+        a {
+          text-decoration: none;
+          float: right;
+          color: @grayLight;
+          line-height: 12px;
+          font-size: 12px;
+          .opacity(25);
+          font-weight: bold;
+          .change-color-smoothly();
+          &:hover {
+            .opacity(100);
+            color: #e66;
+          }
+        }      
+      }
     }
   }
 }

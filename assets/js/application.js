@@ -1,9 +1,12 @@
 //= require './vendor/jquery-1.8.1.js'
+//= require './vendor/jquery.tools.min-tooltip.js'
+//= require './vendor/jquery.autosize.js
 //= require './vendor/underscore.js'
 //= require './vendor/backbone.js'
 //= require './vendor/webfonts.js'
 //= require './boardroom'
 //= require_tree './lib'
+//= require_tree './utils'
 //= require_tree './models'
 //= require './views/base.coffee'
 //= require_tree './views'

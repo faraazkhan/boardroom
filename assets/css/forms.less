@@ -683,7 +683,7 @@ legend + .control-group {
 }
 
 //BUTTONS
-.btn {
+.btn, .delete-btn {
   display: inline-block;
   .ie7-inline-block();
   padding: 4px 12px;
@@ -700,6 +700,7 @@ legend + .control-group {
   .border-radius(@baseBorderRadius);
   .ie7-restore-left-whitespace(); // Give IE7 some love
   .box-shadow(~"inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05)");
+  .change-color-smoothly();
 
 // Hover state
   &:hover {
@@ -713,6 +714,7 @@ legend + .control-group {
   // behind the gradient (there for IE<=9 fallback) gets mismatched
 //    .transition(background-position .1s linear);
   }
+
 
 // Focus state for keyboard and accessibility
   &:focus {
@@ -728,6 +730,7 @@ legend + .control-group {
     outline: 0;
     .box-shadow(~"inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)");
   }
+
 
 // Disabled state
   &.disabled,
@@ -746,6 +749,24 @@ legend + .control-group {
   font-size: @fontSizeMini;
   .border-radius(@borderRadiusSmall);
 }
+
+//delete button
+.delete-btn {
+  .btn-mini();
+  .circular();
+  .change-color-smoothly();
+  font-weight: bold;
+  color: #999;
+  border: 1px solid transparent;
+  background-color: transparent;
+  &:hover {
+    .opacity(100);
+    color: #A22;
+    border: 1px solid transparent;
+    background-color: transparent;
+  }
+}
+
 
 fieldset {
   .btn,input {

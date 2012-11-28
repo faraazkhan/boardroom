@@ -58,12 +58,18 @@ class boardroom.views.Group extends boardroom.views.Base
       onHover: (event, target) =>
         @addIndicator cssClass:'stackable'
         @emitAddIndicator cssClass:'stackable'
+        @$el.removeClass('single-card')
       onBlur: (event, target) =>
         @removeIndicator cssClass:'stackable'
         @emitRemoveIndicator cssClass:'stackable'
+        @updateGroup()
       onDrop: (event, target) =>
         $(target).data('view').hiDropOnToGroup event, @
         @$el.removeClass 'stackable'
+      shouldBlockHover: (data) =>
+        view = $(data.target).data('view')
+        groupView = view.groupView if view?
+        (@ is groupView) # block a card from dropping onto its own view
 
   ###
       render
@@ -95,13 +101,16 @@ class boardroom.views.Group extends boardroom.views.Base
     @displayNewCard card for card in cards
     @updateGroup()
 
-  updateGroup: ()-> # show group name if more than 1 card in the group
+  updateGroup: ()-> # unstyle the group if there is only 1 card
     if 1 < @$('.card').length
       @$('.name').delay(400).fadeIn('slow').find('input').focus() unless @$('.name').is(':visible')
-      @$el.toggleClass('multi-card', true).toggleClass('single-card', false)
+      @$el.removeClass('single-card')
     else
       @$('.name').delay(400).hide()
-      @$el.toggleClass('multi-card', false).toggleClass('single-card', true)
+      @$el.addClass('single-card') unless @$el.is('single-card')
+
+  cardCount: ()->
+    @$('.card').length # +++ count subViews, not DOM elements after viewrefactoring
 
   displayNewCard: (data) ->
     return if !data or @$el.has("#"+ data._id).length
@@ -139,6 +148,8 @@ class boardroom.views.Group extends boardroom.views.Base
 
   hiRequestNewCard: (event) ->
     event.stopPropagation()
+    return unless 1 < @$('.card').length # don't add new card unless there is already more than 1
+
     @socket.emit 'group.card.create',
       sourcePath: @sourcePath
       creator: @boardView.model.get('user_id')

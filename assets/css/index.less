@@ -37,6 +37,7 @@
       border: 1px solid rgba(0,0,0,0.05);
       background-color: @grayLight;
       .box-shadow(2px 2px 10px fade(@grayDark, 25%));
+      .change-color-smoothly();
 
       &:hover {
         background-color: @grayMid;
@@ -80,8 +81,8 @@
 
       .actions {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: -10px;
+        right: -10px;
         cursor: pointer;
         padding-left: 2em;
 

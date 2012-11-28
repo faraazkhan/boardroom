@@ -1,13 +1,16 @@
 class boardroom.views.Card extends boardroom.views.Base
   className: 'card'
   template: _.template """
-    <span class='delete'>&times;</span>
-    <div class='notice'></div>
-    <div class='plus-authors'></div>
+    <div class='header-bar'>
+      <span class='delete-btn'>&times;</span>
+      <span class='notice'></span>
+      <div class='plus-authors'></div>
+    </div>
+    <textarea><%= text %></textarea>
     <div class='toolbar'>
       <div class='plus1'>
-        <a class='btn' href='#'>+1</a>
         <span class='plus-count'></span>
+        <a class='btn' href='#'>+1</a>
       </div>
       <div class='colors'>
         <span class='color color-0'></span>
@@ -18,7 +21,6 @@ class boardroom.views.Card extends boardroom.views.Base
       </div>
       <div class='authors'></div>
     </div>
-    <textarea><%= text %></textarea>
   """
 
   attributes: ->
@@ -29,7 +31,7 @@ class boardroom.views.Card extends boardroom.views.Base
     'keyup textarea': 'hiChangeText'
     'click textarea': 'hiFocusText'
     'click .plus1 .btn': 'hiIncrementPlusCount'
-    'click .delete': 'hiDeleteMe'
+    'click .delete-btn': 'hiDeleteMe'
 
   initialize: (attributes) ->
     { @groupView, @boardView } = attributes
@@ -54,15 +56,26 @@ class boardroom.views.Card extends boardroom.views.Base
         # return false if $(target).is '.color'
         return false if $(target).is '.delete'
         true
+      isOkToDrag: () => 
+        # dont allow card to drag if its the only one in its group (allow the group to drag)
+        1 < @groupView.cardCount()
       onMouseDown: =>
         @groupView.bringForward()
         z = @bringForward()
         @socket.emit 'card.update', { _id: @model.id, z }
+        @$el.css('cursor', 'pointer')
       onMouseMove: =>
         @emitMove()
       onMouseUp: =>
         nothingToDropOnto = => @moveBackToRestingSpot() if (@$el? and @$el.is(':visible'))
-        setTimeout nothingToDropOnto, 1200 # move back if nothing picks up the drop
+        setTimeout nothingToDropOnto, 350 # move back if nothing picks up the drop
+        @$el.css('cursor', 'auto')
+      startedDragging:()=>
+        @$el.addClass('dragging')
+        console.log 'started dragging'
+      stoppedDragging: ()=>
+        @$el.removeClass('dragging')
+        console.log 'ended dragging'
 
   ###
       render
@@ -137,9 +150,7 @@ class boardroom.views.Card extends boardroom.views.Base
 
   adjustTextarea: ->
     $textarea = @$ 'textarea'
-    $textarea.css 'height', 'auto'
-    if $textarea.innerHeight() < $textarea[0].scrollHeight
-      $textarea.css 'height', $textarea[0].scrollHeight + 14
+    $textarea.autosize()
     @analyzeText $textarea
 
   analyzeText: ($textarea) ->

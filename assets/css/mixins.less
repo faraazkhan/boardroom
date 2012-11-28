@@ -238,6 +238,10 @@
   border-radius: @radius;
 }
 
+.circular{
+  .border-radius(50%);
+}
+
 // Single Corner Border Radius
 .border-top-left-radius(@radius) {
   -webkit-border-top-left-radius: @radius;
@@ -292,17 +296,51 @@
   -o-transition: @transition;
   transition: @transition;
 }
+
+.transition-property(@transition-property) {
+  -webkit-transition-property: @transition-property;
+  -moz-transition-property: @transition-property;
+  -o-transition-property: @transition-property;
+  transition-property: @transition-property;
+} 
+
+.transition-duration(@transition-duration) {
+  -webkit-transition-duration: @transition-duration;
+  -moz-transition-duration: @transition-duration;
+  -o-transition-duration: @transition-duration;
+  transition-duration: @transition-duration;
+} 
+
+.transition-timing-function(@transition-timing-function) {
+  -webkit-transition-timing-function: @transition-timing-function;
+  -moz-transition-timing-function: @transition-timing-function;
+  -o-transition-timing-function: @transition-timing-function;
+  transition-timing-function: @transition-timing-function;
+} 
+
+
 .transition-delay(@transition-delay) {
   -webkit-transition-delay: @transition-delay;
   -moz-transition-delay: @transition-delay;
   -o-transition-delay: @transition-delay;
   transition-delay: @transition-delay;
-}
+} 
 .move-smoothly() {
-  .transition(left 500ms);
-  .transition(top 500ms);
-  .transition(width 500ms);
-  .transition(height 500ms);
+  .transition-property(~"left, top, width, height");
+  .transition-duration(~"80ms, 80ms, 80ms, 80ms");
+  .transition-timing-function('linear, linear, linear, linear')
+}
+
+.change-color-smoothly(){
+  .transition-property(~"color, background-color, opacity");
+  .transition-duration(~"80ms, 250ms, 250ms");
+  .transition-timing-function('ease-out, ease-in, ease-in')
+}
+
+.transition-smoothly() {
+  .transition-property(~"left, top, width, height, color, background-color, opacity");
+  .transition-duration(~"80ms, 80ms, 80ms, 80ms, 80ms, 250ms, 250ms");
+  .transition-timing-function('linear, linear, linear, linear, ease-out, ease-in, ease-in')
 }
 
 // Transformations
@@ -414,8 +452,9 @@
 
 // Opacity
 .opacity(@opacity) {
-  opacity: @opacity / 100;
+  zoom: 1;
   filter: ~"alpha(opacity=@{opacity})";
+  opacity: @opacity / 100;
 }
 
 

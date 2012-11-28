@@ -3,7 +3,7 @@ for board in boards
     - if (board.creator === user.user_id)
       .actions
         form(action="/boards/#{board._id}", method="post")
-          input(type="submit", value="Delete")
+          button(class="delete-btn", left-title="Delete this board permanently") X
     .creator
       img.avatar(src='/user/avatar/#{encodeURIComponent(board.creator)}', title='#{board.creator}')
     .updated

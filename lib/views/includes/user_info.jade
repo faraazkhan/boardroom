@@ -1,6 +1,9 @@
 #user-info
   - if(user)
+    span.help(left-title="Double-click your board to add a note.")
+      ?
     img.avatar(src='/user/avatar/#{encodeURIComponent(user.user_id)}')
     div.user
-      div #{user.user_id}
-      a(href='/logout') logout
+      div.user-id #{user.user_id}
+      div.logout
+        a(href='/logout') logout
