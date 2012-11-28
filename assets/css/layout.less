@@ -13,14 +13,18 @@ body {
 
 
 #header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
   color: @grayLight;
   height: 30px;
   min-width: 800px;
   padding: 15px;
   border-bottom: 2px solid @blueLight;
   text-align:center;
-  
+
   .user-select(none);
   .info {
     float: left;
@@ -131,6 +135,7 @@ div.user {
 
 .board {
   position: relative;
+  margin-top: 62px;
   height: 100%;
   padding: 20px 0;
   .user-select(none);
