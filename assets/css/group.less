@@ -21,7 +21,10 @@
     margin: 0;
     background-color: transparent;
     width: 250px;
-    .placeholder(white);
+    .placeholder(#999);
+    &:focus {
+      .box-shadow(none);    
+    }
   }
   .background {
     .transition-all();
