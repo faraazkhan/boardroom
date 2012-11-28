@@ -7,9 +7,9 @@ class boardroom.views.Card extends boardroom.views.Base
       <div class='plus-authors'></div>
     </div>
     <textarea><%= text %></textarea>
+    <div class='plus-count'></div>
     <div class='toolbar'>
       <div class='plus1'>
-        <span class='plus-count'></span>
         <a class='btn' href='#'>+1</a>
       </div>
       <div class='colors'>
@@ -128,7 +128,7 @@ class boardroom.views.Card extends boardroom.views.Base
     avatar = boardroom.models.User.avatar author
     if @$(".plus-authors img[title='#{user}']").length is 0
       user = @model.get('board').get('user_id')
-      $plusCount = @$('.plus1 .plus-count')
+      $plusCount = @$('.plus-count')
       $plusAuthors = @$('.plus-authors')
       plusCountValue = parseInt($plusCount.text()) || 0
 
