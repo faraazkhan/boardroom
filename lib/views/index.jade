@@ -23,7 +23,7 @@
       #boards.span8
         form(id='enter-board', method='post', action='/boards')
           fieldset
-            input#board-name(type='text', name='name')
+            input#board-name(type='text', name='name', value="#{user.user_id}'s board")
             button(class='btn') get a board
         
         - if (created.length)
