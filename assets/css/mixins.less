@@ -324,23 +324,24 @@
   -moz-transition-delay: @transition-delay;
   -o-transition-delay: @transition-delay;
   transition-delay: @transition-delay;
-} 
-.move-smoothly() {
-  .transition-property(~"left, top, width, height");
-  .transition-duration(~"80ms, 80ms, 80ms, 80ms");
-  .transition-timing-function('linear, linear, linear, linear')
 }
 
-.change-color-smoothly(){
+.transition-colors(){
   .transition-property(~"color, background-color, opacity");
   .transition-duration(~"80ms, 250ms, 250ms");
-  .transition-timing-function('ease-out, ease-in, ease-in')
+  .transition-timing-function('ease-out, ease-in, ease-in');
 }
 
-.transition-smoothly() {
+.transition-size-and-colors() {
+  .transition-property(~"width, height, color, background-color, opacity");
+  .transition-duration(~"80ms, 80ms, 80ms, 250ms, 250ms");
+  .transition-timing-function('linear, linear, ease-out, ease-in, ease-in');
+}
+
+.transition-all() {
   .transition-property(~"left, top, width, height, color, background-color, opacity");
   .transition-duration(~"80ms, 80ms, 80ms, 80ms, 80ms, 250ms, 250ms");
-  .transition-timing-function('linear, linear, linear, linear, ease-out, ease-in, ease-in')
+  .transition-timing-function('linear, linear, linear, linear, ease-out, ease-in, ease-in');
 }
 
 // Transformations
