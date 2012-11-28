@@ -64,6 +64,9 @@
     color: @grayDark;
     .box-shadow(none);
     .user-select(text);
+    &:focus {
+      .box-shadow(none);    
+    }
   }
   .plus-count {
     float: right;
