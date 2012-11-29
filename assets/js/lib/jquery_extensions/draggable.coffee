@@ -28,7 +28,7 @@ $.fn.draggable = (opts) ->
 
     @isDragging = false
     e.stopPropagation()
-    e.originalEvent.preventDefault()
+    #e.originalEvent.preventDefault()
     return true unless settings.isTarget(e.target)
     view = $this.data 'view'
     view.restingSpot = 
