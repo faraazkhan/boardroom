@@ -19,16 +19,16 @@
               input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
               button(class='btn') get a board
 
-      #boards.span4
-
-        - if (created.length)
-          h4 OWNER
-          ul.created.span4
-            boards = created
-            include includes/board_list
-      #boards.span4
-        - if (collaborated.length)
-          h4 COLLABORATOR
-          ul.collaborated.span4
-            boards = collaborated
-            include includes/board_list
+      #boards
+        .span4
+          - if (created.length)
+            h4 OWNER
+            ul.created.span4
+              boards = created
+              include includes/board_list
+        .span4
+          - if (collaborated.length)
+            h4 COLLABORATOR
+            ul.collaborated.span4
+              boards = collaborated
+              include includes/board_list
