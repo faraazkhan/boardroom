@@ -140,6 +140,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @resizeHTML()
     # set the focus if card was just created by this user
     cardView.$('textarea').focus() if cardView.model.get('user_id') is card?.creator
+    @removeIndicator cssClass:'stackable'
 
   ###
       human interaction event handlers
