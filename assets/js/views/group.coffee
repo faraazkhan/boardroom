@@ -51,6 +51,10 @@ class boardroom.views.Group extends boardroom.views.Base
       onMouseMove: =>
         @emitMove()
         @resizeHTML()
+      startedDragging: =>
+        @$el.addClass 'dragging'
+      stoppedDragging: =>
+        @$el.removeClass 'dragging'
 
   initializeDroppable: ->
     @$el.droppable
