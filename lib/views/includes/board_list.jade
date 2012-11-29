@@ -4,8 +4,21 @@ for board in boards
       .actions
         form(id="form-#{board._id}", action="/boards/#{board._id}", method="post")
           button(class="delete-btn", left-title="Delete this board permanently") X
+    .note-count
+      .counts
+        .notes
+          i.icon-sort &nbsp;
+          span.count= board.cards.length
+
+        .collaborators
+          i.icon-parents &nbsp;
+          span.count= board.collaborators().length
+
     .creator
       img.avatar(src='/user/avatar/#{encodeURIComponent(board.creator)}', title='#{board.creator}')
+      a(href='/boards/' + board._id)
+        h4.title= board.name
+
     .updated
       | updated on&nbsp;
       span
@@ -16,12 +29,5 @@ for board in boards
       span
         date = board.created
         include pretty_date
-    a(href='/boards/' + board._id)
-      h4.title= board.name
-      .note-count
-        span.count= board.cards.length
-        | &nbsp;notes,&nbsp
-        span.count= board.collaborators().length
-        | &nbsp;collaborators
   script
     $('#form-#{board._id}').on('submit', function(){ return confirm('WARNING: This will delete all cards this board!!  You cannot get this board back.\n\nAre you sure you want to do this?') })
