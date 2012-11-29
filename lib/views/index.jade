@@ -4,35 +4,31 @@
 #main-content.container
   .row
     #home
-      #promotional.span3
+      #promotional.span4
         .note
-          h2 Let's Reflect Together!
+
+          h2 How to use the board?
           ol
-            li Create or login to board
+            li Create a board
+            li Share your board with anyone, anywhere
             li Post your thoughts in real-time
             li Edit and group each other's thoughts
             li Discuss what you find!
-        .general
-          h3 Why Reflect?
-          | Reflection and retrospective meetings allow you to look back
-          | at your shared experiences, discover common desires, and apply
-          | them to future work.
-          h3 How to Reflect?
-          | Connect to a board and take turns to post your
-          | thoughts. Edit and group similar thoughts together.
-      #boards.span8
-        form(id='enter-board', method='post', action='/boards')
-          fieldset
-            input#board-name(type='text', name='name', value="#{user.user_id}'s board")
-            button(class='btn') get a board
-        
+          form(id='enter-board', method='post', action='/boards')
+            fieldset
+              input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
+              button(class='btn') get a board
+
+      #boards.span4
+
         - if (created.length)
           h4 OWNER
-          ul.created.span8
+          ul.created.span4
             boards = created
             include includes/board_list
+      #boards.span4
         - if (collaborated.length)
           h4 COLLABORATOR
-          ul.collaborated.span8
+          ul.collaborated.span4
             boards = collaborated
             include includes/board_list

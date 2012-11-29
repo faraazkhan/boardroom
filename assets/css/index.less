@@ -1,21 +1,22 @@
-#boards {
+#boards,#promotional {
   margin-top: 30px;
 }
 
 #enter-board {
   margin-bottom: 40px;
   .clearfix();
-  input {width: 400px;}
 
   button {
-    margin-left: 15px;
+    float: right;
   }
 }
 
 #boards {
-  float:right;
-  padding: 1em;
-
+  a { text-decoration: none;}
+  h4 {
+    border-bottom: 3px solid @grayDark;
+    line-height: 28px;
+  }
   h2 {
     text-align: center;
     font-weight: bold;
@@ -33,14 +34,36 @@
 
     li {
       position: relative;
-      margin-bottom: 10px;
+      height: 100px;
+      margin-bottom: 30px;
       border: 1px solid rgba(0,0,0,0.05);
-      background-color: @grayLight;
-      .box-shadow(2px 2px 10px fade(@grayDark, 25%));
+      overflow: hidden;
+      border-top: 1px solid fade(@grayLight, 25%);
+      .box-shadow(0 0 3px fade(@grayDark, 25%));
       .transition-colors();
-
       &:hover {
         background-color: @grayMid;
+      }
+
+      .note-count {
+        float: left;
+        position: relative;
+        height: 100%;
+        background-color: @grayLight;
+        padding: 0 10px;
+        margin-right: 10px;
+        .counts {
+          position:relative;
+          top:50%;
+          height: 90px;
+          margin-top:-45px;
+        }
+        i,.count {
+          line-height: 46px;
+          font-size: 20px;
+          padding-left: 3px;
+        }
+        .notes { border-bottom: 1px solid @grayDark;}
       }
 
       p {
@@ -50,71 +73,60 @@
       }
 
       a {
-        display: block;
-        padding: 1.5em 4em 1.5em 3em;
         color: #000;
         :active, :hover {
           text-decoration: none;
+        }
+      }
+
+      .creator {
+        postion: relative;
+        margin: 5px 10px 10px 0;
+        width: 290px;
+        top: 0;
+
+        img {
+          display: inline;
+          float: left;
+          margin-right: 5px;
         }
         .title {
           overflow: hidden;
           margin-top: 0.33em;
           margin-bottom: 0.33em;
+          line-height: 30px;
+          border: none;
+          font-size: 16px;
+          line-height: 18px;
+          display: inline;
+          padding: 0;
+          width: 220px;
         }
       }
-
-      .creator {
-        position: absolute;
-        top: 2em;
-        left: 10px;
-      }
-
-      .created {
-        right: 10px;
-        .timestamp;
-      }
-
       .updated {
-        right: 130px;
-        .timestamp;
+        bottom: 14px;
       }
-
+      .created, .updated {
+        font-size: 11px;
+        line-height: 14px;
+        font-style: italic;
+        position: relative;
+        bottom: -15px;
+        left: 0px;
+      }
       .actions {
         position: absolute;
-        top: -10px;
-        right: -10px;
+        top: 0px;
+        right: -1px;
         cursor: pointer;
-        padding-left: 2em;
-
+        background-color: @grayLight;
         > * {
-          min-height: 33px;
-          padding: 0.25em;
-          margin: 0.5em 0.5em 0 0;
-          border-radius: 5px;
+          margin: 0;
         }
-
-        .delete {
-          width: 33px;
-          height: 33px;
-          background: transparent url("/images/icon-trash-closed-black.png") no-repeat center;
-          &:hover {
-            background: rgba(0,0,0,0.05) url("/images/icon-trash-open-black.png") no-repeat center;
-          }
-          .message {
-            display: none;
-          }
-          &.confirm {
-            background-color: firebrick;
-            background-image: none;
-            width: 6em;
-            .message {
-              color: white;
-              display: block;
-              text-align: center;
-              white-space: nowrap;
-              line-height: 33px;
-            }
-          }
+        .delete-btn {
+          border: none;
+          .border-radius(0);
+          .box-shadow(0 0 0 0 transparent);
         }
       }
       .activity {
@@ -125,10 +137,6 @@
           border: 1px solid white;
         }
       }
-    }
-
-    li:first-child {
-      border-top: none;
     }
   }
 }
