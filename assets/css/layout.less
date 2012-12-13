@@ -22,24 +22,25 @@ body {
   right: 0;
   z-index: 9999;
   color: @grayLight;
-  height: 30px;
+  height: 22px;
   min-width: 800px;
-  padding: 15px;
+  padding: 14px;
   border-bottom: 2px solid @blueLight;
   text-align:center;
 
   .user-select(none);
+  
   .info {
     float: left;
     margin-top: 5px;
     margin-right: 50px;
   }
+  
   .title {
     position: absolute;
     left :14px;
     color: @yellowMid;
     text-decoration: none;
-    line-height: 30px;
     font-size: 30px;
     text-shadow: -1px -1px 2px rgba(0, 0, 0, 0.6);
     text-transform: uppercase;
@@ -74,10 +75,8 @@ body {
     position: absolute;
     right: 0;
     top: 0;
-    margin-top: 14px;
+    margin-top: 10px;
     padding-right: 20px;
-    font-size: 10px;
-    line-height: 14px;
     .user-select(none);
     .help {
       float:left;
@@ -92,18 +91,15 @@ body {
       margin: 0px 8px;
     }
     .user {
-      .user-id{
-        line-height: 12px;
-        font-size: 12px;
-        margin: 0px 0px 7px 0px;
-      }
+      
+      font-size: 12px;
+
       .logout {
         a {
           text-decoration: none;
           float: right;
           color: @grayLight;
           line-height: 12px;
-          font-size: 12px;
           .opacity(25);
           font-weight: bold;
           .transition-colors();
