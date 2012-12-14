@@ -1,14 +1,16 @@
 #header
   include includes/full_logo
   include includes/user_info
+
 #main-content.container
   .row
     .span12
       .row
-        #promotional.span4
-          form(id='enter-board', method='post', action='/boards')
+        .span4
+          form#create-board.dark(id='create-board', method='post', action='/boards')
             input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
             button(class='btn') create a board
+          
           .note
             h2 How to use Boardroom
             ol
