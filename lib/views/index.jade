@@ -3,30 +3,29 @@
   include includes/user_info
 #main-content.container
   .row
-    #home
-      #promotional.span4
-        .note
-
-          h2 How to use the board?
-          ol
-            li Create a board
-            li Share your board with anyone, anywhere
-            li Post your thoughts in real-time
-            li Edit and group each other's thoughts
-            li Discuss what you find!
+    .span12
+      .row
+        #promotional.span4
           form(id='enter-board', method='post', action='/boards')
-            fieldset
-              input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
-              button(class='btn') get a board
-
-      #boards
-        .span4
+            input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
+            button(class='btn') create a board
+          .note
+            h2 How to use Boardroom
+            ol
+              li Create a board.
+              li Share your board with anyone, anywhere.
+              li Post your thoughts in real-time.
+              li Edit and group each other's thoughts.
+              li Discuss what you find!   
+          
+        .board-list.span4
           - if (created.length)
             h4 OWNER
             ul.created.span4
               boards = created
               include includes/board_list
-        .span4
+        
+        .board-list.span4
           - if (collaborated.length)
             h4 COLLABORATOR
             ul.collaborated.span4
