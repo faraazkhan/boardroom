@@ -21,13 +21,13 @@
         .board-list.span4
           - if (created.length)
             h4 OWNER
-            ul.created.span4
+            ul.created
               boards = created
               include includes/board_list
         
         .board-list.span4
           - if (collaborated.length)
             h4 COLLABORATOR
-            ul.collaborated.span4
+            ul.collaborated
               boards = collaborated
               include includes/board_list
