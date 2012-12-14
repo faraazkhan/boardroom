@@ -2,6 +2,7 @@
   include includes/full_logo
   input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
   include includes/user_info
+    span.help(title="Double-click your board to add a note.") ?
 
 .board
   #connection-status-modal(style="display:none")
