@@ -80,11 +80,11 @@ form#create-board {
       }
 
       .info {
-        height: 100%;
-        position: relative;
-        float: left;
         margin-top: 10px;
-        width: 275px;
+        overflow: hidden;
+        position: relative;
+        width: 75%;
+        height: 95%;
         
         img.creator {
           display: inline;
@@ -92,35 +92,33 @@ form#create-board {
           margin-right: 5px;
         }
       
-        a {
+        .title {
           float: left;
           width: 90%;
-        }
-
-        .title {
-          overflow: hidden;
-          border: none;
-          font-size: 14px;
+          height: 65%;
+          font-size: 16px;
           line-height: 18px;
-          display: inline;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-      
-        .dates {
-          float: left;
-          width: 275px;
+        
+        .date {
+          float:left;
+          position: absolute;
+          top: 50px;
           font-size: 11px;
           line-height: 14px;
           font-style: italic;
-          position: absolute;
-          top: 70px;
-          left: 25px;
-          
+
+          p {
+            margin: 2px 0;
+          }
         }
 
-        .created {
-          margin-left: 15px;
-        }
       }
+      
+      
       
       .actions {
         position: absolute;
