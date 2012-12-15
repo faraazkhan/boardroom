@@ -2,16 +2,18 @@
 html
   head
     != css('application')
-    != css('login')
     != js('application')
     != js('login')
     link(href='http://fonts.googleapis.com/css?family=Lato:400,700|Inconsolata:400,700', rel='stylesheet', type='text/css')
     title Boardroom - Real-time Reflection and Story Boarding
+  
   body.login.background_1
+    
     #header
       include includes/full_logo
-    form(action='/login', method='post')
+    
+    form#login.dark(action='/login', method='post')
       input#user_id(name='user_id', type='text', value='twitter username or gravatar email', defaultValue='twitter username or gravatar email')
-      button Get On Board
+      button get on board
       .rule
       p Better than stickies<br/> on a wall

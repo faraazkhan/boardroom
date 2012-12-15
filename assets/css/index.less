@@ -1,22 +1,28 @@
-#boards,#promotional {
-  margin-top: 30px;
-}
-
-#enter-board {
-  margin-bottom: 40px;
-  .clearfix();
-
-  button {
-    float: right;
+.note {
+  ol {
+    margin: 0 0 5px 18px;
   }
 }
 
-#boards {
+
+form#create-board {
+  margin-top: 39px;
+  margin-bottom: 16px;
+  
+  input[type="text"] {
+    width: 95%;
+  }
+}
+
+.board-list {
   a { text-decoration: none;}
+  
   h4 {
     border-bottom: 3px solid @grayDark;
     line-height: 28px;
+    margin-bottom: 28px;
   }
+  
   h2 {
     text-align: center;
     font-weight: bold;
@@ -31,16 +37,16 @@
     list-style-type: none;
     overflow-y:auto;
     color: #000;
+    width: 100%;
 
     li {
       position: relative;
       height: 100px;
       margin-bottom: 30px;
-      border: 1px solid rgba(0,0,0,0.05);
       overflow: hidden;
-      border-top: 1px solid fade(@grayLight, 25%);
-      .box-shadow(0 0 3px fade(@grayDark, 25%));
+      .box-shadow(2px 2px 6px fade(@grayDark, 25%));
       .transition-colors();
+      background-color: fade(@offWhite, 75%);
       &:hover {
         background-color: @grayMid;
       }
@@ -66,12 +72,6 @@
         .notes { border-bottom: 1px solid @grayDark;}
       }
 
-      p {
-        margin: 0;
-        padding: 2.5em 2em;
-        text-align: center;
-      }
-
       a {
         color: #000;
         :active, :hover {
@@ -79,41 +79,47 @@
         }
       }
 
-      .creator {
-        postion: relative;
-        margin: 5px 10px 10px 0;
-        width: 290px;
-        top: 0;
-
-        img {
+      .info {
+        margin-top: 10px;
+        overflow: hidden;
+        position: relative;
+        width: 75%;
+        height: 95%;
+        
+        img.creator {
           display: inline;
           float: left;
           margin-right: 5px;
         }
+      
         .title {
-          overflow: hidden;
-          margin-top: 0.33em;
-          margin-bottom: 0.33em;
-          line-height: 30px;
-          border: none;
+          float: left;
+          width: 90%;
+          height: 65%;
           font-size: 16px;
           line-height: 18px;
-          display: inline;
-          padding: 0;
-          width: 220px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
+        
+        .date {
+          float:left;
+          position: absolute;
+          top: 50px;
+          font-size: 11px;
+          line-height: 14px;
+          font-style: italic;
+
+          p {
+            margin: 2px 0;
+          }
+        }
+
       }
-      .updated {
-        bottom: 14px;
-      }
-      .created, .updated {
-        font-size: 11px;
-        line-height: 14px;
-        font-style: italic;
-        position: relative;
-        bottom: -15px;
-        left: 0px;
-      }
+      
+      
+      
       .actions {
         position: absolute;
         top: 0px;
@@ -123,12 +129,14 @@
         > * {
           margin: 0;
         }
+        
         .delete-btn {
           border: none;
           .border-radius(0);
           .box-shadow(0 0 0 0 transparent);
         }
       }
+
       .activity {
         padding-top: 0.5em;
         img {
