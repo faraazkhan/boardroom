@@ -3,15 +3,13 @@ $ ->
     addFormInteractivity()
 
 randomizeBackgroundImage = ->
+    
     random = Math.floor(Math.random() * 5 + 1)
-    bodyBackgroundClassPrefix = "background_"
+    prefix = "/images/bg_"
+    suffix = ".jpg"
 
-    bodyBackgroundClass = bodyBackgroundClassPrefix + random
-
-    $("body").removeClass((index, cssClass) ->
-        matches = cssClass.match(/background_\d/) or []
-        matches.join " "
-    ).addClass bodyBackgroundClass;
+    image_url = prefix + random + suffix
+    $.backstretch image_url, fade: 800
 
 addFormInteractivity = ->
     $('input[type="text"]').focus ->

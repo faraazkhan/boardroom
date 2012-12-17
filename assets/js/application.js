@@ -1,6 +1,7 @@
 //= require './vendor/jquery-1.8.1.js'
 //= require './vendor/jquery.tools.min-tooltip.js'
 //= require './vendor/jquery.autosize.js'
+//= require './vendor/jquery.backstretch.min.js'
 //= require './vendor/underscore.js'
 //= require './vendor/backbone.js'
 //= require './vendor/webfonts.js'
