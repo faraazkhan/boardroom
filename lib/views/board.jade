@@ -2,6 +2,7 @@
   include includes/full_logo
   input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
   include includes/user_info
+    span.copy-url(title="Copy link for sharing.") copy
     span.help(title="Double-click your board to add a note.") ?
 
 .board
@@ -13,3 +14,10 @@ script(type="text/javascript")
   var board = new boardroom.models.Board(attributes);
   var roomView = new boardroom.views.Room({ model: board });
   roomView.render();
+
+  $(".copy-url").each(function() {
+    $(this).zclip({
+      path: "/swf/ZeroClipboard.swf",
+      copy: window.document.location.href
+    })
+  });
