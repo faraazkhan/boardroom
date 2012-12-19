@@ -58,17 +58,20 @@ form#create-board {
         background-color: @grayLight;
         padding: 0 10px;
         margin-right: 10px;
+        
         .counts {
           position:relative;
           top:50%;
           height: 90px;
           margin-top:-45px;
-        }
-        i,.count {
-          line-height: 46px;
           font-size: 20px;
+        }
+        
+        .count {
+          line-height: 46px;
           padding-left: 3px;
         }
+        
         .notes { border-bottom: 1px solid @grayDark;}
       }
 
@@ -123,22 +126,35 @@ form#create-board {
         right: -1px;
         cursor: pointer;
         background-color: @grayLight;
+        
         > * {
           margin: 0;
         }
         
-        .delete-btn {
-          border: none;
-          .border-radius(0);
-          .box-shadow(0 0 0 0 transparent);
+        .copy-url {
+          .icon-link {
+            background-color: transparent;
+            padding: 5px 5px 1px 8px;
+            font-size: 13px;
+            color: #999;
+          }
         }
-      
-        .icon-link {
-          font-size: 12px;
+
+        .copy-url.hover {
+          .icon-link {
+            .opacity(100);
+            color: #A22;
+          }
         }
       
         form {
           border-top: solid 1px @grayMid;
+
+          .delete-btn {
+            border: none;
+            .border-radius(0);
+            .box-shadow(0 0 0 0 transparent);
+          }
         }
       }
 
