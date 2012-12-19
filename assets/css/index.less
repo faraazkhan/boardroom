@@ -48,7 +48,7 @@ form#create-board {
       .transition-colors();
       background-color: fade(@offWhite, 75%);
       &:hover {
-        background-color: @grayMid;
+        background-color: darken(@white, 10%);
       }
 
       .note-count {
@@ -156,6 +156,13 @@ form#create-board {
             .box-shadow(0 0 0 0 transparent);
           }
         }
+
+        form, .copy-url {
+          &.active, &:active {
+            background-color: @grayMid;
+          }
+        }
+
       }
 
       .activity {
