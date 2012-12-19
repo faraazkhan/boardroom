@@ -33,3 +33,29 @@
             ul.collaborated
               boards = collaborated
               include includes/board_list
+
+script
+  $(".copy-url").each(function() {
+    $(this).zclip({
+      path: "/swf/ZeroClipboard.swf",
+      copy: window.document.location.href + $(this).closest("li").find(".info a").attr("href").slice(1),
+      afterCopy: function() {
+        return;
+      }
+    })
+  });
+
+  $(".zclip").each(function() {
+    $(this).mouseover(function() {
+      var associatedEl = $(this).closest(".actions").find(".copy-url");
+      $(this).closest(".actions").find(".copy-url a").mouseover();
+    });
+
+    $(this).mouseout(function() {
+      var associatedEl = $(this).closest(".actions").find(".copy-url");
+      $(this).closest(".actions").find(".copy-url a").mouseout();
+    });
+  });
+  
+  
+

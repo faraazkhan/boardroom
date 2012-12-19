@@ -24,7 +24,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 9999;
+  z-index: 9998;
   color: @grayLight;
   height: 22px;
   min-width: 800px;
@@ -84,15 +84,23 @@ body {
     
     .user-select(none);
     
-    .help {
+    .help, .copy-url {
       float:left;
       line-height: 30px;
-      font-size: 22px;
       margin: 0px 0px;
-      padding-right: 15px;
       border-right: solid 1px rgba(255, 255, 255, .2);
     }
     
+    .help {
+      font-size: 22px;
+      padding: 0px 15px;
+    }
+
+    .copy-url {
+      font-size: 18px;
+      padding: 0px 13px;
+    }
+
     img.avatar {
       float: left;
       width: 28px;
@@ -152,6 +160,14 @@ div.user {
   .user-select(none);
   &.stackable {
   }
+}
+
+.copy-url:hover, .copy-url.hover {
+  color: @yellowLight;
+}
+
+.copy-url:active, .copy-url.active {
+  color: darken(@yellowDark, 20%);
 }
 
 #connection-status-modal {

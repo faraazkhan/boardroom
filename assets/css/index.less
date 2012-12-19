@@ -18,9 +18,10 @@ form#create-board {
   a { text-decoration: none;}
   
   h4 {
-    border-bottom: 3px solid @grayDark;
+    border-bottom: 4px solid @grayDark;
     line-height: 28px;
     margin-bottom: 28px;
+    font-size: 1.5em;
   }
   
   h2 {
@@ -48,7 +49,7 @@ form#create-board {
       .transition-colors();
       background-color: fade(@offWhite, 75%);
       &:hover {
-        background-color: @grayMid;
+        background-color: darken(@white, 10%);
       }
 
       .note-count {
@@ -58,17 +59,20 @@ form#create-board {
         background-color: @grayLight;
         padding: 0 10px;
         margin-right: 10px;
+        
         .counts {
           position:relative;
           top:50%;
           height: 90px;
           margin-top:-45px;
-        }
-        i,.count {
-          line-height: 46px;
           font-size: 20px;
+        }
+        
+        .count {
+          line-height: 46px;
           padding-left: 3px;
         }
+        
         .notes { border-bottom: 1px solid @grayDark;}
       }
 
@@ -94,7 +98,7 @@ form#create-board {
       
         .title {
           float: left;
-          width: 90%;
+          width: 85%;
           height: 65%;
           font-size: 16px;
           line-height: 18px;
@@ -115,10 +119,7 @@ form#create-board {
             margin: 2px 0;
           }
         }
-
       }
-      
-      
       
       .actions {
         position: absolute;
@@ -126,15 +127,42 @@ form#create-board {
         right: -1px;
         cursor: pointer;
         background-color: @grayLight;
+        
         > * {
           margin: 0;
         }
         
-        .delete-btn {
-          border: none;
-          .border-radius(0);
-          .box-shadow(0 0 0 0 transparent);
+        .copy-url {
+          .icon-link {
+            background-color: transparent;
+            padding: 5px 5px 1px 8px;
+            font-size: 13px;
+            color: #999;
+          }
         }
+
+        .copy-url.hover {
+          .icon-link {
+            color: #A22;
+          }
+        }
+      
+        form {
+          border-top: solid 1px @grayMid;
+
+          .delete-btn {
+            border: none;
+            .border-radius(0);
+            .box-shadow(0 0 0 0 transparent);
+          }
+        }
+
+        form, .copy-url {
+          &.active, &:active {
+            background-color: @grayMid;
+          }
+        }
+
       }
 
       .activity {

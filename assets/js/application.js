@@ -5,6 +5,7 @@
 //= require './vendor/underscore.js'
 //= require './vendor/backbone.js'
 //= require './vendor/webfonts.js'
+//= require './vendor/jquery.zclip.min.js'
 //= require './boardroom'
 //= require_tree './lib'
 //= require_tree './utils'

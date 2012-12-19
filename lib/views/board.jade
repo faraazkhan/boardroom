@@ -2,7 +2,8 @@
   include includes/full_logo
   input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
   include includes/user_info
-    span.help(title="Double-click your board to add a note.") ?
+    span.copy-url.icon-link(data-left-title="Copy URL for this board.") &nbsp;
+    span.help(data-left-title="Double-click your board to add a note.") ?
 
 .board
   #connection-status-modal(style="display:none")
@@ -13,3 +14,23 @@ script(type="text/javascript")
   var board = new boardroom.models.Board(attributes);
   var roomView = new boardroom.views.Room({ model: board });
   roomView.render();
+
+  $(".copy-url").each(function() {
+    $(this).zclip({
+      path: "/swf/ZeroClipboard.swf",
+      copy: window.document.location.href,
+      afterCopy: function() {
+        return;
+      }
+    })
+  });
+
+  $(".zclip").each(function() {
+      $(this).mouseover(function() {
+        $(this).closest("#user-info").find(".copy-url").mouseover();
+      });
+
+      $(this).mouseout(function() {
+        $(this).closest("#user-info").find(".copy-url").mouseout();
+      });
+    });
