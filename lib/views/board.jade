@@ -18,6 +18,9 @@ script(type="text/javascript")
   $(".copy-url").each(function() {
     $(this).zclip({
       path: "/swf/ZeroClipboard.swf",
-      copy: window.document.location.href
+      copy: window.document.location.href,
+      afterCopy: function() {
+        return;
+      }
     })
   });

@@ -38,7 +38,10 @@ script
   $(".copy-url").each(function() {
     $(this).zclip({
       path: "/swf/ZeroClipboard.swf",
-      copy: window.document.location.href + $(this).closest("li").find(".info a").attr("href").slice(1)
+      copy: window.document.location.href + $(this).closest("li").find(".info a").attr("href").slice(1),
+      afterCopy: function() {
+        return;
+      }
     })
   });
 
