@@ -45,6 +45,17 @@ script
     })
   });
 
+  $(".zclip").each(function() {
+    $(this).mouseover(function() {
+      var associatedEl = $(this).closest(".actions").find(".copy-url");
+      $(this).closest(".actions").find(".copy-url a").mouseover();
+    });
+
+    $(this).mouseout(function() {
+      var associatedEl = $(this).closest(".actions").find(".copy-url");
+      $(this).closest(".actions").find(".copy-url a").mouseout();
+    });
+  });
   
   
 
