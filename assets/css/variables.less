@@ -46,9 +46,14 @@
 // Default 940px grid
 // -------------------------
 @gridColumns:             12;
-@gridColumnWidth:         60px;
-@gridGutterWidth:         20px;
+@gridColumnWidth:         70px;
+@gridGutterWidth:         30px;
 @gridRowWidth:            (@gridColumns * @gridColumnWidth) + (@gridGutterWidth * (@gridColumns - 1));
+
+// 1600px min
+@gridColumnWidth1600:     90px;
+@gridGutterWidth1600:     40px;
+@gridRowWidth1600:        (@gridColumns * @gridColumnWidth1600) + (@gridGutterWidth1600 * (@gridColumns - 1));
 
 // 1200px min
 @gridColumnWidth1200:     70px;
@@ -65,6 +70,10 @@
 // -------------------------
 @fluidGridColumnWidth:    percentage(@gridColumnWidth/@gridRowWidth);
 @fluidGridGutterWidth:    percentage(@gridGutterWidth/@gridRowWidth);
+
+// 1600px min
+@fluidGridColumnWidth1600:     percentage(@gridColumnWidth1600/@gridRowWidth1600);
+@fluidGridGutterWidth1600:     percentage(@gridGutterWidth1600/@gridRowWidth1600);
 
 // 1200px min
 @fluidGridColumnWidth1200:     percentage(@gridColumnWidth1200/@gridRowWidth1200);
