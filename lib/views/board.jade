@@ -1,7 +1,8 @@
-#header
-  include includes/full_logo
+include includes/header
+   
+#board-nav
   input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
-  include includes/user_info
+  .actions
     span.copy-url.icon-link(data-left-title="Copy URL for this board.") &nbsp;
     span.help(data-left-title="Double-click your board to add a note.") ?
 

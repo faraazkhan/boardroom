@@ -1,8 +1,0 @@
-#user-info
-  - if(user)
-    yield
-    img.avatar(src='/user/avatar/#{encodeURIComponent(user.user_id)}')
-    div.user
-      div.user-id #{user.user_id}
-      div.logout
-        a(href='/logout') logout

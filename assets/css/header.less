@@ -1,0 +1,131 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9998;
+  color: @grayLight;
+  height: 22px;
+  font-size: 12px;
+  
+  .user-select(none);
+  
+  .nav {
+    margin: 0 0;
+    li {
+      line-height: 12px;
+    }
+  }
+
+  .navbar-inner {
+    padding: 0 14px;
+    border: none;
+    background: transparent url('/images/dark_checkers.png') repeat 0 0;
+  }
+
+  .title {
+    color: @yellowMid;
+    text-decoration: none;
+    font-size: 16px;
+    text-shadow: -1px -1px 2px rgba(0, 0, 0, 0.6);
+    text-transform: uppercase;
+  }
+
+  #user-info {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-top: 4px;
+    padding-right: 14px;
+    
+    .user-select(none);
+    
+    .logout {
+      margin-left: 15px;
+      
+      a {
+        text-decoration: none;
+        color: @grayLight;
+        line-height: 12px;
+        .opacity(25);
+        font-weight: bold;
+        .transition-colors();
+        &:hover {
+          .opacity(100);
+          color: #e66;
+        }
+      }      
+    }
+  }
+}
+
+
+// RESPONSIVE HEADER STYLING w Bootstrap overrides
+// -----------------------------------------------
+
+@media (max-width: 979px) {
+
+  // Padding to set content in a bit
+  body {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  
+  .container {
+    padding: 0 14px;
+  }
+
+  // Negative indent the now static "fixed" navbar
+  .navbar-fixed-top {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
+
+@media (max-width: @navbarCollapseWidth) {
+ 
+  .navbar {
+    
+    .navbar-inner {
+      min-height: 24px;
+    }
+
+    .nav {
+      margin-bottom: 5px;
+      li {
+        margin-bottom: 5px;
+      }
+    }
+
+    .btn-navbar {
+
+      padding: 5px 5px;
+      margin: 7px 0 0 0;
+      .buttonBackground(@blueLight, @blueMid);      
+
+      .icon-bar {
+        width: 15px;
+        height: 1px;
+        display: block;
+        color: @grayLight;
+      }
+    }
+
+    .title {
+      display: block;
+      padding-top: 4px;
+      margin-bottom: 3px;
+    }
+
+    #user-info {
+      position: static;
+      margin-top: 0;
+      margin-bottom: 3px;
+      padding-right: 20px;
+
+      .logout {
+        margin: 0 0;
+      }
+    }
+  }
+}
