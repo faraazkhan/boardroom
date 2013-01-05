@@ -1,0 +1,15 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    - if (typeof(user) !== 'undefined')
+      a.btn.btn-navbar(data-toggle='collapse', data-target='.navbar-responsive-collapse')
+        span.icon-bar
+        span.icon-bar
+    a.title(href="/") BOARDROOM
+    - if (typeof(user) !== 'undefined')
+      #user-info.nav-collapse.collapse.navbar-responsive-collapse
+        ul.nav
+          li
+            div.user-id #{user.user_id}
+          li
+            span.logout
+              a(href='/logout') logout

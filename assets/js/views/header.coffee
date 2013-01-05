@@ -1,5 +1,5 @@
 class boardroom.views.Header extends Backbone.View
-  el: '#header'
+  el: '#board-nav'
 
   events:
     'keyup #name': 'hiChangeBoardName'

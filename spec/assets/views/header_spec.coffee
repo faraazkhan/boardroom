@@ -1,7 +1,7 @@
 describe 'boardroom.views.Header', ->
   beforeEach ->
     setFixtures '''
-      <div id="header">
+      <div id="board-nav">
         <input id="name" />
         <button class="create" />
       </div>

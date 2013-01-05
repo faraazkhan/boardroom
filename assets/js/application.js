@@ -4,6 +4,7 @@
 //= require './vendor/jquery.backstretch.min.js'
 //= require './vendor/underscore.js'
 //= require './vendor/backbone.js'
+//= require './vendor/bootstrap.min.js'
 //= require './vendor/webfonts.js'
 //= require './vendor/jquery.zclip.min.js'
 //= require './boardroom'
