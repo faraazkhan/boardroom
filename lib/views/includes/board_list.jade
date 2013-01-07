@@ -18,8 +18,8 @@ for board in boards
           span.count= board.collaborators().length
 
     .info
-      img.creator.avatar(src='/user/avatar/#{encodeURIComponent(board.creator)}', title='#{board.creator}')
       a.title(href='/boards/' + board._id) #{board.name}
+      img.creator.avatar(src='/user/avatar/#{encodeURIComponent(board.creator)}', title='#{board.creator}')
       .date
         p
           | updated on&nbsp;
@@ -29,6 +29,7 @@ for board in boards
           | created on&nbsp;
           date = board.created
           include pretty_date
+
 
   script
     $('#form-#{board._id}').on('submit', function(){ return confirm('WARNING: This will delete all cards this board!!  You cannot get this board back.\n\nAre you sure you want to do this?') })
