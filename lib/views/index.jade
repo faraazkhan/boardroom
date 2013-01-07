@@ -38,7 +38,11 @@ script
       path: "/swf/ZeroClipboard.swf",
       copy: window.document.location.href + $(this).closest("li").find(".info a").attr("href").slice(1),
       afterCopy: function() {
-        return;
+        var el_shown = $('.copy-url a').filter(function() {
+          return $(this).data("tooltip").isShown(true);
+        });
+        var tooltip_api = el_shown.data("tooltip")
+        tooltip_api.getTip().html("URL copied!");
       }
     })
   });

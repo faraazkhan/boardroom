@@ -14,4 +14,3 @@ $ ()->
       position: "center right"
       effect: "fade"
       opacity: 0.9
-
