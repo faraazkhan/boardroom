@@ -16,8 +16,16 @@ describe 'BoardsController', ->
       count = Board.sync.count()
       expect(count).toEqual 1
       board = Board.sync.findOne {}
+      board = Board.sync.findById board.id
+      board = board.toObject getters: true
       expect(board.name).toEqual name
       expect(board.creator).toEqual 'user'
+      expect(board.groups[0].cards.length).toEqual 1
+      card = board.groups[0].cards[0]
+      expect(card.creator).toEqual 'user'
+      expect(card.authors[0]).toEqual '@carbonfive'
+      expect(card.text).toEqual 'foo'
+      
 
   describe '#show', ->
     beforeEach ->
