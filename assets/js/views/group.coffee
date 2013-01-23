@@ -6,6 +6,7 @@ class boardroom.views.Group extends boardroom.views.Base
     <div class="background"></div>
     <div class='notice'></div>
     <input type='text' class='name' value="<%=name%>" placeholder="group name"></input>
+    <button class='add-card'>+</button>
   """
 
   attributes: ->
@@ -13,6 +14,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   events:
     'keyup .name': 'hiChangeGroupName'
+    'click .add-card': 'hiRequestNewCard'
 
   initialize: (attributes) ->
     { @boardView } = attributes
@@ -27,7 +29,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @enableEditing '.name'
 
   initializeSourcePath: ()->
-    @sourcePath = 
+    @sourcePath =
       boardId: @boardView.model.id
       groupId: @model.id
 

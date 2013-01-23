@@ -173,3 +173,17 @@ describe 'boardroom.views.Board', ->
         call = @spy.firstCall
         expect(call.args[0].x).toEqual 200 - 10
         expect(call.args[0].y).toEqual 201 - 10
+
+  describe 'when clicking the add card button of a group', ->
+    beforeEach ->
+      @spy = sinon.spy()
+      @cards = [{_id: 1}, { _id: 2}]
+      @group = {_id: 2, x: 100, y: 200, cards: @cards}
+      @socket.emit 'group.create', @group
+      @socket.on 'group.card.create', @spy
+
+    it 'creates a new card in the group', ->
+      groupView = @boardView.findView(@group._id)
+      @click = new $.Event 'click'
+      groupView.$('.add-card').trigger @click
+      expect(@spy.called).toBeTruthy()
