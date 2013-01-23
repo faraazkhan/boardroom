@@ -14,7 +14,7 @@ class CardHandler extends Handler
       return if cards? and 0<cards.length
       Group.findById model.groupId, (error, group) =>
         throw error if error?
-        group.remove (error) =>
+        group?.remove (error) =>
           throw error if error?
           @socket.emit 'group.delete', model.groupId
           @socket.broadcast.emit 'group.delete', model.groupId

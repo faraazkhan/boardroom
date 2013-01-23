@@ -130,10 +130,8 @@ class boardroom.views.Group extends boardroom.views.Base
       groupView: @
       boardView: @boardView
       socket: @socket
-    cardView.$el.hide() # animate adding the new card
     @$el.append cardView.render().el
-    cardView.$el.slideDown 'fast'
-    setTimeout (=>cardView.adjustTextarea()), 88 # let the card render before adjusting text
+    cardView.adjustTextarea()
     @cardViews.push cardView
     @updateGroup()
     @resizeHTML()
