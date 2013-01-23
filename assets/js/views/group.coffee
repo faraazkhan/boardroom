@@ -13,7 +13,6 @@ class boardroom.views.Group extends boardroom.views.Base
 
   events:
     'keyup .name': 'hiChangeGroupName'
-    'dblclick':    'hiRequestNewCard'
 
   initialize: (attributes) ->
     { @boardView } = attributes
