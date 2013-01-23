@@ -17,7 +17,7 @@ class BoardsController extends ApplicationController
     group.sync.save()
 
     authors = ['@carbonfive']
-    text = 'Hi!\n\n1. This is a note. Double click anywhere on the board to create a new note.\n\n2. Now drag your new note on top of me to create a group.\n\n3. Remove notes from groups by dragging them out.\n\n4. Try typing "I wish" into a new note. Neat!\n\n5. Now try typing "I like" into a new note. Woohoo!'
+    text = 'Welcome to your virtual!'
     card = new Card { groupId: group.id, creator: request.session.user_id, authors: authors, text: text }
     card.sync.save()
     

@@ -24,8 +24,8 @@ describe 'BoardsController', ->
       card = board.groups[0].cards[0]
       expect(card.creator).toEqual 'user'
       expect(card.authors[0]).toEqual '@carbonfive'
-      expect(card.text).toEqual 'foo'
-      
+      expect(card.text).toContain 'Welcome to your virtual whiteboard!'
+
 
   describe '#show', ->
     beforeEach ->
