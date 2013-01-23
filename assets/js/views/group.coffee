@@ -133,7 +133,7 @@ class boardroom.views.Group extends boardroom.views.Base
       boardView: @boardView
       socket: @socket
     @$el.append cardView.render().el
-    cardView.adjustTextarea()
+    setTimeout ( => cardView.adjustTextarea() ), 100
     @cardViews.push cardView
     @updateGroup()
     @resizeHTML()
