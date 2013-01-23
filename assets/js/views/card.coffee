@@ -65,19 +65,15 @@ class boardroom.views.Card extends boardroom.views.Base
         @groupView.bringForward()
         z = @bringForward()
         @socket.emit 'card.update', { _id: @model.id, z }
-        @$el.css('cursor', 'pointer')
       onMouseMove: =>
         @emitMove()
       onMouseUp: =>
         nothingToDropOnto = => @moveBackToRestingSpot() if (@$el? and @$el.is(':visible'))
         setTimeout nothingToDropOnto, 350 # move back if nothing picks up the drop
-        @$el.css('cursor', 'auto')
       startedDragging:()=>
         @$el.addClass('dragging')
-        console.log 'started dragging'
       stoppedDragging: ()=>
         @$el.removeClass('dragging')
-        console.log 'ended dragging'
 
   ###
       render
