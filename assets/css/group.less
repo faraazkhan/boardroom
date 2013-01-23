@@ -26,6 +26,20 @@
       .box-shadow(none);    
     }
   }
+  .add-card {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #e7db79;
+    cursor: pointer;
+
+    &:hover {
+      color: #a22;
+    }
+  }
   .background {
     .transition-all();
     .border-radius(2px);
@@ -47,6 +61,14 @@
     }
     .background {
       .opacity(20);
+    }
+
+    button.add-card {
+      color: #222;
+
+      &:hover {
+        color: #a22;
+      }
     }
   }
   &.stackable {
