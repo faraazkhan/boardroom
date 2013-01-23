@@ -73,9 +73,7 @@ class boardroom.views.Board extends boardroom.views.Base
       model: group
       boardView: @
       socket: @socket
-    groupView.$el.hide() # animate adding the new group
     @$el.append groupView.el
-    groupView.$el.slideDown 'fast', ()-> groupView.$el.css 'overflow', 'visible'
     @groupViews.push groupView
     @resizeHTML()
     # set the focus if group was just created by this user
@@ -162,9 +160,8 @@ class boardroom.views.Board extends boardroom.views.Base
     cardView = @findView id
     return unless cardView?
     cardView.eventsOff() # prevent further clicks and drops during animate the delete
-    cardView.$el.slideUp 'fast', ()-> 
-      cardView.destroy()
-      cardView.groupView.updateGroup()
+    cardView.destroy()
+    cardView.groupView.updateGroup()
 
   onConnect: =>
     @socket.emit 'join', user_id: @model.get('user_id')
