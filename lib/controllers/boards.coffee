@@ -17,7 +17,7 @@ class BoardsController extends ApplicationController
     group.sync.save()
 
     authors = ['@carbonfive']
-    text = 'Welcome to your virtual!'
+    text = 'Welcome to your virtual whiteboard!\n\n1. Invite others to participate by copying the url or clicking on the link icon in the top right corner.\n\n2. Double click anywhere on the board to create a new note.\n\n3. Drag notes onto one another to create a group.'
     card = new Card { groupId: group.id, creator: request.session.user_id, authors: authors, text: text }
     card.sync.save()
     
