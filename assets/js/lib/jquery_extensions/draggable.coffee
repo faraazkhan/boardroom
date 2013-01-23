@@ -28,7 +28,8 @@ $.fn.draggable = (opts) ->
 
     @isDragging = false
     e.stopPropagation()
-    #e.originalEvent.preventDefault()
+    # this fixes a WebKit cursor issue (although there may be a better way)
+    e.originalEvent.preventDefault() unless $(e.target).is('textarea') || $(e.target).is('input')
     return true unless settings.isTarget(e.target)
     view = $this.data 'view'
     view.restingSpot = 
