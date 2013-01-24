@@ -87,6 +87,7 @@ class boardroom.views.Group extends boardroom.views.Base
         left: @model.get('x')
         top: @model.get('y')
         'z-index': @model.get('z')
+    @$('.name').trimInput()
     @updateGroup()
     @
 
@@ -119,9 +120,9 @@ class boardroom.views.Group extends boardroom.views.Base
 
   displayNewCard: (data) ->
     return if !data or @$el.has("#"+ data._id).length
-    bindings = 
+    bindings =
       'group': @model
-      'board': (@model.get 'board') 
+      'board': (@model.get 'board')
     if data.set? # check if we already have a BackboneModel
       data.set bindings
       card = data
