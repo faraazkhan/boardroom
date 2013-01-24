@@ -1,16 +1,17 @@
-$.fn.trimInput = ->
+$.fn.trimInput = (minimumWidth, maxWidth) ->
   @each ->
-    $(@).data 'original-width', $(@).css('width')
+    maxWidth ||= $(@).css('width')
 
     setWidth = =>
-      return if @scrollWidth > @offsetWidth
-      $(@).css('width', 0)
-      minimumInputWidth = Math.max(@scrollWidth, 20)
-      $(@).css('width', minimumInputWidth + 'px')
+      zoomRatio = document.width / $(document).width()
+      return if zoomRatio * @scrollWidth > @offsetWidth
+      $(@).css 'width', 0
+      minimumInputWidth = Math.max(zoomRatio * @scrollWidth, minimumWidth || 20)
+      @style.width = minimumInputWidth + 'px'
 
     setWidth() if not $(@).is(':focus')
 
     $(@).blur setWidth
 
     $(@).focus =>
-      $(@).css 'width', $(@).data('original-width')
+      $(@).css 'width', maxWidth
