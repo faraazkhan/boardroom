@@ -1,6 +1,7 @@
 class boardroom.views.Group extends boardroom.views.Base
   className: 'group'
   cardViews: []
+  nameDecorated: false
 
   template: _.template """
     <div class="background"></div>
@@ -108,7 +109,11 @@ class boardroom.views.Group extends boardroom.views.Base
 
   updateGroup: ()-> # unstyle the group if there is only 1 card
     if 1 < @$('.card').length
-      @$('.name').delay(400).fadeIn('slow').find('input').focus() unless @$('.name').is(':visible')
+      fadeComplete = =>
+        if ! @nameDecorated
+          @$('.name').trimInput(80)
+          @nameDecorated = true
+      @$('.name').delay(400).fadeIn('slow', fadeComplete).find('input').focus() unless @$('.name').is(':visible')
       @$el.removeClass('single-card')
     else
       @$('.name').delay(400).hide()
@@ -119,9 +124,9 @@ class boardroom.views.Group extends boardroom.views.Base
 
   displayNewCard: (data) ->
     return if !data or @$el.has("#"+ data._id).length
-    bindings = 
+    bindings =
       'group': @model
-      'board': (@model.get 'board') 
+      'board': (@model.get 'board')
     if data.set? # check if we already have a BackboneModel
       data.set bindings
       card = data

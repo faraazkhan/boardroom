@@ -8,6 +8,8 @@ class boardroom.views.Header extends Backbone.View
     { @socket } = attributes
     @socket.on 'board.update', @onBoardUpdate
 
+    @$('#name').trimInput(80)
+
   ###
       human interaction event handlers
   ###
