@@ -4,7 +4,7 @@ include includes/header
   .row
     .span12
       .row
-        .span4
+        .span6
           form#create-board.dark(id='create-board', method='post', action='/boards')
             input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
             button(class='btn') create a board
@@ -26,8 +26,6 @@ include includes/header
             ul.created
               boards = created
               include includes/board_list
-        
-        .board-list.span4
           - if (collaborated.length)
             h4 COLLABORATOR
             ul.collaborated
