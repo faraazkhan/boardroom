@@ -1,4 +1,4 @@
-{ mongoose, db } = require './db'
+{ mongoose } = require './db'
 Populator = require "./populator"
 Card = require "./card"
 Group = require "./group"
@@ -85,6 +85,6 @@ BoardSchema.methods =
             Group.findById otherGroup.id, (error, model) => model.remove (error) if model? # delete otherGroup
             Group.findById parentGroup.id, callback
 
-Board = db.model 'Board', BoardSchema
+Board = mongoose.model 'Board', BoardSchema
 
 module.exports = Board

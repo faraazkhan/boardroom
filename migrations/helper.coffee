@@ -1,14 +1,23 @@
-mongodb = require 'mongodb'
-server = new mongodb.Server 'localhost', 27017
-db = new mongodb.Db "boardroom_#{process.env.NODE_ENV || 'development'}", server
-db_instance = null
+MongoClient = require('mongodb').MongoClient
+
 mongo = (callback) ->
-  return callback(null, db_instance) if db_instance?
-  db.open (error, connection) ->
-    db_instance = connection
-    callback error, connection
+  if DB.connection?
+    callback null, DB.connection
+  else
+    console.log "MongoClient not connected.  You must call DB.connect()"
 
 DB = {}
+
+DB.connection = null
+
+DB.connect = (callback) ->
+  db_name = "boardroom_#{process.env['NODE_ENV'] || 'development'}"
+  MongoClient.connect "mongodb://localhost:27017/#{db_name}", { db: { w: 'majority' } }, (error, db) ->
+    DB.connection = db
+    callback error
+
+DB.disconnect = () ->
+  DB.connection.close() if DB.connection?
 
 DB.find = (colName, query, callback) ->
   withCollection colName, (error, col) ->

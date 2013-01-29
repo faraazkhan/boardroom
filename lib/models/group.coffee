@@ -1,4 +1,4 @@
-{ mongoose, db } = require './db'
+{ mongoose } = require './db'
 Card = require './card'
 
 GroupSchema = new mongoose.Schema
@@ -45,6 +45,6 @@ GroupSchema.methods =
     newCard.save callback
 
 
-Group = db.model 'Group', GroupSchema
+Group = mongoose.model 'Group', GroupSchema
 
 module.exports = Group
