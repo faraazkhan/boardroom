@@ -24,6 +24,7 @@ $.fn.draggable = (opts) ->
       y: offset.top
 
   $this.on 'mousedown.draggable', (e) ->
+    return true unless e.which == 1  # only drag left-click drags
     return true unless settings.isOkToDrag()
 
     @isDragging = false
