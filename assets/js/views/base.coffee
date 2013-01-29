@@ -86,7 +86,9 @@ class boardroom.views.Base extends Backbone.View
   ###
 
   showNotice: ({ user, message }) =>
-    @$('.notice')
+    notices = @$('.notice')
+    notice = if notices.length == 2 then notices.last() else notices.first() # stupid single-card group hack
+    notice
       .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
       .show()
 
