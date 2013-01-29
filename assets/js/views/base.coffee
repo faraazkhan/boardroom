@@ -94,8 +94,9 @@ class boardroom.views.Base extends Backbone.View
     if isNaN(Number(x)) or isNaN(Number(y))
       @$el.css {left: x, top: y}
     else # move to x, y but preserve 12px of margin 
-      left = (Math.max x, (@boardView.left() + 12) )  # decouple from boardView!
-      top = (Math.max y, (@boardView.top()  + 12) ) # decouple from boardView!
+      parentOffset = @$el.offsetParent().offset()
+      left = x + parentOffset.left
+      top = y + parentOffset.top
       @$el.offset { left: left, top: top }
     @resizeHTML()
 
@@ -113,10 +114,10 @@ class boardroom.views.Base extends Backbone.View
     @$('.notice').fadeOut 100
 
   left: ->
-    @$el.offset()?.left || 0
+    @$el.position()?.left || 0
 
   top: ->
-    @$el.offset()?.top || 0
+    @$el.position()?.top || 0
 
   right: ->
     @left() + @$el.width()
