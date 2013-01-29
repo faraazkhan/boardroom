@@ -108,15 +108,17 @@ class boardroom.views.Group extends boardroom.views.Base
     @updateGroup()
 
   updateGroup: ()-> # unstyle the group if there is only 1 card
-    if 1 < @$('.card').length
+    if 1 < @cardCount()
       fadeComplete = =>
         if ! @nameDecorated
           @$('.name').trimInput(80)
           @nameDecorated = true
-      @$('.name').delay(400).fadeIn('slow', fadeComplete).find('input').focus() unless @$('.name').is(':visible')
+      @$('.name').fadeIn('slow', fadeComplete).find('input').focus() unless @$('.name').is(':visible')
+      @$('.add-card').show()
       @$el.removeClass('single-card')
     else
-      @$('.name').delay(400).hide()
+      @$('.name').hide()
+      @$('.add-card').hide()
       @$el.addClass('single-card') unless @$el.is('single-card')
 
   cardCount: ()->
