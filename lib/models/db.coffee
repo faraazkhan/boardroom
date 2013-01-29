@@ -1,9 +1,9 @@
 mongoose = require 'mongoose'
 
-db = mongoose.createConnection 'localhost',
+mongoose.connect 'localhost',
   "boardroom_#{process.env['NODE_ENV'] || 'development'}"
 
-db.on 'error', (error) ->
+mongoose.connection.on 'error', (error) ->
   console.log "Mongoose error: #{error.trace}"
 
-module.exports = { mongoose, db }
+module.exports = { mongoose }

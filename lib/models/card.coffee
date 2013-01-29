@@ -1,4 +1,4 @@
-{ mongoose, db } = require './db'
+{ mongoose } = require './db'
 
 CardSchema = new mongoose.Schema
   groupId: String
@@ -32,6 +32,6 @@ CardSchema.methods =
     @save (error, card) ->
       callback error, card
 
-Card = db.model 'Card', CardSchema
+Card = mongoose.model 'Card', CardSchema
 
 module.exports = Card

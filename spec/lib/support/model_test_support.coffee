@@ -2,7 +2,7 @@ lib = "#{__dirname}/../../../lib"
 speclib = "#{__dirname}/.."
 require "#{speclib}/support/spec_helper"
 
-{ db } = require "#{lib}/models/db"
+{ mongoose } = require "#{lib}/models/db"
 Board = require "#{lib}/models/board"
 Group = require "#{lib}/models/group"
 Card = require "#{lib}/models/card"
@@ -14,7 +14,7 @@ timeout = null
 finalizers = []
 
 finalizers.push ->
-  db.close()
+  mongoose.disconnect()
 
 afterAll = ->
   f() for f in finalizers

@@ -1,4 +1,5 @@
 fs = require 'fs'
+helper = require '../migrations/helper'
 
 class Migrator
   constructor: ->
@@ -7,12 +8,17 @@ class Migrator
   migrate: (callback) ->
     next = (error) =>
       return callback error if error?
-      return callback() if @migrations.length == 0
+      if @migrations.length == 0
+        helper.disconnect()
+        return callback()
+
       migration = @migrations.shift()
       console.log "[Migrate] #{migration.split('/').pop()}"
       m = require migration
       m.up next
-    next()
+
+    helper.connect (error) ->
+      next error
 
   loadMigrations: ->
     fs.readdirSync("#{@migrationsDir()}").filter (file) ->
