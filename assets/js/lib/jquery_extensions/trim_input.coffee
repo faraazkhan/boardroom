@@ -1,5 +1,5 @@
 $.fn.textMetrics = () ->
-  html = $(@).html() || $(@).val()
+  html = $(@).html() || $(@).val() || $(@).attr('placeholder')
   $div = $("<div>#{html}</div>").
     css({ position: 'absolute', left: -1000, top: -1000, display: 'none' }).
     appendTo($('body'))
@@ -14,7 +14,7 @@ $.fn.trimInput = (minWidth, maxWidth) ->
     maxWidth ||= parseInt $(@).css('width')
 
     setWidth = =>
-      width = $(@).textMetrics().width
+      width = $(@).textMetrics().width + 3
       width = Math.max width, 20
       width = Math.min width, maxWidth
       $(@).css 'width', width
