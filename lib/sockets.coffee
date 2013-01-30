@@ -26,7 +26,7 @@ class Sockets
 
         socket.on 'join', (user) =>
           @users[user.user_id] = user
-          boardNamespace.emit 'joined', user
+          boardNamespace.emit 'join', user
 
     @boards[boardId] = @users
 
