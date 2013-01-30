@@ -69,11 +69,24 @@ describe 'boardroom.views.Card', ->
         @text = sinon.spy()
         @socket.on 'card.update', @text
         @authorCount = @card.get('authors').length
+        @cardView.$('textarea').trigger($.Event 'keypress')
 
-        event = $.Event 'keyup'
-        @cardView
-          .$('textarea')
-          .trigger(event)
+      it 'adds the author to its author list', ->
+        expect(@cardView.$('.authors img').length).toEqual @authorCount + 1
+
+      it 'emits a "text" socket event', ->
+        expect(@text.called).toBeTruthy()
+        [args] = @text.lastCall.args
+        expect(args._id).toEqual @card.id
+        expect(args.text).toEqual ''
+        expect(args.author).toEqual @board.get('user_id')
+
+    describe 'entering special text (deletes)', ->
+      beforeEach ->
+        @text = sinon.spy()
+        @socket.on 'card.update', @text
+        @authorCount = @card.get('authors').length
+        @cardView.$('textarea').trigger($.Event 'keyup', { keyCode: 8 } )
 
       it 'adds the author to its author list', ->
         expect(@cardView.$('.authors img').length).toEqual @authorCount + 1
