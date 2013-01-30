@@ -13,6 +13,7 @@ include includes/header
 script(type="text/javascript")
   var attributes = !{JSON.stringify(board)};
   var board = new boardroom.models.Board(attributes);
+  var handler = new boardroom.Handler(board);
   var roomView = new boardroom.views.Room({ model: board });
   roomView.render();
 

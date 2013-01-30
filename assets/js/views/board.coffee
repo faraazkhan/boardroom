@@ -8,7 +8,7 @@ class boardroom.views.Board extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
-    @initializeSocketEventHandlers()
+    #@initializeSocketEventHandlers()
     @initializeGroups()
     @initializeDroppable()
     @resizeHTML()

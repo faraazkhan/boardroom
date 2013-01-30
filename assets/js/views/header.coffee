@@ -5,9 +5,7 @@ class boardroom.views.Header extends Backbone.View
     'keyup #name': 'hiChangeBoardName'
 
   initialize: (attributes) ->
-    { @socket } = attributes
-    @socket.on 'board.update', @onBoardUpdate
-
+    @model.on 'change:name', @onBoardUpdate, @
     @$('#name').trimInput(80)
 
   ###
@@ -19,12 +17,11 @@ class boardroom.views.Header extends Backbone.View
     if isEnter
       @$('#name').blur()
     else
-      @socket.emit 'board.update', _id: @model.get('_id'), name: @$('#name').val()
+      @model.set 'name', @$('#name').val()
 
-    ###
-        socket handlers
-    ###
+  ###
+      model handlers
+  ###
 
-  onBoardUpdate: (data) =>
-    @$('#name').val data.name
-
+  onBoardUpdate: (model, value) =>
+    @$('#name').val(value).trimInput(80)
