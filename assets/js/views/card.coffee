@@ -30,7 +30,8 @@ class boardroom.views.Card extends boardroom.views.Base
 
   events: # human interaction event
     'click .color': 'hiChangeColor'
-    'keyup textarea': 'hiChangeText'
+    'keypress textarea': 'hiChangeText'
+    'keyup textarea': 'hiChangeTextHelper'
     'click textarea': 'hiFocusText'
     'click .plus1 .btn': 'hiIncrementPlusCount'
     'click .delete-btn': 'hiDeleteMe'
@@ -171,13 +172,17 @@ class boardroom.views.Card extends boardroom.views.Base
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
 
-  hiChangeText: (event)->
+  hiChangeText: (e)->
     text = @$('textarea').val()
     author = @model.get('board').get('user_id')
     @addAuthor author
     @adjustTextarea()
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, text, z, author }
+
+  hiChangeTextHelper: (e) ->
+    codes = [ 8, 46 ] # backspace, delete
+    @hiChangeText e if codes.indexOf(e.keyCode) >= 0
 
   hiFocusText: (event)->
     z = @bringForward()
