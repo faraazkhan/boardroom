@@ -25,6 +25,7 @@ $.fn.draggable = (opts) ->
 
   $this.on 'mousedown.draggable', (e) ->
     return true unless e.which == 1  # only drag left-click drags
+    return true if e.ctrlKey         # ctrl is the same as right click on os x
     return true unless settings.isOkToDrag()
 
     @isDragging = false
