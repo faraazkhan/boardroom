@@ -8,7 +8,6 @@ class boardroom.views.Board extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
-    #@initializeSocketEventHandlers()
     @initializeGroups()
     @initializeDroppable()
     @resizeHTML()
@@ -17,21 +16,6 @@ class boardroom.views.Board extends boardroom.views.Base
   initializeSourcePath: ()->
     @sourcePath = 
       boardId: @model.id
-
-  initializeSocketEventHandlers: ->
-    @socket.on 'joined', @onJoined
-    @socket.on 'connect', @onConnect
-    @socket.on 'disconnect', @onDisconnect
-    @socket.on 'reconnecting', @onReconnecting
-    @socket.on 'reconnect', @onReconnect
-    @socket.on 'group.create', @onGroupCreate
-    @socket.on 'group.update', @onGroupUpdate
-    @socket.on 'group.update-cards', @onGroupUpdateCards
-    @socket.on 'group.delete', @onGroupDelete
-    @socket.on 'card.update', @onCardUpdate
-    @socket.on 'card.delete', @onCardDelete
-    @socket.on 'view.add-indicator', @onAddIndicator
-    @socket.on 'view.remove-indicator', @onRemoveIndicator
 
   initializeGroups: ->
     groups = @model.get('groups')
@@ -174,6 +158,3 @@ class boardroom.views.Board extends boardroom.views.Base
 
   onReconnecting: =>
     @displayStatus 'Reconnecting...'
-
-  onJoined: (data) =>
-    @model.addUser data

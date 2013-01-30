@@ -1,41 +1,46 @@
 class boardroom.Handler
 
-  constructor: (@board) ->
+  constructor: (@board, @user) ->
     @socket = io.connect "#{@socketHost()}/boards/#{@board.id}"
+    @send 'join', @userMessage()
 
-    @socket.on 'joined', @onJoined
-    @socket.on 'connect', @onConnect
-    @socket.on 'disconnect', @onDisconnect
-    @socket.on 'reconnecting', @onReconnecting
-    @socket.on 'reconnect', @onReconnect
+    @socket.on 'join', @onJoin
+    #@socket.on 'connect', @onConnect
+    #@socket.on 'disconnect', @onDisconnect
+    #@socket.on 'reconnecting', @onReconnecting
+    #@socket.on 'reconnect', @onReconnect
     @socket.on 'board.update', @onBoardUpdate
-    @socket.on 'group.create', @onGroupCreate
-    @socket.on 'group.update', @onGroupUpdate
-    @socket.on 'group.update-cards', @onGroupUpdateCards
-    @socket.on 'group.delete', @onGroupDelete
-    @socket.on 'card.update', @onCardUpdate
-    @socket.on 'card.delete', @onCardDelete
-    @socket.on 'view.add-indicator', @onAddIndicator
-    @socket.on 'view.remove-indicator', @onRemoveIndicator
+    #@socket.on 'group.create', @onGroupCreate
+    #@socket.on 'group.update', @onGroupUpdate
+    #@socket.on 'group.update-cards', @onGroupUpdateCards
+    #@socket.on 'group.delete', @onGroupDelete
+    #@socket.on 'card.update', @onCardUpdate
+    #@socket.on 'card.delete', @onCardDelete
+    #@socket.on 'view.add-indicator', @onAddIndicator
+    #@socket.on 'view.remove-indicator', @onRemoveIndicator
 
     @board.on 'change', =>
-      @send 'board.update', @boardMessage(@board)
+      @send 'board.update', @boardMessage()
 
   send: (name, message) ->
     console.log name
     console.log message
     @socket.emit name, message
 
+  onJoin: (data) =>
+    @board.addUser data
+
   onBoardUpdate: (data) =>
     @board.set 'name', data.name
 
-  onGroupCreate: (data) ->
+  onGroupCreate: (data) =>
     findGroup(data).displayNewGroup data
 
-  boardMessage: (board) ->
-    attrs = _.pick board.toJSON(), 'name'
-    attrs._id = board.id
-    attrs
+  userMessage: () =>
+    @user.toJSON()
+
+  boardMessage: () =>
+    _.chain(@board.toJSON()).pick('name').extend({ _id: @board.id }).value()
 
   findCard: (data) ->
     @board.findCard data._id

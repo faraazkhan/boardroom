@@ -11,9 +11,14 @@ include includes/header
     #connection-status
 
 script(type="text/javascript")
-  var attributes = !{JSON.stringify(board)};
-  var board = new boardroom.models.Board(attributes);
-  var handler = new boardroom.Handler(board);
+  var boardAttrs = !{JSON.stringify(board)};
+  var board = new boardroom.models.Board(boardAttrs);
+
+  var userAttrs = !{JSON.stringify(user)};
+  var user = new boardroom.models.User(userAttrs);
+
+  var handler = new boardroom.Handler(board, user);
+
   var roomView = new boardroom.views.Room({ model: board });
   roomView.render();
 
