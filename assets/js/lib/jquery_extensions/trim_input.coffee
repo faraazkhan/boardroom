@@ -11,11 +11,13 @@ $.fn.textMetrics = () ->
 
 $.fn.trimInput = (minWidth, maxWidth) ->
   @each ->
-    maxWidth ||= $(@).css('width')
+    maxWidth ||= parseInt $(@).css('width')
 
     setWidth = =>
-      metrics = $(@).textMetrics()
-      $(@).css 'width', $(@).textMetrics().width
+      width = $(@).textMetrics().width
+      width = Math.max width, 20
+      width = Math.min width, maxWidth
+      $(@).css 'width', width
 
     setWidth() if not $(@).is(':focus')
 
