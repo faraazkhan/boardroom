@@ -17,14 +17,14 @@ describe 'boardroom.views.Board', ->
       socket: @socket
 
   describe 'socket events', ->
-    describe 'joined', ->
+    describe 'join', ->
       beforeEach ->
         @user = { user_id: 1 }
-        @socket.emit 'joined', @user
+        @socket.emit 'join', @user
 
       it "adds the new user to the board's user list", ->
         users = @board.get 'users'
-        expect(users[@user.user_id]).toEqual @user        
+        expect(users[@user.user_id]).toEqual @user
 
     describe 'connect', ->
       beforeEach ->
