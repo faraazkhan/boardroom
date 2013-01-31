@@ -15,7 +15,7 @@ describe 'HomeController', ->
           .end()
         expect(response.ok).toBeTruthy()
         window = jsdom.sync.env response.text
-        expect($('.board-list', window.document).length).toEqual 2
+        expect($('.board-list', window.document).length).toEqual 1
         expect($('.board-list ul.created li', window.document).length).toEqual 1
         expect($('.board-list ul.collaborated li', window.document).length).toEqual 2
 
