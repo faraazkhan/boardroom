@@ -8,12 +8,20 @@ html
     link(href='http://fonts.googleapis.com/css?family=Lato:400,700|Inconsolata:400,700', rel='stylesheet', type='text/css')
     title Boardroom - Real-time Reflection and Story Boarding
   
-  body#login
-    
+  body.login
+
     include includes/header
-    
-    form#login.dark(action='/login', method='post')
-      input#user_id(name='user_id', type='text', value='twitter username or gravatar email', defaultValue='twitter username or gravatar email')
-      button get on board
-      .rule
-      p Better than stickies<br/> on a wall
+
+    form#login(action='/login', method='post')
+      h2 WELCOME TO
+      h1 BOARDROOM
+      input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
+      .inset
+        button GET ON BOARD
+      hr
+      blockquote
+        em
+          | &ldquo;
+        | Better than stickies on a wall.
+        em
+          | &rdquo;
