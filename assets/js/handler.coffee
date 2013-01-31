@@ -4,13 +4,12 @@ class boardroom.Handler
 
   initialize: () ->
     @socket = @createSocket()
-    @send 'join', @userMessage()
 
+    @socket.on 'connect', @onConnect
     @socket.on 'join', @onJoin
-    #@socket.on 'connect', @onConnect
-    #@socket.on 'disconnect', @onDisconnect
-    #@socket.on 'reconnecting', @onReconnecting
-    #@socket.on 'reconnect', @onReconnect
+    @socket.on 'disconnect', @onDisconnect
+    @socket.on 'reconnecting', @onReconnecting
+    @socket.on 'reconnect', @onReconnect
     @socket.on 'board.update', @onBoardUpdate
     #@socket.on 'group.create', @onGroupCreate
     #@socket.on 'group.update', @onGroupUpdate
@@ -32,7 +31,24 @@ class boardroom.Handler
     console.log message
     @socket.emit name, message
 
+  onConnect: =>
+    console.log 'onConnect'
+    @send 'join', @userMessage()
+
+  onDisconnect: =>
+    console.log 'onDisconnect'
+    @board.set 'status', 'Disconnected'
+
+  onReconnecting: =>
+    console.log 'onReconnecting'
+    @board.set 'status', 'Reconnecting...'
+
+  onReconnect: =>
+    console.log 'onReconnect'
+    @board.set 'status', null
+
   onJoin: (data) =>
+    console.log 'onJoin'
     @board.addUser data
 
   onBoardUpdate: (data) =>
