@@ -1,7 +1,9 @@
 class boardroom.Handler
 
   constructor: (@board, @user) ->
-    @socket = io.connect "#{@socketHost()}/boards/#{@board.id}"
+
+  initialize: () ->
+    @socket = @createSocket()
     @send 'join', @userMessage()
 
     @socket.on 'join', @onJoin
@@ -21,6 +23,9 @@ class boardroom.Handler
 
     @board.on 'change', =>
       @send 'board.update', @boardMessage()
+
+  createSocket: () ->
+    io.connect "#{@socketHost()}/boards/#{@board.id}"
 
   send: (name, message) ->
     console.log name

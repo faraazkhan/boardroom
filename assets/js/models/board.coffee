@@ -1,5 +1,8 @@
 class boardroom.models.Board extends Backbone.Model
 
+  defaults:
+    users: {}
+
   findCard: (id) ->
     get('cards').find (card) ->
       card.id == id
