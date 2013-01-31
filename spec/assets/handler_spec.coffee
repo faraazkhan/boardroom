@@ -3,17 +3,30 @@ describe 'boardroom.Handler', ->
     @socket = new io.Socket()
     @board = new boardroom.models.Board {}
     @user = new boardroom.models.User { user_id: 1 }
+    @handler = handler_for @socket, @board, @user
 
-  describe '#constructor', ->
-    beforeEach ->
-      @handler = handler_for @socket, @board, @user
-
+  describe '*connect', ->
     it 'emits a join message', ->
+      @socket.emit 'connect'
       expect(@handler.send).toHaveBeenCalledWith('join', @user.toJSON())
+
+  describe '*disconnect', ->
+    it 'displays a "Disconnected" message', ->
+      @socket.emit 'disconnect'
+      expect(@board.get 'status').toEqual 'Disconnected'
+
+  describe '*reconnecting', ->
+    it 'displays a "Reconnecting..." message', ->
+      @socket.emit 'reconnecting'
+      expect(@board.get 'status').toEqual 'Reconnecting...'
+
+  describe '*reconnect', ->
+    it 'clears the status message', ->
+      @socket.emit 'reconnect'
+      expect(@board.get 'status').toBeNull()
 
   describe '*join', ->
     beforeEach ->
-      @handler = handler_for @socket, @board, @user
       @newUser = { user_id: 2 }
       @socket.emit 'join', @newUser
 

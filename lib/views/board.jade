@@ -17,7 +17,7 @@ script(type="text/javascript")
   var userAttrs = !{JSON.stringify(user)};
   var user = new boardroom.models.User(userAttrs);
 
-  new boardroom.Handler(board, user).initalize();
+  new boardroom.Handler(board, user).initialize();
 
   var roomView = new boardroom.views.Room({ model: board });
   roomView.render();

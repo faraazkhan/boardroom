@@ -12,6 +12,7 @@ class boardroom.views.Board extends boardroom.views.Base
     @initializeDroppable()
     @resizeHTML()
     $(window).resize => @resizeHTML()
+    @model.on 'change:status', @displayStatus, @
 
   initializeSourcePath: ()->
     @sourcePath = 
@@ -42,7 +43,8 @@ class boardroom.views.Board extends boardroom.views.Base
       render
   ###
 
-  displayStatus: (status) ->
+  displayStatus: ->
+    status = @model.get 'status'
     @$('#connection-status').html status
     modal = @$('#connection-status-modal')
     if status then modal.show() else modal.hide()
@@ -146,15 +148,3 @@ class boardroom.views.Board extends boardroom.views.Base
     cardView.eventsOff() # prevent further clicks and drops during animate the delete
     cardView.destroy()
     cardView.groupView.updateGroup()
-
-  onConnect: =>
-    @socket.emit 'join', user_id: @model.get('user_id')
-
-  onDisconnect: =>
-    @displayStatus 'Disconnected'
-
-  onReconnect: =>
-    @displayStatus null
-
-  onReconnecting: =>
-    @displayStatus 'Reconnecting...'
