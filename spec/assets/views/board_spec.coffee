@@ -21,6 +21,14 @@ describe 'boardroom.views.Board', ->
       expect(@boardView.statusModalDiv()).toBeVisible()
       expect(@boardView.statusDiv().html()).toEqual 'foo'
 
+  describe 'clear status', ->
+    it 'hides the status', ->
+      @board.set 'status', 'foo'
+      @board.set 'status', null
+      expect(@boardView.statusModalDiv()).toBeHidden()
+      expect(@boardView.statusDiv().html()).toEqual ''
+
+
   describe 'socket events', ->
     describe 'group.create', ->
       beforeEach ->
