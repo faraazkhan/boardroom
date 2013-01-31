@@ -43,11 +43,16 @@ class boardroom.views.Board extends boardroom.views.Base
       render
   ###
 
+  statusModalDiv: ->
+    @$('#connection-status-modal')
+
+  statusDiv: ->
+    @$('#connection-status')
+
   displayStatus: ->
     status = @model.get 'status'
-    @$('#connection-status').html status
-    modal = @$('#connection-status-modal')
-    if status then modal.show() else modal.hide()
+    @statusDiv().html status
+    if status then @statusModalDiv().show() else @statusModalDiv().hide()
 
   displayNewGroup: (data) ->
     if data.set? # check if we already have a BackboneModel

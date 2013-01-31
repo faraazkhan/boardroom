@@ -14,52 +14,14 @@ describe 'boardroom.views.Board', ->
       user_id: 1
     @boardView = new boardroom.views.Board
       model: @board
-      socket: @socket
+
+  describe 'set status', ->
+    it 'shows the status', ->
+      @board.set 'status', 'foo'
+      expect(@boardView.statusModalDiv()).toBeVisible()
+      expect(@boardView.statusDiv().html()).toEqual 'foo'
 
   describe 'socket events', ->
-    describe 'connect', ->
-      beforeEach ->
-        @join = sinon.spy()
-        @socket.on 'join', @join
-        @socket.emit 'connect', {}
-
-      it 'publishes that a user joined', ->
-        expect(@join.called).toBeTruthy()
-        [args] = @join.lastCall.args
-        expect(args.user_id).toEqual @board.get('user_id')
-
-    describe 'disconnect', ->
-      beforeEach ->
-        @boardView = new boardroom.views.Board
-          model: @board
-          socket: @socket
-        @socket.emit 'disconnect', {}
-
-      it 'displays a disconnected status', ->
-        expect(@boardView.$('#connection-status')).toHaveText('Disconnected')
-        expect(@boardView.$('#connection-status-modal')).toBeVisible()
-
-    describe 'reconnecting', ->
-      beforeEach ->
-        @boardView = new boardroom.views.Board
-          model: @board
-          socket: @socket
-        @socket.emit 'reconnecting', {}
-
-      it 'displays a reconnecting status', ->
-        expect(@boardView.$('#connection-status')).toHaveText('Reconnecting...')
-
-    describe 'reconnect', ->
-      beforeEach ->
-        @boardView = new boardroom.views.Board
-          model: @board
-          socket: @socket
-        @socket.emit 'reconnect', {}
-
-      it 'hides any status message', ->
-        expect(@boardView.$('#connection-status')).toBeEmpty()
-        expect(@boardView.$('#connection-status-modal')).toBeHidden()
-
     describe 'group.create', ->
       beforeEach ->
         @cardCount = @boardView.$('.card').length
