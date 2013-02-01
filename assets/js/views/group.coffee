@@ -53,13 +53,8 @@ class boardroom.views.Group extends boardroom.views.Base
         true
       onMouseDown: =>
         @model.bringForward()
-        #z = @bringForward()
-        #@socket.emit 'group.update', { _id: @model.id, z }
       onMouseMove: =>
-        @model.set
-          x: @left()
-          y: @top()
-          author: @model.get('board').get('user_id')
+        @model.moveTo @left(), @top()
         #@resizeHTML()
       startedDragging: =>
         @$el.addClass 'dragging'

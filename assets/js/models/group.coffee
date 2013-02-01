@@ -10,6 +10,12 @@ class boardroom.models.Group extends Backbone.Model
     super attributes, options
     @set 'cards', cards
 
+  moveTo: (x, y) ->
+    @set
+      x: x
+      y: y
+      author: @get('board').get('user_id')
+
   bringForward: ->
     maxZ = @get('board').maxZ()
     @set('z', maxZ + 1) unless @get('z') == maxZ
