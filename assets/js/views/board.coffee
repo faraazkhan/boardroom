@@ -59,14 +59,10 @@ class boardroom.views.Board extends boardroom.views.Base
     if status then @statusModalDiv().show() else @statusModalDiv().hide()
 
   displayNewGroup: (data) ->
-    if data.set? # check if we already have a BackboneModel
-      data.set 'board', @model
-      group = data
-    else
-      group = new boardroom.models.Group _.extend(data, board: @model)
+    data.set 'board', @model
 
     groupView = new boardroom.views.Group
-      model: group
+      model: data
       boardView: @
     @$el.append groupView.el
     @groupViews.push groupView

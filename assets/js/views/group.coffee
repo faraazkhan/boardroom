@@ -130,23 +130,19 @@ class boardroom.views.Group extends boardroom.views.Base
     bindings =
       'group': @model
       'board': (@model.get 'board')
-    if data.set? # check if we already have a BackboneModel
-      data.set bindings
-      card = data
-    else 
-      card = new boardroom.models.Card _.extend(data, bindings)
+    data.set bindings
+
     cardView = new boardroom.views.Card
-      model: card
+      model: data
       groupView: @
       boardView: @boardView
-      socket: @socket
     @$el.append cardView.render().el
     setTimeout ( => cardView.adjustTextarea() ), 100
     @cardViews.push cardView
     @updateGroup()
     @resizeHTML()
     # set the focus if card was just created by this user
-    cardView.$('textarea').focus() if @boardView.model.get('user_id') is card.get('creator')
+    cardView.$('textarea').focus() if @boardView.model.get('user_id') is data.get('creator')
     @removeIndicator cssClass:'stackable'
 
   ###
