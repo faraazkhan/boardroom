@@ -36,7 +36,8 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initializeCards: () ->
     cards = @model.get('cards')
-    @displayNewCard card for card in cards if cards
+    cards.each (card) =>
+      @displayNewCard card
 
   initializeDraggable: ->
     @$el.draggable

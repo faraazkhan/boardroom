@@ -13,6 +13,9 @@ class boardroom.views.Board extends boardroom.views.Base
     @resizeHTML()
     $(window).resize => @resizeHTML()
     @model.on 'change:status', @displayStatus, @
+    @model.get('groups').on 'add', ( (group) =>
+      console.log 'groups.on add'
+      @displayNewGroup group ), @
 
   initializeSourcePath: ()->
     @sourcePath = 
@@ -20,7 +23,8 @@ class boardroom.views.Board extends boardroom.views.Base
 
   initializeGroups: ->
     groups = @model.get('groups')
-    @displayNewGroup group for group in groups if groups
+    groups.each (group) =>
+      @displayNewGroup group
 
   initializeDroppable: ->
     @$el.droppable
@@ -57,13 +61,13 @@ class boardroom.views.Board extends boardroom.views.Base
   displayNewGroup: (data) ->
     if data.set? # check if we already have a BackboneModel
       data.set 'board', @model
-      group = data 
+      group = data
     else
       group = new boardroom.models.Group _.extend(data, board: @model)
+
     groupView = new boardroom.views.Group
       model: group
       boardView: @
-      socket: @socket
     @$el.append groupView.el
     @groupViews.push groupView
     @resizeHTML()
@@ -83,16 +87,6 @@ class boardroom.views.Board extends boardroom.views.Base
       service calls
   ###
 
-  createNewGroup: ({x, y})->
-    z = @maxZ()
-    @socket.emit 'group.create',
-      boardId: @model.get('_id')
-      creator: @model.get('user_id')
-      x: x - 10
-      y: y - 10
-      z: z + 1
-      focus: true
-
   switchGroups: (cardSourcePath, newGroupSourcePath)->
     @socket.emit 'board.card.switch-groups',
       cardSourcePath: cardSourcePath
@@ -111,7 +105,7 @@ class boardroom.views.Board extends boardroom.views.Base
   ###
   hiRequestNewCard: (event) ->
     return unless event.target.className == 'board'
-    @createNewGroup (@coordinateOfEvent event)
+    @model.createGroup(@coordinateOfEvent event)
 
   ###
       socket handlers
@@ -124,9 +118,6 @@ class boardroom.views.Board extends boardroom.views.Base
   onRemoveIndicator: (data) =>
     view = @findView data._id
     view.removeIndicator data if view?
-
-  onGroupCreate: (data) =>
-    @displayNewGroup data
 
   onGroupUpdate: (data) =>
     groupView = @findView data._id

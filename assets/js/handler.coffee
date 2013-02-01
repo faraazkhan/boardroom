@@ -11,7 +11,7 @@ class boardroom.Handler
     @socket.on 'reconnecting', @onReconnecting
     @socket.on 'reconnect', @onReconnect
     @socket.on 'board.update', @onBoardUpdate
-    #@socket.on 'group.create', @onGroupCreate
+    @socket.on 'group.create', @onGroupCreate
     #@socket.on 'group.update', @onGroupUpdate
     #@socket.on 'group.update-cards', @onGroupUpdateCards
     #@socket.on 'group.delete', @onGroupDelete
@@ -23,12 +23,17 @@ class boardroom.Handler
     @board.on 'change', =>
       @send 'board.update', @boardMessage()
 
+    pendingGroups = @board.get 'pendingGroups'
+    pendingGroups.on 'add', (group) =>
+      @send 'group.create', @groupMessage(group)
+      pendingGroups.remove group
+
   createSocket: () ->
     io.connect "#{@socketHost()}/boards/#{@board.id}"
 
   send: (name, message) ->
-    console.log name
-    console.log message
+    console.log "send: #{name}"
+    #console.log message
     @socket.emit name, message
 
   onConnect: =>
@@ -52,16 +57,24 @@ class boardroom.Handler
     @board.addUser data
 
   onBoardUpdate: (data) =>
+    console.log 'onBoardUpdate'
     @board.set 'name', data.name
 
   onGroupCreate: (data) =>
-    findGroup(data).displayNewGroup data
+    console.log 'onGroupCreate'
+    @board.get('groups').add(new boardroom.models.Group(data))
 
   userMessage: () =>
     @user.toJSON()
 
   boardMessage: () =>
     _.chain(@board.toJSON()).pick('name').extend({ _id: @board.id }).value()
+
+  groupMessage: (group) =>
+    message = group.toJSON()
+    message._id = group.id if group.id
+    message.boardId = @board.id
+    message
 
   findCard: (data) ->
     @board.findCard data._id
