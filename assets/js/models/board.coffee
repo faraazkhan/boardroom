@@ -13,11 +13,11 @@ class boardroom.models.Board extends Backbone.Model
     @set 'groups', groups
 
   findCard: (id) ->
-    get('cards').find (card) ->
+    @get('cards').find (card) ->
       card.id == id
 
   findGroup: (id) ->
-    get('groups').find (group) ->
+    @get('groups').find (group) ->
       group.id == id
 
   addUser: (user) =>

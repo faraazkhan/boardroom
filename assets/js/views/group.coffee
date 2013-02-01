@@ -20,11 +20,14 @@ class boardroom.views.Group extends boardroom.views.Base
   initialize: (attributes) ->
     { @boardView } = attributes
     super attributes
-    @model.set('name', '') unless @model.get('name')
+    @model.set('name', '', { silent: true }) unless @model.get('name')
     @render()
     @initializeCards()
     @initializeDraggable()
     @initializeDroppable()
+
+    @model.on 'change', (group, options) =>
+      @update options.changes
 
   onLockPoll: ()=>
     @enableEditing '.name'
@@ -49,11 +52,15 @@ class boardroom.views.Group extends boardroom.views.Base
         return false if $(target).is '.delete'
         true
       onMouseDown: =>
-        z = @bringForward()
-        @socket.emit 'group.update', { _id: @model.id, z }
+        @model.bringForward()
+        #z = @bringForward()
+        #@socket.emit 'group.update', { _id: @model.id, z }
       onMouseMove: =>
-        @emitMove()
-        @resizeHTML()
+        @model.set
+          x: @left()
+          y: @top()
+          author: @model.get('board').get('user_id')
+        #@resizeHTML()
       startedDragging: =>
         @$el.addClass 'dragging'
       stoppedDragging: =>
@@ -92,17 +99,17 @@ class boardroom.views.Group extends boardroom.views.Base
     @updateGroup()
     @
 
-  update: (data) =>
-    if data.x?
-      @moveTo x: data.x, y: data.y
-      @showNotice user: data.author, message: data.author
+  update: (changes) =>
+    if changes.x?
+      @moveTo x: @model.get('x'), y: @model.get('y')
+      @showNotice user: @model.get('author'), message: @model.get('author')
       @authorLock.lock 500
-    if data.z?
-      @$el.css 'z-index', data.z
-    if data.name?
-      @disableEditing '.name', data.name
+    if changes.z?
+      @$el.css 'z-index', @model.get('z')
+    if changes.name?
+      @disableEditing '.name', @model.get('name')
       @authorLock.lock()
-      @$('.name').val(data.name).trimInput(80)
+      @$('.name').val(@model.get('name')).trimInput(80)
 
   updateCards: (cards) =>
     @displayNewCard card for card in cards

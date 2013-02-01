@@ -59,7 +59,7 @@ class boardroom.views.Board extends boardroom.views.Base
     if status then @statusModalDiv().show() else @statusModalDiv().hide()
 
   displayNewGroup: (data) ->
-    data.set 'board', @model
+    data.set 'board', @model, { silent: true }
 
     groupView = new boardroom.views.Group
       model: data

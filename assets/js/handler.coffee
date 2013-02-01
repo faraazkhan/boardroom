@@ -12,7 +12,7 @@ class boardroom.Handler
     @socket.on 'reconnect', @onReconnect
     @socket.on 'board.update', @onBoardUpdate
     @socket.on 'group.create', @onGroupCreate
-    #@socket.on 'group.update', @onGroupUpdate
+    @socket.on 'group.update', @onGroupUpdate
     #@socket.on 'group.update-cards', @onGroupUpdateCards
     #@socket.on 'group.delete', @onGroupDelete
     #@socket.on 'card.update', @onCardUpdate
@@ -22,6 +22,11 @@ class boardroom.Handler
 
     @board.on 'change', =>
       @send 'board.update', @boardMessage()
+
+    groups = @board.get 'groups'
+    groups.on 'change', (group, options) =>
+      unless options.synced?
+        @send 'group.update', @groupMessage(group, _(options.changes).keys())
 
     pendingGroups = @board.get 'pendingGroups'
     pendingGroups.on 'add', (group) =>
@@ -52,17 +57,21 @@ class boardroom.Handler
     console.log 'onReconnect'
     @board.set 'status', null
 
-  onJoin: (data) =>
+  onJoin: (message) =>
     console.log 'onJoin'
-    @board.addUser data
+    @board.addUser message
 
-  onBoardUpdate: (data) =>
+  onBoardUpdate: (message) =>
     console.log 'onBoardUpdate'
-    @board.set 'name', data.name
+    @board.set 'name', message.name
 
-  onGroupCreate: (data) =>
+  onGroupCreate: (message) =>
     console.log 'onGroupCreate'
-    @board.get('groups').add(new boardroom.models.Group(data))
+    @board.get('groups').add(new boardroom.models.Group(message))
+
+  onGroupUpdate: (message) =>
+    console.log 'onGroupUpdate'
+    @board.findGroup(message._id).set(_(message).omit('_id'), { synced: true })
 
   userMessage: () =>
     @user.toJSON()
@@ -70,10 +79,12 @@ class boardroom.Handler
   boardMessage: () =>
     _.chain(@board.toJSON()).pick('name').extend({ _id: @board.id }).value()
 
-  groupMessage: (group) =>
+  groupMessage: (group, attrs) =>
     message = group.toJSON()
+    message = _(message).pick(attrs) if attrs?
     message._id = group.id if group.id
-    message.boardId = @board.id
+    message.boardId = @board.id unless message._id
+    message.author = @board.get('user_id')
     message
 
   findCard: (data) ->
