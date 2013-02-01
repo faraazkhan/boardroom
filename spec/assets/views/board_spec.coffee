@@ -79,64 +79,6 @@ describe 'boardroom.views.Board', ->
           cardView = @boardView.findView 1
           expect(cardView.$el).toHaveClass "color-0"
 
-    describe 'move events', ->
-      beforeEach ->
-        @card1 = { _id: 1}
-        @group2 = {_id: 2, x: 100, y: 200, cards: [@card1]}
-        @socket.emit 'group.create', @group2
-
-        @card11 = { _id: 11 }
-        @group12 = {_id: 12, x: 400, y: 400, cards: [@card11]}
-        @socket.emit 'group.create', @group12
-        groupView = @boardView.findView(@group12._id)
-
-      describe 'groups.update (move)', ->
-        beforeEach ->
-          move = { _id: @group12._id, x: 300, y: 300, user: 'user-1' }
-          @socket.emit 'group.update', move
-
-        it 'moves the group', ->
-          groupView = @boardView.findView(@group12._id)
-          expect(groupView.$el.position().left).toEqual 300
-
-
-        it 'locks the card to prevent other users from moving it', ->
-          groupView = @boardView.findView 12
-          expect(groupView.authorLock.lock_data).not.toBeUndefined()
-
-  xdescribe 'when double clicking the board', ->
-    beforeEach ->
-      @spy = sinon.spy()
-      @socket.on 'group.create', @spy
-      @dblclick = new $.Event 'dblclick'
-      @dblclick.pageX = 200
-      @dblclick.pageY = 201
-
-    describe 'for the first card', ->
-      beforeEach ->
-        @boardView.cardViews = []
-        @boardView.$el.trigger @dblclick
-
-      it 'emits a "group.create" socket event', ->
-        expect(@spy.called).toBeTruthy()
-
-      it 'creates the group at the mouse location', ->
-        call = @spy.firstCall
-        expect(call.args[0].x).toEqual 200 - 10
-        expect(call.args[0].y).toEqual 201 - 10
-
-    describe 'for the second card and beyond', ->
-      beforeEach ->
-        @boardView.$el.trigger @dblclick
-
-      it 'emits a "group.create" socket event', ->
-        expect(@spy.called).toBeTruthy()
-
-      it 'creates the group at the mouse location', ->
-        call = @spy.firstCall
-        expect(call.args[0].x).toEqual 200 - 10
-        expect(call.args[0].y).toEqual 201 - 10
-
   describe 'when clicking the add card button of a group', ->
     beforeEach ->
       @spy = sinon.spy()

@@ -13,7 +13,6 @@ class boardroom.views.Header extends Backbone.View
   ###
 
   hiChangeBoardName: (event) ->
-    console.log event.keyCode
     isEnter = event.keyCode is 13
     if isEnter
       @$('#name').blur()
