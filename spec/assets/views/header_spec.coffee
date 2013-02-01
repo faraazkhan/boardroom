@@ -5,48 +5,29 @@ describe 'boardroom.views.Header', ->
         <input id="name" />
         <button class="create" />
       </div>
-    '''
-    @socket = new io.Socket
+'''
+    @board = new boardroom.models.Board { name: 'foo' }
     @header = new boardroom.views.Header
-      model: new boardroom.models.Board
-      socket: @socket
+      model: @board
+    @$name = $('#name')
 
-  describe 'socket events', ->
-    describe "when the board's name changes", ->
-      beforeEach ->
-        @name = 'name'
-        @socket.emit 'board.update', _id: 1, name: @name
+  describe 'change name', ->
+    it 'updates the model', ->
+      @$name.val 'bar'
+      keyup = $.Event 'keyup'
+      keyup.keyCode = 50
+      @$name.trigger keyup
+      expect(@board.get('name')).toEqual('bar')
 
-      it 'updates its name', ->
-        expect(@header.$('#name')).toHaveValue @name
+  describe 'press enter', ->
+    it 'blurs the name', ->
+      @$name.focus()
+      keyup = $.Event 'keyup'
+      keyup.keyCode = 13
+      @$name.trigger keyup
+      expect(document.activeElement.tagName).not.toMatch /input/i
 
-  describe 'DOM events', ->
-    describe 'when entering a name', ->
-      describe 'and the user is still name', ->
-        beforeEach ->
-          @nameChanged = sinon.spy()
-          @socket.on 'board.update', @nameChanged
-
-          keyup = $.Event 'keyup'
-          keyup.keyCode = 50
-          @header
-            .$('#name')
-            .trigger keyup
-
-        it 'emits the "name changed" socket event', ->
-          expect(@nameChanged.called).toBeTruthy()
-          [args] = @nameChanged.lastCall.args
-          expect(args.name).toEqual ''
-
-      describe 'the enter key is hit', ->
-        beforeEach ->
-          $('input#name').focus()
-          enter = $.Event 'keyup'
-          enter.keyCode = 13
-          @header
-            .$('#name')
-            .trigger enter
-
-        it 'blurs the input field', ->
-          expect(document.activeElement.tagName).not.toMatch /input/i
-
+  describe 'board name changes', ->
+    it 'updates the html', ->
+      @board.set 'name', 'bar'
+      expect(@$name.val()).toEqual 'bar'
