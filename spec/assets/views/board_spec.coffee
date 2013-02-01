@@ -28,22 +28,24 @@ describe 'boardroom.views.Board', ->
       expect(@boardView.statusModalDiv()).toBeHidden()
       expect(@boardView.statusDiv().html()).toEqual ''
 
+  describe 'double click', ->
+    beforeEach ->
+      dblclick = new $.Event 'dblclick'
+      dblclick.pageX = 200
+      dblclick.pageY = 201
+      @boardView.$el.trigger dblclick
+      @pendingGroups = @board.get 'pendingGroups'
+
+    it 'creates a new pending group', ->
+      expect(@pendingGroups).toBeDefined()
+      expect(@pendingGroups.length).toEqual(1)
+      group = @pendingGroups.at(0)
+      expect(group.get('cards').length).toEqual(0)
+      expect(group.get('x')).toEqual(190)
+      expect(group.get('y')).toEqual(191)
+
 
   describe 'socket events', ->
-    describe 'group.create', ->
-      beforeEach ->
-        @cardCount = @boardView.$('.card').length
-        @groupCount = @boardView.$('.group').length
-        g = 
-          cards: [{}, {}, {}]  # group has 3 cards
-        @socket.emit 'group.create', g
-
-      it 'displays the new group', ->
-        expect(@boardView.$('.group').length).toEqual @groupCount + 1
-
-      it 'displays the new cards in the group', ->
-        expect(@boardView.$('.card').length).toEqual @cardCount + 3
-
     xdescribe 'card.delete', ->
       beforeEach ->
         @card = { _id: 1 }
@@ -102,7 +104,7 @@ describe 'boardroom.views.Board', ->
           groupView = @boardView.findView 12
           expect(groupView.authorLock.lock_data).not.toBeUndefined()
 
-  describe 'when double clicking the board', ->
+  xdescribe 'when double clicking the board', ->
     beforeEach ->
       @spy = sinon.spy()
       @socket.on 'group.create', @spy

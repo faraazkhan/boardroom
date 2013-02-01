@@ -1,7 +1,7 @@
 describe 'boardroom.Handler', ->
   beforeEach ->
     @socket = new io.Socket()
-    @board = new boardroom.models.Board {}
+    @board = new boardroom.models.Board()
     @user = new boardroom.models.User { user_id: 1 }
     @handler = handler_for @socket, @board, @user
 
@@ -33,6 +33,16 @@ describe 'boardroom.Handler', ->
     it 'adds user to board', ->
       users = @board.get 'users'
       expect(users[@newUser.user_id]).toEqual @newUser
+
+  describe '*group.create', ->
+    beforeEach ->
+      @group = new boardroom.models.Group { _id: 1 }
+      @socket.emit 'group.create', @group
+      @groups = @board.get 'groups'
+
+    it 'adds group to the board', ->
+      expect(@groups.length).toEqual(1)
+      expect(@groups.pluck('_id')).toEqual([1])
 
 handler_for = (socket, board, user) ->
   handler = new boardroom.Handler board, user
