@@ -77,7 +77,7 @@ class boardroom.Handler
     @user.toJSON()
 
   boardMessage: () =>
-    _.chain(@board.toJSON()).pick('name').extend({ _id: @board.id }).value()
+    _(@board.toJSON()).pick('_id', 'name')
 
   groupMessage: (group, attrs) =>
     message = group.toJSON()
