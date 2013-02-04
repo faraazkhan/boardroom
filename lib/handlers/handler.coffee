@@ -7,6 +7,11 @@ class Handler
   constructor: (@modelClass, @name) ->
 
   registerAll: ->
+    #broadcastEmit = @socket.broadcast.emit
+    #@socket.broadcast.emit = (event, data) ->
+    #  data.broadcast = true if data?
+    #  broadcastEmit.call @, event, data
+
     @register "#{@name}.create", @handleCreate
     @register "#{@name}.update", @handleUpdate
     @register "#{@name}.delete", @handleDelete

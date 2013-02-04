@@ -20,12 +20,13 @@ class boardroom.Handler
     #@socket.on 'view.add-indicator', @onAddIndicator
     #@socket.on 'view.remove-indicator', @onRemoveIndicator
 
-    @board.on 'change', =>
-      @send 'board.update', @boardMessage()
+    @board.on 'change', (board, options) =>
+      unless options.rebroadcast?
+        @send 'board.update', @boardMessage()
 
     groups = @board.get 'groups'
     groups.on 'change', (group, options) =>
-      unless options.synced?
+      unless options.rebroadcast?
         @send 'group.update', @groupMessage(group, _(options.changes).keys())
 
     pendingGroups = @board.get 'pendingGroups'
@@ -63,15 +64,15 @@ class boardroom.Handler
 
   onBoardUpdate: (message) =>
     console.log 'onBoardUpdate'
-    @board.set 'name', message.name
+    @board.set 'name', message.name, { rebroadcast: true }
 
   onGroupCreate: (message) =>
     console.log 'onGroupCreate'
-    @board.get('groups').add(new boardroom.models.Group(message))
+    @board.get('groups').add(new boardroom.models.Group(message), { rebroadcast: true })
 
   onGroupUpdate: (message) =>
     console.log 'onGroupUpdate'
-    @board.findGroup(message._id).set(_(message).omit('_id'), { synced: true })
+    @board.findGroup(message._id).set(_(message).omit('_id'), { rebroadcast: true })
 
   userMessage: () =>
     @user.toJSON()
