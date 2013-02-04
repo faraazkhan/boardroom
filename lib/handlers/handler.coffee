@@ -4,40 +4,57 @@ class Handler
 
   socket: null
 
-  constructor: (@modelClass, @name) ->
+  constructor: (@modelClass, @modelName) ->
 
   registerAll: ->
-    @register "#{@name}.create", @handleCreate
-    @register "#{@name}.update", @handleUpdate
-    @register "#{@name}.delete", @handleDelete
+    @register "#{@modelName}.create", @handleCreate
+    @register "#{@modelName}.update", @handleUpdate
+    @register "#{@modelName}.delete", @handleDelete
 
   register: (event, handler) ->
-    # console.log "Register handler for #{event}"
+    console.log "Register handler for #{event}"
     @socket.on event, (data) ->
-      # console.log "Handling #{event} with:"
-      # console.log data
+      console.log "Handling #{event} with:"
+      console.log data
       handler event, data
 
-  handleCreate: (event, data) =>
+  handleCreate: (event, payload) =>
+    cid = payload.cid
+    data = payload.data
+
+    console.log 'event', event
+    console.log 'payload', payload
+
     model = new @modelClass data
     model.save (error, card) =>
-      throw error if error?
+      return console.log error if error?
       @socket.emit event, model
       @socket.broadcast.emit event, model
 
-  handleUpdate: (event, data) =>
+  handleUpdate: (event, payload) =>
+    id = payload.id
+    cid = payload.cid
+    data = payload.data
+
+    console.log 'event', event
+    console.log 'payload', payload
+
     @modelClass.findById data._id, (error, model) =>
-      throw error if error?
+      return console.log error if error?
       model.updateAttributes data, (error) =>
-        throw error if error?
+        return console.log error if error?
         @socket.broadcast.emit event, data
 
   afterDelete: (model) => # post delete hook
-  handleDelete: (event, id) =>
+  handleDelete: (event, payload) =>
+    id = payload.id
+
+    console.log 'event', event
+    console.log 'payload', payload
     @modelClass.findById id, (error, model) =>
-      throw error if error?
+      return console.log error if error?
       model.remove (error) =>
-        throw error if error?
+        return console.log error if error?
         @socket.emit event, id
         @socket.broadcast.emit event, id
         @afterDelete(model)

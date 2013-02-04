@@ -4,46 +4,55 @@ class boardroom.Handler
 
   initialize: () ->
     @socket = @createSocket()
+    boardroom.socket  = @socket
 
     @socket.on 'connect', @onConnect
     @socket.on 'join', @onJoin
     @socket.on 'disconnect', @onDisconnect
     @socket.on 'reconnecting', @onReconnecting
     @socket.on 'reconnect', @onReconnect
-    @socket.on 'board.update', @onBoardUpdate
-    @socket.on 'group.create', @onGroupCreate
-    @socket.on 'group.update', @onGroupUpdate
+    # client side events can collapse into standard BackBone Model and Collection operations:
+    # load
+    # reload
+    # delete
+    # add-item
+    # remove-item
+
+    #@socket.on 'Board.update', @onBoardUpdate
+    #@socket.on 'Group.create', @onGroupCreate
+    #@socket.on 'Group.update', @onGroupUpdate
     #@socket.on 'group.update-cards', @onGroupUpdateCards
     #@socket.on 'group.delete', @onGroupDelete
     #@socket.on 'card.update', @onCardUpdate
-    #@socket.on 'card.delete', @onCardDelete
+    #@socket.on 'Card.delete', @onCardDelete
     #@socket.on 'view.add-indicator', @onAddIndicator
     #@socket.on 'view.remove-indicator', @onRemoveIndicator
 
-    @board.on 'change', =>
-      @send 'board.update', @boardMessage()
+    # @board.on 'change', =>
+    #   @send 'Board.update', @boardMessage()
 
-    groups = @board.get 'groups'
-    groups.on 'change', (group, options) =>
-      unless options.synced?
-        @send 'group.update', @groupMessage(group, _(options.changes).keys())
+    # groups = @board.get 'groups'
+    # groups.on 'change', (group, options) =>
+    #   unless options.synced?
+    #     @send 'Group.update', @groupMessage(group, _(options.changes).keys())
 
-    pendingGroups = @board.get 'pendingGroups'
-    pendingGroups.on 'add', (group) =>
-      @send 'group.create', @groupMessage(group)
-      pendingGroups.remove group
+    # pendingGroups = @board.get 'pendingGroups'
+    # pendingGroups.on 'add', (group) =>
+    #   @send 'Group.create', @groupMessage(group)
+    #   pendingGroups.remove group
 
   createSocket: () ->
     io.connect "#{@socketHost()}/boards/#{@board.id}"
 
-  send: (name, message) ->
-    console.log "send: #{name}"
-    #console.log message
-    @socket.emit name, message
+  # send: (name, message) ->
+  #   console.log "send: #{name}"
+  #   #console.log message
+  #   @socket.emit name, message
 
   onConnect: =>
     console.log 'onConnect'
-    @send 'join', @userMessage()
+    @socket.emit 'join', @userMessage()
+    # @send 'join', @userMessage()
 
   onDisconnect: =>
     console.log 'onDisconnect'

@@ -76,6 +76,8 @@ class boardroom.views.Base extends Backbone.View
     $('body').height(height)
 
   destroy: () ->
+    console.log 1, 2, 3
+    @model.destroy()
     @eventsOff()
     @unbind()
     @$el.remove()
@@ -139,9 +141,11 @@ class boardroom.views.Base extends Backbone.View
     maxZ = _.max allZs
     return if @zIndex() > maxZ
 
-    newZ = maxZ + 1
-    @$el.css 'z-index', newZ
-    newZ
+    z = maxZ + 1
+    @$el.css 'z-index', z
+    @model.save { z }
+    console.log 4
+    z
 
   moveBackToRestingSpot: () ->
     @socket.emit "#{@className}.update",
@@ -159,7 +163,8 @@ class boardroom.views.Base extends Backbone.View
   ###
 
   deleteMe: ()->
-    @socket.emit "#{@className}.delete", @model.id
+    @model.destroy()
+    # @socket.emit "#{@className}.delete", @model.id
 
   ###
       human interaction event handlers

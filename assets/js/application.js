@@ -11,6 +11,9 @@
 //= require './handler'
 //= require_tree './lib'
 //= require_tree './utils'
+
+//= require './model'
 //= require_tree './models'
+
 //= require './views/base.coffee'
 //= require_tree './views'

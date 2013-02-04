@@ -5,19 +5,22 @@ Card = require '../models/card'
 class GroupHandler extends Handler
 
   constructor: ->
-    super Group, 'group'
+    super Group, 'Group'
 
   registerAll: ->
-    @register "group.card.create", @handleCreateCard
+    @register "Group.Card.create", @handleCreateCard
     super
 
-  handleCreate: (event, data) =>
+  handleCreate: (event, payload) =>
+    cid = payload.cid
+    data = payload.data
+
     group = new Group { boardId: data.boardId, x: data.x, y: data.y, z: data.z }
     group.save (error, group) =>
-      throw error if error?
+      return console.log error if error?
       card = new Card { groupId: group.id, creator: data.creator, focus: data.focus }
       card.save (error, card) =>
-        throw error if error?
+        return console.log error if error?
         group.cards = [card]
         message = group.toObject(getters: true)
         @socket.emit event, message
@@ -27,9 +30,9 @@ class GroupHandler extends Handler
     sourcePath = data.sourcePath
     card = new Card { groupId: data.sourcePath.groupId, creator: data.creator, focus: data.focus }
     card.save (error, card) =>
-      throw error if error?
+      return console.log error if error?
       Card.findByGroupId data.sourcePath.groupId, (err, cards) =>
-        throw error if error?
+        return console.log error if error?
         payload =
           groupId: data.sourcePath.groupId
           cards: cards

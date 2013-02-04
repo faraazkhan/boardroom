@@ -38,7 +38,12 @@ class boardroom.views.Card extends boardroom.views.Base
   initialize: (attributes) ->
     { @groupView, @boardView } = attributes
     super attributes
+
     @initializeDraggable()
+
+  renderColor: (model, value)=>
+    console.log value
+    @setColor value
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
@@ -157,7 +162,6 @@ class boardroom.views.Card extends boardroom.views.Base
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
 
-
   ###
       human interaction event handlers
   ###
@@ -169,22 +173,22 @@ class boardroom.views.Card extends boardroom.views.Base
     @setColor colorIndex
     @addAuthor author
     z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
+    # @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
 
   hiChangeText: (e)->
     text = @$('textarea').val()
     existing = @model.get 'text'
-    @model.set 'text', text
+    @model.set { text }
+    # @model.save()
     if text != existing
       author = @model.get('board').get('user_id')
       @addAuthor author
       @adjustTextarea()
       z = @bringForward()
-      @socket.emit 'card.update', { _id: @model.id, text, z, author }
+      # @socket.emit 'card.update', { _id: @model.id, text, z, author }
 
   hiFocusText: (event)->
-    z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, z}
+    # z = @bringForward() !!! <- no longer necessary since cards are in groups?
     @$('textarea').focus()
 
   hiIncrementPlusCount: (e) ->
@@ -193,7 +197,8 @@ class boardroom.views.Card extends boardroom.views.Base
     plusAuthor = @model.get('board').get('user_id')
     @addPlusAuthor plusAuthor
     z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, plusAuthor, z }
+    # @model.save { plusAuthor, z }
+    # @socket.emit 'card.update', { _id: @model.id, plusAuthor, z }
 
   hiDropOnToGroup: (event, parentGroupView) ->
     event.stopPropagation()

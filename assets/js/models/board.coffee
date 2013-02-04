@@ -1,5 +1,4 @@
-class boardroom.models.Board extends Backbone.Model
-
+class boardroom.models.Board extends boardroom.models.Model
   defaults:
     users: {}
     pendingGroups: new Backbone.Collection()

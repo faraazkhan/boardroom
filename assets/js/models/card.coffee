@@ -1,5 +1,4 @@
-class boardroom.models.Card extends Backbone.Model
-  idAttribute: '_id'
+class boardroom.models.Card extends boardroom.models.Model
 
   defaults:
     text: ''

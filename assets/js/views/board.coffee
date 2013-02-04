@@ -84,13 +84,13 @@ class boardroom.views.Board extends boardroom.views.Base
   ###
 
   switchGroups: (cardSourcePath, newGroupSourcePath)->
-    @socket.emit 'board.card.switch-groups',
+    @socket.emit 'Board.Card.switch-groups',
       cardSourcePath: cardSourcePath
       newGroupSourcePath: newGroupSourcePath
 
   ungroupCard: (cardSourcePath, newCoordinate) ->
     z = @maxZ()
-    @socket.emit 'board.card.ungroup',
+    @socket.emit 'Board.Card.ungroup',
       cardSourcePath: cardSourcePath
       x: newCoordinate.x - 10
       y: newCoordinate.y - 10
