@@ -10,6 +10,10 @@ class boardroom.models.Group extends Backbone.Model
     super attributes, options
     @set 'cards', cards
 
+  findCard: (id) ->
+    @get('cards').find (card) ->
+      card.id == id
+
   moveTo: (x, y) ->
     @set
       x: x

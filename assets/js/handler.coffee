@@ -14,8 +14,8 @@ class boardroom.Handler
     @socket.on 'group.create', @onGroupCreate
     @socket.on 'group.update', @onGroupUpdate
     #@socket.on 'group.update-cards', @onGroupUpdateCards
-    #@socket.on 'group.delete', @onGroupDelete
-    #@socket.on 'card.update', @onCardUpdate
+    @socket.on 'group.delete', @onGroupDelete
+    @socket.on 'card.update', @onCardUpdate
     #@socket.on 'card.delete', @onCardDelete
     #@socket.on 'view.add-indicator', @onAddIndicator
     #@socket.on 'view.remove-indicator', @onRemoveIndicator
@@ -29,6 +29,21 @@ class boardroom.Handler
       unless options.rebroadcast?
         @send 'group.update', @groupMessage(group, _(options.changes).keys())
 
+    groups.on 'remove', (group, groups, options) =>
+      unless options.rebroadcast?
+        @send 'group.delete', group.id
+
+    cardOnChange = (card, options) =>
+      unless options.rebroadcast?
+        @send 'card.update', @cardMessage(card, _(options.changes).keys())
+
+    groups.each (group) =>
+      group.get('cards').on 'change', cardOnChange
+
+    # new groups need to have this handler too
+    groups.on 'add', (group) =>
+      group.get('cards').on 'change', cardOnChange
+
     pendingGroups = @board.get 'pendingGroups'
     pendingGroups.on 'add', (group) =>
       @send 'group.create', @groupMessage(group)
@@ -38,8 +53,10 @@ class boardroom.Handler
     io.connect "#{@socketHost()}/boards/#{@board.id}"
 
   send: (name, message) ->
-    console.log "send: #{name}"
-    #console.log message
+    return unless message?
+    unless name == 'group.update'
+      console.log "send: #{name}"
+      console.log message
     @socket.emit name, message
 
   onConnect: =>
@@ -71,8 +88,29 @@ class boardroom.Handler
     @board.get('groups').add(new boardroom.models.Group(message), { rebroadcast: true })
 
   onGroupUpdate: (message) =>
-    console.log 'onGroupUpdate'
-    @board.findGroup(message._id).set(_(message).omit('_id'), { rebroadcast: true })
+    #console.log 'onGroupUpdate'
+    group = @board.findGroup message._id
+    unless group
+      console.log "Handler: cannot find group #{message._id}"
+      return
+    group.set(_(message).omit('_id'), { rebroadcast: true })
+
+  onGroupDelete: (message) =>
+    console.log 'onGroupDelete'
+    group = @board.findGroup message
+    unless group
+      console.log "Handler: cannot find group #{message}"
+      return
+    @board.get('groups').remove group, { rebroadcast: true }
+
+  onCardUpdate: (message) =>
+    console.log 'onCardUpdate'
+    card = @board.findCard message._id
+    unless card
+      console.log "Handler: cannot find card: #{message._id}"
+      return
+
+    card.set(_(message).omit('_id'), { rebroadcast: true })
 
   userMessage: () =>
     @user.toJSON()
@@ -83,16 +121,23 @@ class boardroom.Handler
   groupMessage: (group, attrs) =>
     message = group.toJSON()
     message = _(message).pick(attrs) if attrs?
-    message._id = group.id if group.id
+    message = _(message).omit('board')
+    return null if _(message).isEmpty()
+
+    message._id = group.id if group.id?
     message.boardId = @board.id unless message._id
-    message.author = @board.get('user_id')
+    message.author = @board.get 'user_id'
     message
 
-  findCard: (data) ->
-    @board.findCard data._id
+  cardMessage: (card, attrs) =>
+    message = card.toJSON()
+    message = _(message).pick(attrs) if attrs?
+    message = _(message).omit('group', 'board')
+    return null if _(message).isEmpty()
 
-  findGroup: (data) ->
-    @board.findGroup data._id
+    message._id = card.id if card.id?
+    message.author = @board.get 'user_id'
+    message
 
   # We can dump this when nginx starts supporting websockets
   socketHost: ->

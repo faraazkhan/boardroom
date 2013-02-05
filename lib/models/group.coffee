@@ -44,6 +44,10 @@ GroupSchema.methods =
     newCard.groupId = @id
     newCard.save callback
 
+  isRemovable: (callback) ->
+    Card.findByGroupId @id, (error, cards) ->
+      callback(cards.length == 0)
+
 
 Group = mongoose.model 'Group', GroupSchema
 

@@ -12,10 +12,16 @@ class boardroom.views.Board extends boardroom.views.Base
     @initializeDroppable()
     @resizeHTML()
     $(window).resize => @resizeHTML()
+
     @model.on 'change:status', @displayStatus, @
-    @model.get('groups').on 'add', ( (group) =>
+
+    @model.get('groups').on 'add', (group) =>
       console.log 'groups.on add'
-      @displayNewGroup group ), @
+      @displayNewGroup group
+
+    @model.get('groups').on 'remove', (group) =>
+      console.log 'groups.on remove'
+      $("##{group.id}").remove()
 
   initializeSourcePath: ()->
     @sourcePath = 

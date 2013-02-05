@@ -29,6 +29,12 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change', (group, options) =>
       @update options.changes
 
+    @model.get('cards').on 'add', (card, options) =>
+      @displayNewCard card
+
+    @model.get('cards').on 'remove', (card, options) =>
+      $("##{card.id}").remove()
+
   onLockPoll: ()=>
     @enableEditing '.name'
 
@@ -73,7 +79,7 @@ class boardroom.views.Group extends boardroom.views.Base
         @emitRemoveIndicator cssClass:'stackable'
         @updateGroup()
       onDrop: (event, target) =>
-        $(target).data('view').hiDropOnToGroup event, @
+        @model.get('board').mergeGroups @$el.attr('id'), $(target).attr('id')
         @$el.removeClass 'stackable'
       shouldBlockHover: (data) =>
         view = $(data.target).data('view')
@@ -128,11 +134,11 @@ class boardroom.views.Group extends boardroom.views.Base
     @$('.card').length # +++ count subViews, not DOM elements after viewrefactoring
 
   displayNewCard: (data) ->
-    return if !data or @$el.has("#"+ data._id).length
+    return if !data or @$el.has("#"+ data.id).length
     bindings =
       'group': @model
       'board': (@model.get 'board')
-    data.set bindings
+    data.set bindings, { silent: true }
 
     cardView = new boardroom.views.Card
       model: data
@@ -183,17 +189,5 @@ class boardroom.views.Group extends boardroom.views.Base
       sourcePath: @sourcePath
       creator: @boardView.model.get('user_id')
       focus: true
-
-  hiDropOnToGroup: (event, parentGroupView) ->
-    if 0==$('#'+parentGroupView.model.id).length
-      console.log "Can't drop onto a phantom!"
-      return # patch: draggable/dropable handlers still running but shouldn't be (after deleting another group)
-    @eventsOff()
-    boardModel = @model.get('board')
-    @socket.emit 'board.group.merge',
-      _id: boardModel.id
-      parentGroupId: parentGroupView.model.id
-      otherGroupId: @model.id
-      author: boardModel.get('user_id')
 
   hiDropOnToBoard: (event, boardView) -> # noop group can move freely on a board

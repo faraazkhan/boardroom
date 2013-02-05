@@ -13,8 +13,10 @@ class boardroom.models.Board extends Backbone.Model
     @set 'groups', groups
 
   findCard: (id) ->
-    @get('cards').find (card) ->
-      card.id == id
+    card = null
+    @get('groups').each (group) ->
+      card = group.findCard(id) unless card?
+    card
 
   findGroup: (id) ->
     @get('groups').find (group) ->
@@ -35,6 +37,14 @@ class boardroom.models.Board extends Backbone.Model
       z: z + 1
       focus: true
     @get('pendingGroups').add(new boardroom.models.Group(group))
+
+  mergeGroups: (parentId, childId) =>
+    console.log "board.mergeGroups: #{parentId}, #{childId}"
+    child = @findGroup childId
+    childCards = child.get('cards').toArray()
+    for card in childCards
+      card.set 'groupId', parentId
+    @get('groups').remove child
 
   maxZ: =>
     groups = @get 'groups'

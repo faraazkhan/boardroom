@@ -31,6 +31,8 @@ class Handler
       @socket.broadcast.emit event, model
 
   handleUpdate: (event, data) =>
+    console.log "handleUpdate: #{event}"
+    console.log data
     @modelClass.findById data._id, (error, model) =>
       throw error if error?
       model.updateAttributes data, (error) =>
@@ -39,12 +41,24 @@ class Handler
 
   afterDelete: (model) => # post delete hook
   handleDelete: (event, id) =>
-    @modelClass.findById id, (error, model) =>
-      throw error if error?
-      model.remove (error) =>
+    console.log "handleDelete: #{event} - #{id}"
+    count = 0
+    doDelete = () =>
+      count += 1
+      @modelClass.findById id, (error, model) =>
         throw error if error?
-        @socket.emit event, id
-        @socket.broadcast.emit event, id
-        @afterDelete(model)
+        model.isRemovable (removable) =>
+          if removable
+            model.remove (error) =>
+              throw error if error?
+              console.log "did delete"
+              #@socket.emit event, id
+              @socket.broadcast.emit event, id
+              @afterDelete(model)
+          else
+            console.log "did not delete"
+            setTimeout doDelete, 100 unless count > 10
+
+    doDelete()
 
 module.exports = Handler
