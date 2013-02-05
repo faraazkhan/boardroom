@@ -139,7 +139,7 @@ class boardroom.views.Group extends boardroom.views.Base
       groupView: @
       boardView: @boardView
       socket: @socket
-    @$el.append cardView.render().el
+    @insertCardView cardView
     setTimeout ( => cardView.adjustTextarea() ), 100
     @cardViews.push cardView
     @updateGroup()
@@ -147,6 +147,9 @@ class boardroom.views.Group extends boardroom.views.Base
     # set the focus if card was just created by this user
     cardView.$('textarea').focus() if @boardView.model.get('user_id') is card.get('creator')
     @removeIndicator cssClass:'stackable'
+
+  insertCardView: (view) ->
+    @$el.append view.render().el
 
   ###
       human interaction event handlers
