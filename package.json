@@ -23,12 +23,12 @@
     "mongodb": "1.2"
   },
   "devDependencies": {
-    "jasmine-node": "latest",
+    "jasmine-node": "1.1",
     "sinon": "1.4",
     "factory-lady": "git://github.com/carbonfive/factory-lady.git",
     "supertest": "latest",
     "jsdom": "latest",
     "socket.io-client": "latest",
-    "fibrous" : "latest"
+    "fibrous" : "0.3"
   }
 }
