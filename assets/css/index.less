@@ -139,25 +139,23 @@ form#create-board {
         }
         
         .copy-url {
+          &.hover .icon-link {
+            color: @yellowLight;
+          }
           .icon-link {
             background-color: transparent;
             padding: 5px 5px 1px 8px;
-            font-size: 13px;
+            font-size: 18px;
             color: #999;
           }
         }
 
-        .copy-url.hover {
-          .icon-link {
-            color: #A22;
-          }
-        }
-      
         form {
           border-top: solid 1px @grayMid;
 
           .delete-btn {
             border: none;
+            font-size: 18px;
             .border-radius(0);
             .box-shadow(0 0 0 0 transparent);
           }
