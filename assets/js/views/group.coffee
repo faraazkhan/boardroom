@@ -139,14 +139,30 @@ class boardroom.views.Group extends boardroom.views.Base
       groupView: @
       boardView: @boardView
       socket: @socket
-    @$el.append cardView.render().el
-    setTimeout ( => cardView.adjustTextarea() ), 100
+    @renderCardInOrder cardView
     @cardViews.push cardView
+    setTimeout ( => cardView.adjustTextarea() ), 100
     @updateGroup()
     @resizeHTML()
     # set the focus if card was just created by this user
     cardView.$('textarea').focus() if @boardView.model.get('user_id') is card.get('creator')
     @removeIndicator cssClass:'stackable'
+
+  renderCardInOrder: (cardView) ->
+    elCard = cardView.render().el
+
+    nextCardView = null
+    for card in @$('.card') # identify which card to insert cardView before
+      view = $(card).data('view')
+      if view.model.get('created') > cardView.model.get('created')
+        nextCardView = view
+        break
+
+    if nextCardView? 
+      $(elCard).insertBefore nextCardView.el # insert in order 
+    else 
+      @$el.append(elCard) # put it at the end if this is the last card
+
 
   ###
       human interaction event handlers
