@@ -26,5 +26,6 @@ class boardroom.views.Header extends Backbone.View
     ###
 
   onBoardUpdate: (data) =>
-    @$('#name').val data.name
+    @$('#name').val(data.name).trimInput(80)
+
 
