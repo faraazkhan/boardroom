@@ -11,7 +11,11 @@ $.fn.textMetrics = () ->
 
 $.fn.trimInput = (minWidth, maxWidth) ->
   @each ->
-    maxWidth ||= parseInt $(@).css('width')
+    unless maxWidth
+      curWidth = parseInt $(@).css('width')
+      $(@).css 'width', 'inherit'
+      maxWidth = $(@).width()
+      $(@).css 'width', curWidth
 
     setWidth = =>
       width = $(@).textMetrics().width + 3

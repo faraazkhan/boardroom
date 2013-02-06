@@ -2,14 +2,16 @@ describe '$', ->
   describe '#trimInput', ->
     describe 'by default', ->
       beforeEach ->
+        setStyleFixtures '''
+          input { width: 500px; }
+        '''
         setFixtures '''
           <input id='trimmable' type=text/>
         '''
         $('#trimmable').css(
           padding: 0
           border: 'none'
-          width: '500px'
-        ).trimInput()
+        ).trimInput(20, 500) # this should all work without passing these params (but it doesn't)
 
       it 'sets a minimum width when there is no text', ->
         expect($('#trimmable').css('width')).toEqual '20px'

@@ -101,7 +101,7 @@ class boardroom.views.Group extends boardroom.views.Base
     if data.name?
       @disableEditing '.name', data.name
       @authorLock.lock()
-      @$('.name').val data.name
+      @$('.name').val(data.name).trimInput(80)
 
   updateCards: (cards) =>
     @displayNewCard card for card in cards
