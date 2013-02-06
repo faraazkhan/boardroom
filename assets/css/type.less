@@ -6,33 +6,69 @@
 // Icon Fonts
 // ------------------------
 @font-face {
-  font-family: 'icomoon';
-  src:url('/fonts/icomoon.eot');
-  src:url('/fonts/icomoon.eot?#iefix') format('embedded-opentype'),
-    url('/fonts/icomoon.svg#icomoon') format('svg'),
-    url('/fonts/icomoon.woff') format('woff'),
-    url('/fonts/icomoon.ttf') format('truetype');
+  font-family: 'boardroom';
+  src:url('/fonts/boardroom.eot');
+  src:url('/fonts/boardroom.eot?#iefix') format('embedded-opentype'),
+  url('/fonts/boardroom.woff') format('woff'),
+  url('/fonts/boardroom.ttf') format('truetype'),
+  url('/fonts/boardroom.svg#boardroom') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 
-[class^="icon-"]:before, [class*=" icon-"]:before {
-  font-family: 'icomoon';
-  font-style: normal;
+/* Use the following CSS code if you want to use data attributes for inserting your icons */
+[data-icon]:before {
+  font-family: 'boardroom';
+  content: attr(data-icon);
   speak: none;
   font-weight: normal;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
 }
 
-.icon-link:before {
+/* Use the following CSS code if you want to have a class per icon */
+/*
+Instead of a list of all class selectors,
+you can use the generic selector below, but it's slower:
+[class*="icon-"]:before {
+*/
+.icon-users:before, .icon-stickies:before, .icon-star:before, .icon-link:before, .icon-info:before, .icon-draw:before, .icon-draw-alt:before, .icon-delete:before, .icon-delete-alt:before, .icon-add:before {
+  font-family: 'boardroom';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+.icon-users:before {
   content: "\e000";
 }
-.icon-group:before {
+.icon-stickies:before {
   content: "\e001";
 }
-.icon-notes:before {
+.icon-star:before {
   content: "\e002";
+}
+.icon-link:before {
+  content: "\e003";
+}
+.icon-info:before {
+  content: "\e004";
+}
+.icon-draw:before {
+  content: "\e005";
+}
+.icon-draw-alt:before {
+  content: "\e006";
+}
+.icon-delete:before {
+  content: "\e007";
+}
+.icon-delete-alt:before {
+  content: "\e008";
+}
+.icon-add:before {
+  content: "\e009";
 }
 
 // Body
