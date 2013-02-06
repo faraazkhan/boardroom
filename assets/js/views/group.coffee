@@ -139,7 +139,8 @@ class boardroom.views.Group extends boardroom.views.Base
       groupView: @
       boardView: @boardView
       socket: @socket
-    @insertCardView cardView
+    @renderCardInOrder cardView
+    @cardViews.push cardView
     setTimeout ( => cardView.adjustTextarea() ), 100
     @updateGroup()
     @resizeHTML()
@@ -147,27 +148,21 @@ class boardroom.views.Group extends boardroom.views.Base
     cardView.$('textarea').focus() if @boardView.model.get('user_id') is card.get('creator')
     @removeIndicator cssClass:'stackable'
 
-  insertCardView: (view) ->
-    el = view.render().el
-    if @cardViews.length == 0
-      console.log "append to empty"
-      @cardViews.push view
-      @$el.append el
-    else
-      inserted = false
-      for cardView in @cardViews
-        console.log "#{view.model.get('created')} <=>  #{cardView.model.get('created')}"
-        if view.model.get('created') < cardView.model.get('created')
-          console.log "append before: #{cardView.model.get('text')}"
-          index = @cardViews.indexOf cardView
-          @cardViews.splice index, 0, view
-          $(el).insertBefore cardView.$el
-          inserted = true
-          break
-      unless inserted
-        console.log "append at end"
-        @cardViews.push cardView
-        @$el.append el
+  renderCardInOrder: (cardView) ->
+    elCard = cardView.render().el
+
+    nextCardView = null
+    for card in @$('.card') # identify which card to insert cardView before
+      view = $(card).data('view')
+      if view.model.get('created') > cardView.model.get('created')
+        nextCardView = view
+        break
+
+    if nextCardView? 
+      $(elCard).insertBefore nextCardView.el # insert in order 
+    else 
+      @$el.append(elCard) # put it at the end if this is the last card
+
 
   ###
       human interaction event handlers
