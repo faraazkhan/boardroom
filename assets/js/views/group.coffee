@@ -141,7 +141,6 @@ class boardroom.views.Group extends boardroom.views.Base
       socket: @socket
     @insertCardView cardView
     setTimeout ( => cardView.adjustTextarea() ), 100
-    @cardViews.push cardView
     @updateGroup()
     @resizeHTML()
     # set the focus if card was just created by this user
@@ -149,7 +148,26 @@ class boardroom.views.Group extends boardroom.views.Base
     @removeIndicator cssClass:'stackable'
 
   insertCardView: (view) ->
-    @$el.append view.render().el
+    el = view.render().el
+    if @cardViews.length == 0
+      console.log "append to empty"
+      @cardViews.push view
+      @$el.append el
+    else
+      inserted = false
+      for cardView in @cardViews
+        console.log "#{view.model.get('created')} <=>  #{cardView.model.get('created')}"
+        if view.model.get('created') < cardView.model.get('created')
+          console.log "append before: #{cardView.model.get('text')}"
+          index = @cardViews.indexOf cardView
+          @cardViews.splice index, 0, view
+          $(el).insertBefore cardView.$el
+          inserted = true
+          break
+      unless inserted
+        console.log "append at end"
+        @cardViews.push cardView
+        @$el.append el
 
   ###
       human interaction event handlers
