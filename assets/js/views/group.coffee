@@ -31,6 +31,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:y', (group, y, options) => @updatePosition(group.get('x'), y, options)
     @model.on 'change:z', (group, z, options) => @updateZIndex(z, options)
 
+    # in the case of a move, we should move it via jquery
     @model.get('cards').on 'add', (card, options) =>
       @displayNewCard card
 
@@ -104,7 +105,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @
 
   updateName: (name, options) =>
-    unless options.hiEvent
+    if options.rebroadcast
       @disableEditing '.name', name
       @authorLock.lock()
     @$('.name').val(name).trimInput(80)
@@ -185,7 +186,7 @@ class boardroom.views.Group extends boardroom.views.Base
       @$('.name').blur()
     else
       name = @$('.name').val()
-      @model.set 'name', name, { hiEvent: true }
+      @model.set 'name', name
 
   hiRequestNewCard: (event) ->
     event.stopPropagation()
