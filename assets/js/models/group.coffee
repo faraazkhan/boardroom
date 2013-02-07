@@ -10,6 +10,8 @@ class boardroom.models.Group extends Backbone.Model
     super attributes, options
     @set 'cards', cards
 
+  cards: ()-> @get('cards')
+
   findCard: (id) ->
     @get('cards').find (card) ->
       card.id == id
@@ -23,3 +25,6 @@ class boardroom.models.Group extends Backbone.Model
   bringForward: ->
     maxZ = @get('board').maxZ()
     @set('z', maxZ + 1) unless @get('z') == maxZ
+
+  createCard: (data)->
+    @cards().add(new boardroom.models.Card(data))
