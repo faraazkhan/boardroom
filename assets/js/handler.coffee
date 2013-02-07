@@ -34,11 +34,10 @@ class boardroom.Handler
         @send 'group.delete', group.id
 
     onCardEvents = (group) =>
-      cards = group.get 'cards'
-      cards.on 'change', (card, options) =>
-        unless options.rebroadcast?
-          @send 'card.update', @cardMessage(card, _(options.changes).keys())
-      cards.each (card) =>
+      group.get('cards').each (card) =>
+        card.on 'change', (card, options) =>
+          unless options.rebroadcast?
+            @send 'card.update', @cardMessage(card, _(options.changes).keys())
         card.on 'destroy', (card, cards, options) =>
           unless options.rebroadcast?
             @send 'card.delete', card.id
@@ -111,6 +110,7 @@ class boardroom.Handler
     unless card
       console.log "Handler: cannot find card: #{message._id}"
       return
+    console.log message
     card.set(_(message).omit('_id'), { rebroadcast: true })
 
   onCardDelete: (message) =>

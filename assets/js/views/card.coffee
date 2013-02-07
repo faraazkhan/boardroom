@@ -39,6 +39,7 @@ class boardroom.views.Card extends boardroom.views.Base
     { @groupView, @boardView } = attributes
     super attributes
     @initializeDraggable()
+    @model.on 'change:colorIndex', (card, colorIndex, options) => @setColor(colorIndex)
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
@@ -168,6 +169,9 @@ class boardroom.views.Card extends boardroom.views.Base
   hiChangeColor: (event) ->
     event.stopPropagation()
     colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
+    @model.set 'colorIndex', colorIndex
+    return
+
     author = @model.get('board').get('user_id')
     @setColor colorIndex
     @addAuthor author
