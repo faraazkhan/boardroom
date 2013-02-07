@@ -197,8 +197,7 @@ class boardroom.views.Card extends boardroom.views.Base
       @socket.emit 'card.update', { _id: @model.id, text, z, author }
 
   hiFocusText: (event)->
-    z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, z}
+    @groupView.model.bringForward()
     @$('textarea').focus()
 
   hiIncrementPlusCount: (e) ->
