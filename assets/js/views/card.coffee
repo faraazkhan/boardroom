@@ -40,6 +40,7 @@ class boardroom.views.Card extends boardroom.views.Base
     super attributes
     @initializeDraggable()
     @model.on 'change:colorIndex', (card, colorIndex, options) => @setColor(colorIndex)
+    @model.on 'change:text', (card, text, options) => @setText(text)
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
@@ -123,6 +124,9 @@ class boardroom.views.Card extends boardroom.views.Base
     @$el.removeClassMatching /color-\d+/g
     @$el.addClass "color-#{color}"
 
+  setText: (text) =>
+    @$el.find('textarea').val(text)
+
   addPlusAuthor: (author) ->
     avatar = boardroom.models.User.avatar author
     if @$(".plus-authors img[title='#{user}']").length is 0
@@ -180,6 +184,9 @@ class boardroom.views.Card extends boardroom.views.Base
 
   hiChangeText: (e)->
     text = @$('textarea').val()
+    @model.set 'text', text
+    return
+
     existing = @model.get 'text'
     @model.set 'text', text
     if text != existing
