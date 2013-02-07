@@ -64,9 +64,7 @@ class boardroom.views.Card extends boardroom.views.Base
         # dont allow card to drag if its the only one in its group (allow the group to drag)
         1 < @groupView.cardCount()
       onMouseDown: =>
-        @groupView.bringForward()
-        z = @bringForward()
-        @socket.emit 'card.update', { _id: @model.id, z }
+        @groupView.model.bringForward()
       onMouseMove: =>
         @emitMove()
       onMouseUp: =>
