@@ -32,6 +32,9 @@ CardSchema.methods =
     @save (error, card) ->
       callback error, card
 
+  isRemovable: (callback) ->
+    callback true
+
 Card = mongoose.model 'Card', CardSchema
 
 module.exports = Card

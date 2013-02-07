@@ -9,3 +9,8 @@ class boardroom.models.Card extends Backbone.Model
       console.log "card.on change:groupId - #{groupId}"
       @get('group').get('cards').remove @, options
       @get('group').get('board').findGroup(groupId).get('cards').add @, options
+
+  delete: ->
+    cards = @get('group').get('cards')
+    cards.remove @
+    @trigger 'destroy', @, cards, {}

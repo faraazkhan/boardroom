@@ -16,7 +16,7 @@ class boardroom.Handler
     #@socket.on 'group.update-cards', @onGroupUpdateCards
     @socket.on 'group.delete', @onGroupDelete
     @socket.on 'card.update', @onCardUpdate
-    #@socket.on 'card.delete', @onCardDelete
+    @socket.on 'card.delete', @onCardDelete
     #@socket.on 'view.add-indicator', @onAddIndicator
     #@socket.on 'view.remove-indicator', @onRemoveIndicator
 
@@ -33,16 +33,18 @@ class boardroom.Handler
       unless options.rebroadcast?
         @send 'group.delete', group.id
 
-    cardOnChange = (card, options) =>
-      unless options.rebroadcast?
-        @send 'card.update', @cardMessage(card, _(options.changes).keys())
+    onCardEvents = (group) =>
+      cards = group.get 'cards'
+      cards.on 'change', (card, options) =>
+        unless options.rebroadcast?
+          @send 'card.update', @cardMessage(card, _(options.changes).keys())
+      cards.each (card) =>
+        card.on 'destroy', (card, cards, options) =>
+          unless options.rebroadcast?
+            @send 'card.delete', card.id
 
-    groups.each (group) =>
-      group.get('cards').on 'change', cardOnChange
-
-    # new groups need to have this handler too
-    groups.on 'add', (group) =>
-      group.get('cards').on 'change', cardOnChange
+    groups.each (group) => onCardEvents(group)
+    groups.on 'add', onCardEvents # new groups need to handle these events too
 
     pendingGroups = @board.get 'pendingGroups'
     pendingGroups.on 'add', (group) =>
@@ -109,8 +111,15 @@ class boardroom.Handler
     unless card
       console.log "Handler: cannot find card: #{message._id}"
       return
-
     card.set(_(message).omit('_id'), { rebroadcast: true })
+
+  onCardDelete: (message) =>
+    console.log 'onCardDelete'
+    card = @board.findCard message
+    unless card
+      console.log "Handler: cannot find card #{message}"
+      return
+    card.get('group').get('cards').remove card, { rebroadcast: true }
 
   userMessage: () =>
     @user.toJSON()

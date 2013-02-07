@@ -33,7 +33,7 @@ class boardroom.views.Card extends boardroom.views.Base
     'keyup textarea': 'hiChangeText'
     'click textarea': 'hiFocusText'
     'click .plus1 .btn': 'hiIncrementPlusCount'
-    'click .delete-btn': 'hiDeleteMe'
+    'click .delete-btn': 'hiDeleteCard'
 
   initialize: (attributes) ->
     { @groupView, @boardView } = attributes
@@ -161,6 +161,9 @@ class boardroom.views.Card extends boardroom.views.Base
   ###
       human interaction event handlers
   ###
+
+  hiDeleteCard: (event) ->
+    @model.delete()
 
   hiChangeColor: (event) ->
     event.stopPropagation()

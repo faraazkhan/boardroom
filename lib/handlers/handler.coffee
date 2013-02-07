@@ -52,7 +52,6 @@ class Handler
             model.remove (error) =>
               throw error if error?
               console.log "did delete"
-              #@socket.emit event, id
               @socket.broadcast.emit event, id
               @afterDelete(model)
           else
