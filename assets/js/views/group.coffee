@@ -34,6 +34,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
     @model.get('cards').on 'remove', (card, options) =>
       $("##{card.id}").remove()
+      @updateGroup()
 
   onLockPoll: ()=>
     @enableEditing '.name'
