@@ -26,8 +26,10 @@ class boardroom.views.Group extends boardroom.views.Base
     @initializeDraggable()
     @initializeDroppable()
 
-    @model.on 'change', (group, options) =>
-      @update options.changes
+    @model.on 'change:name', (group, name, options) => @updateName(name, options)
+    @model.on 'change:x', (group, x, options) => @updatePosition(x, group.get('y'), options)
+    @model.on 'change:y', (group, y, options) => @updatePosition(group.get('x'), y, options)
+    @model.on 'change:z', (group, z, options) => @updateZIndex(z, options)
 
     @model.get('cards').on 'add', (card, options) =>
       @displayNewCard card
@@ -101,17 +103,19 @@ class boardroom.views.Group extends boardroom.views.Base
     @updateGroup()
     @
 
-  update: (changes) =>
-    if changes.x?
-      @moveTo x: @model.get('x'), y: @model.get('y')
-      @showNotice user: @model.get('author'), message: @model.get('author')
-      @authorLock.lock 500
-    if changes.z?
-      @$el.css 'z-index', @model.get('z')
-    if changes.name?
-      @disableEditing '.name', @model.get('name')
+  updateName: (name, options) =>
+    unless options.hiEvent
+      @disableEditing '.name', name
       @authorLock.lock()
-      @$('.name').val(@model.get('name')).trimInput(80)
+    @$('.name').val(name).trimInput(80)
+
+  updatePosition: (x, y) =>
+    @moveTo x: x, y: y
+    @showNotice user: @model.get('author'), message: @model.get('author')
+    @authorLock.lock 500
+
+  updateZIndex: (z) =>
+    @$el.css 'z-index', z
 
   updateCards: (cards) =>
     @displayNewCard card for card in cards
@@ -180,7 +184,8 @@ class boardroom.views.Group extends boardroom.views.Base
     if isEnter
       @$('.name').blur()
     else
-      @socket.emit 'group.update', _id: @model.get('_id'), name: @$('.name').val()
+      name = @$('.name').val()
+      @model.set 'name', name, { hiEvent: true }
 
   hiRequestNewCard: (event) ->
     event.stopPropagation()

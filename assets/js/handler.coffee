@@ -110,7 +110,6 @@ class boardroom.Handler
     unless card
       console.log "Handler: cannot find card: #{message._id}"
       return
-    console.log message
     card.set(_(message).omit('_id'), { rebroadcast: true })
 
   onCardDelete: (message) =>

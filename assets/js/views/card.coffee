@@ -39,8 +39,8 @@ class boardroom.views.Card extends boardroom.views.Base
     { @groupView, @boardView } = attributes
     super attributes
     @initializeDraggable()
-    @model.on 'change:colorIndex', (card, colorIndex, options) => @setColor(colorIndex)
-    @model.on 'change:text', (card, text, options) => @setText(text)
+    @model.on 'change:colorIndex', (card, colorIndex, options) => @updateColor(colorIndex, options)
+    @model.on 'change:text', (card, text, options) => @updateText(text, options)
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
@@ -86,7 +86,7 @@ class boardroom.views.Card extends boardroom.views.Base
         left: @model.get('x')
         top: @model.get('y')
         'z-index': @model.get('z')
-    @setColor @model.get('colorIndex')
+    @updateColor @model.get('colorIndex')
     if @model.has('authors')
       for author in @model.get('authors')
         @addAuthor author
@@ -113,16 +113,16 @@ class boardroom.views.Card extends boardroom.views.Base
       @adjustTextarea()
     if data.colorIndex?
       @addAuthor data.author
-      @setColor data.colorIndex
+      @updateColor data.colorIndex
     if data.plusAuthor?
       @addPlusAuthor data.plusAuthor
 
-  setColor: (color) ->
+  updateColor: (color) ->
     color = 2 if color == undefined
     @$el.removeClassMatching /color-\d+/g
     @$el.addClass "color-#{color}"
 
-  setText: (text) =>
+  updateText: (text) =>
     @$el.find('textarea').val(text)
 
   addPlusAuthor: (author) ->
@@ -175,7 +175,7 @@ class boardroom.views.Card extends boardroom.views.Base
     return
 
     author = @model.get('board').get('user_id')
-    @setColor colorIndex
+    @updateColor colorIndex
     @addAuthor author
     z = @bringForward()
     @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
