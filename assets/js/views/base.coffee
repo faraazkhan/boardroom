@@ -6,6 +6,7 @@ class boardroom.views.Base extends Backbone.View
     @authorLock.poll =>
       @hideNotice()
       @onLockPoll()
+    @$el.data 'view', @
 
   onLockPoll: ()=> # template and hook
 
