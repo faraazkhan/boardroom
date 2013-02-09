@@ -30,11 +30,13 @@ class boardroom.models.Board extends Backbone.Model
 
   createGroup: (coords, callback) =>
     group = @newGroupAt coords
+    creator = @get 'user_id'
     @addGroupCallback group, (group) =>
       card =
-        creator: @get 'user_id'
+        creator: creator
         focus: true
         groupId: group.id
+        authors: [ creator ]
       group.get('pendingCards').add(new boardroom.models.Card(card))
     @get('pendingGroups').add group
 

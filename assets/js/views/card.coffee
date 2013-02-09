@@ -97,9 +97,8 @@ class boardroom.views.Card extends boardroom.views.Base
     @
 
   updateColor: (color) ->
-    color = 2 if color == undefined
     @$el.removeClassMatching /color-\d+/g
-    @$el.addClass "color-#{color}"
+    @$el.addClass "color-#{color ? 2}"
 
   updateText: (text) =>
     @$el.find('textarea').val(text)
@@ -146,7 +145,6 @@ class boardroom.views.Card extends boardroom.views.Base
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
 
-
   ###
       human interaction event handlers
   ###
@@ -155,10 +153,8 @@ class boardroom.views.Card extends boardroom.views.Base
     @model.delete()
 
   hiChangeColor: (event) ->
-    event.stopPropagation()
     colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
-    @model.set 'colorIndex', colorIndex
-    return
+    @model.colorize colorIndex
 
   hiChangeText: (e)->
     @model.type @$('textarea').val()
