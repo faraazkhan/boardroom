@@ -143,9 +143,7 @@ class boardroom.Handler
     return null if _(message).isEmpty()
 
     message._id = group.id if group.id?
-    message.cards = message.cards.toJSON() if message.cards?
     message.boardId = @board.id unless message._id
-    message.author = @board.get 'user_id'
     message
 
   cardMessage: (card) =>
@@ -156,7 +154,6 @@ class boardroom.Handler
     return null if _(message).isEmpty()
 
     message._id = card.id if card.id?
-    message.author = @board.get 'user_id'
     message
 
   # We can dump this when nginx starts supporting websockets

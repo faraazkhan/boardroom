@@ -3,6 +3,8 @@ class boardroom.models.Card extends Backbone.Model
 
   defaults:
     text: ''
+    authors: []
+    plusAuthors: []
 
   initialize: (attributes, options) ->
     @.on 'change:groupId', (card, groupId, options) =>
@@ -11,10 +13,15 @@ class boardroom.models.Card extends Backbone.Model
       @get('group').get('board').findGroup(groupId).get('cards').add @, options
 
   moveTo: (x, y) ->
-    @set
-      x: x
-      y: y
-      author: @currentUser()
+    @set { x, y }
+    @touch()
+
+  type: (text) ->
+    @set { text }
+    @touch()
+
+  focus: () ->
+    @get('group').bringForward()
 
   delete: ->
     cards = @get('group').get('cards')
@@ -29,6 +36,15 @@ class boardroom.models.Card extends Backbone.Model
       clone = _.clone(plusAuthors) # need to clone other backbone won't trigger a change event
       clone.push author
       @set 'plusAuthors', clone
+    @touch()
 
   currentUser: ->
     @get('group').get('board').get('user_id')
+
+  touch: =>
+    authors = @get 'authors'
+    author = @currentUser()
+    unless authors.indexOf(author) >= 0
+      clone = _.clone(authors)
+      clone.push author
+      @set 'authors', clone

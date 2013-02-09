@@ -33,7 +33,7 @@ class boardroom.views.Card extends boardroom.views.Base
     'keyup textarea': 'hiChangeText'
     'click textarea': 'hiFocusText'
     'click .plus1 .btn': 'hiIncrementPlusCount'
-    'click .delete-btn': 'hiDeleteCard'
+    'click .delete-btn': 'hiDelete'
 
   initialize: (attributes) ->
     { @groupView, @boardView } = attributes
@@ -44,6 +44,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @model.on 'change:x', (card, x, options) => @updatePosition(x, @model.get('y'), options)
     @model.on 'change:y', (card, y, options) => @updatePosition(@model.get('x') ,y, options)
     @model.on 'change:plusAuthors', (card, plusAuthors, options) => @updatePlusAuthors(plusAuthors, options)
+    @model.on 'change:authors', (card, authors, options) => @updateAuthors(authors, options)
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
@@ -90,13 +91,9 @@ class boardroom.views.Card extends boardroom.views.Base
         top: @model.get('y')
         'z-index': @model.get('z')
     @updateColor @model.get('colorIndex')
-    if @model.has('authors')
-      for author in @model.get('authors')
-        @addAuthor author
-    if @model.has('plusAuthors')
-      @updatePlusAuthors @model.get('plusAuthors')
-    if @model.get('focus')
-      @$('textarea').focus()
+    @updateAuthors @model.get('authors')
+    @updatePlusAuthors @model.get('plusAuthors')
+    @$('textarea').focus() if @model.get('focus')
     @
 
   updateColor: (color) ->
@@ -129,10 +126,14 @@ class boardroom.views.Card extends boardroom.views.Base
     if plusAuthors.indexOf(@model.currentUser()) > -1
         @$('.plus1 .btn').remove()
 
-  addAuthor: (user) ->
-    avatar = boardroom.models.User.avatar user
-    if @$(".authors img[title='#{user}']").length is 0
-      @$('.authors').append("<img class='avatar' src='#{avatar}' title='#{_.escape user}'/>")
+  updateAuthors: (authors, options) =>
+    return if authors.length == 0
+
+    $authors = @$('.authors')
+    $authors.empty()
+    for author in authors
+      avatar = boardroom.models.User.avatar author
+      $authors.append("<img class='avatar' src='#{avatar}' title='#{_.escape author}'/>")
 
   adjustTextarea: ->
     $textarea = @$ 'textarea'
@@ -150,7 +151,7 @@ class boardroom.views.Card extends boardroom.views.Base
       human interaction event handlers
   ###
 
-  hiDeleteCard: (event) ->
+  hiDelete: (event) ->
     @model.delete()
 
   hiChangeColor: (event) ->
@@ -160,17 +161,13 @@ class boardroom.views.Card extends boardroom.views.Base
     return
 
   hiChangeText: (e)->
-    text = @$('textarea').val()
-    @model.set 'text', text
-    return
+    @model.type @$('textarea').val()
 
   hiFocusText: (event)->
-    @model.get('group').bringForward()
-    @$('textarea').focus()
+    @model.focus()
 
   hiIncrementPlusCount: (e) ->
     @model.plusOne()
-    return
 
   hiDropOnToGroup: (event, parentGroupView) ->
     event.stopPropagation()

@@ -23,10 +23,8 @@ CardSchema.statics =
 
 CardSchema.methods =
   updateAttributes: (attributes, callback) ->
-    for attribute in ['text', 'colorIndex', 'deleted', 'groupId', 'plusAuthors'] when attributes[attribute]?
+    for attribute in ['text', 'colorIndex', 'deleted', 'groupId', 'plusAuthors', 'authors'] when attributes[attribute]?
       @[attribute] = attributes[attribute]
-    if attributes.author?
-      @authors.push attributes.author unless attributes.author in @authors
     @save (error, card) ->
       callback error, card
 
