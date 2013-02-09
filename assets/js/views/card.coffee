@@ -167,12 +167,3 @@ class boardroom.views.Card extends boardroom.views.Base
 
   hiIncrementPlusCount: (e) ->
     @model.plusOne()
-
-  hiDropOnToGroup: (event, parentGroupView) ->
-    event.stopPropagation()
-    if parentGroupView is @groupView
-      @moveBackToRestingSpot()
-      return
-    @eventsOff()
-    @groupView.eventsOff() if @groupView.cardViews.length is 1
-    @boardView.switchGroups @sourcePath, parentGroupView.sourcePath

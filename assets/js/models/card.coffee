@@ -11,6 +11,7 @@ class boardroom.models.Card extends Backbone.Model
       console.log "card.on change:groupId - #{groupId}"
       @group().get('cards').remove @, options
       @board().findGroup(groupId).cards().add @, options
+      @drop()
       @touch()
 
   group: -> @get 'group'

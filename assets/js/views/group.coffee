@@ -66,7 +66,6 @@ class boardroom.views.Group extends boardroom.views.Base
         @model.bringForward()
       onMouseMove: =>
         @model.moveTo @left(), @top()
-        #@resizeHTML()
       startedDragging: =>
         @$el.addClass 'dragging'
       stoppedDragging: =>
@@ -199,5 +198,3 @@ class boardroom.views.Group extends boardroom.views.Base
     event.stopPropagation()
     return unless 1 < @model.cards().length # don't add new card unless there is already more than 1
     @model.createCard()
-
-  hiDropOnToBoard: (event, boardView) -> # noop group can move freely on a board

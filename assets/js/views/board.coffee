@@ -77,17 +77,9 @@ class boardroom.views.Board extends boardroom.views.Base
     $("##{group.id}").remove()
 
   ###
-      service calls
-  ###
-
-  switchGroups: (cardSourcePath, newGroupSourcePath)->
-    @socket.emit 'board.card.switch-groups',
-      cardSourcePath: cardSourcePath
-      newGroupSourcePath: newGroupSourcePath
-
-  ###
       human interaction event handlers
   ###
+
   hiRequestNewCard: (event) ->
     return unless event.target.className == 'board'
     @model.createGroup(@coordinateOfEvent event)
