@@ -77,14 +77,6 @@ class boardroom.views.Board extends boardroom.views.Base
     $("##{group.id}").remove()
 
   ###
-      utils
-  ###
-
-  maxZ: ()->
-    return  _.max(@groupViews, (view) -> view.zIndex()).zIndex() if @groupViews.length
-    0
-
-  ###
       service calls
   ###
 
@@ -93,33 +85,9 @@ class boardroom.views.Board extends boardroom.views.Base
       cardSourcePath: cardSourcePath
       newGroupSourcePath: newGroupSourcePath
 
-  ungroupCard: (cardSourcePath, newCoordinate) ->
-    z = @maxZ()
-    @socket.emit 'board.card.ungroup',
-      cardSourcePath: cardSourcePath
-      x: newCoordinate.x - 10
-      y: newCoordinate.y - 10
-      z: z + 1
-
   ###
       human interaction event handlers
   ###
   hiRequestNewCard: (event) ->
     return unless event.target.className == 'board'
     @model.createGroup(@coordinateOfEvent event)
-
-  ###
-      socket handlers
-  ###
-
-  onAddIndicator: (data) =>
-    view = @findView data._id
-    view.addIndicator data if view?
-
-  onRemoveIndicator: (data) =>
-    view = @findView data._id
-    view.removeIndicator data if view?
-
-  onGroupUpdateCards: (data) =>
-    groupView = @findView data.groupId
-    groupView.updateCards data.cards if groupView?

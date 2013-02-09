@@ -102,16 +102,6 @@ class boardroom.views.Base extends Backbone.View
       @$el.offset { left: left, top: top }
     @resizeHTML()
 
-  addIndicator: ({selector, cssClass, emit}) ->
-    return unless cssClass
-    $dom = if selector? then @$(selector) else @$el
-    $dom.addClass cssClass unless $dom.is cssClass
-
-  removeIndicator: ({selector, cssClass, emit}) ->
-    return unless cssClass
-    $dom = if selector? then @$(selector) else @$el
-    $dom.removeClass cssClass
-
   hideNotice: ->
     @$('.notice').fadeOut 100
 
@@ -127,52 +117,10 @@ class boardroom.views.Base extends Backbone.View
   bottom: ->
     @top() + @$el.height()
 
-  zIndex: ->
-    parseInt(@$el.css('z-index')) || 0
-
   moveBackToRestingSpot: () ->
     @model.set
       x: @restingSpot.left
       y: @restingSpot.top
-
-  ###
-      services
-  ###
-
-  deleteMe: ()->
-    @socket.emit "#{@className}.delete", @model.id
-
-  ###
-      human interaction event handlers
-  ###
-
-  hiDeleteMe: (event)->
-    event.stopPropagation()
-    @deleteMe()
-
-  ###
-      messages
-  ###
-
-  emitMove: () ->
-    @socket.emit "#{@className}.update",
-      _id: @model.id
-      x: @left()
-      y: @top()
-      author: @model.get('board').get('user_id')
-
-  emitAddIndicator: ({selector, cssClass, emit}) ->
-    @socket.emit "view.add-indicator",
-      _id: @model.id
-      selector: selector
-      cssClass: cssClass
-
-  emitRemoveIndicator: ({selector, cssClass, emit}) ->
-    @socket.emit "view.remove-indicator",
-      _id: @model.id
-      selector: selector
-      cssClass: cssClass
-
 
   ###
       debug

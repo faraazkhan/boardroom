@@ -30,6 +30,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:x', (group, x, options) => @updatePosition(x, group.get('y'), options)
     @model.on 'change:y', (group, y, options) => @updatePosition(group.get('x'), y, options)
     @model.on 'change:z', (group, z, options) => @updateZIndex(z, options)
+    @model.on 'change:hover', (group, hover, options) => @updateHover(hover, options)
 
     # in the case of a move, we should move it via jquery
     @model.get('cards').on 'add', (card, options) =>
@@ -75,20 +76,14 @@ class boardroom.views.Group extends boardroom.views.Base
     @$el.droppable
       threshold: 88
       onHover: (event, target) =>
-        @addIndicator cssClass:'stackable'
-        @emitAddIndicator cssClass:'stackable'
-        @$el.removeClass('single-card')
+        @model.hover()
       onBlur: (event, target) =>
-        @removeIndicator cssClass:'stackable'
-        @emitRemoveIndicator cssClass:'stackable'
-        @updateGroup()
+        @model.blur()
       onDrop: (event, target) =>
         id = $(target).attr 'id'
-        if $(target).is('.card')
-          @model.dropCard id
-        else if $(target).is('.group')
-          @model.dropGroup id
-        @$el.removeClass 'stackable'
+        @model.dropCard(id)  if $(target).is('.card')
+        @model.dropGroup(id) if $(target).is('.group')
+        @model.blur()
       shouldBlockHover: (data) =>
         view = $(data.target).data('view')
         groupView = view.groupView if view?
@@ -122,6 +117,14 @@ class boardroom.views.Group extends boardroom.views.Base
 
   updateZIndex: (z, options) =>
     @$el.css 'z-index', z
+
+  updateHover: (hover, options) =>
+    if hover
+      @$el.addClass 'stackable'
+      @$el.removeClass 'single-card'
+    else
+      @$el.removeClass 'stackable'
+      @updateGroup()
 
   updateCards: (cards) =>
     @displayNewCard card for card in cards
@@ -163,7 +166,6 @@ class boardroom.views.Group extends boardroom.views.Base
     @resizeHTML()
     # set the focus if card was just created by this user
     cardView.$('textarea').focus() if @boardView.model.get('user_id') is data.get('creator')
-    @removeIndicator cssClass:'stackable'
 
   renderCardInOrder: (cardView) ->
     elCard = cardView.render().el

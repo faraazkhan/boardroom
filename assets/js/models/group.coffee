@@ -38,3 +38,9 @@ class boardroom.models.Group extends Backbone.Model
 
   dropGroup: (id) =>
     @board().mergeGroups @get('_id'), id
+
+  hover: =>
+    @set 'hover', true
+
+  blur: =>
+    @set 'hover', false
