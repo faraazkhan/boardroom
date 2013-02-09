@@ -28,9 +28,11 @@ class boardroom.Handler
     groups.on 'change', (group, options) => @send 'group.update', @groupMessage(group), options
     groups.on 'remove', (group, groups, options) => @send 'group.delete', group.id, options
 
-    handleCardEvents = (card) =>
-      card.on 'change', (card, options) => @send 'card.update', @cardMessage(card), options
-      card.on 'destroy', (card, cards, options) => @send 'card.delete', card.id, options
+    handleCardEvents = (card, cards, options) =>
+      unless card.eventsInitialized
+        card.on 'change', (card, options) => @send 'card.update', @cardMessage(card), options
+        card.on 'destroy', (card, cards, options) => @send 'card.delete', card.id, options
+        card.eventsInitialized = true
 
     handleGroupEvents = (group) =>
       cards = group.get 'cards'
@@ -137,7 +139,7 @@ class boardroom.Handler
     attrs = _(group.changed).keys()
     message = group.toJSON()
     message = _(message).pick(attrs) if message._id # restrict to changed attrs on updates only
-    message = _(message).omit('board')
+    message = _(message).omit('board', 'cards', 'pendingCards')
     return null if _(message).isEmpty()
 
     message._id = group.id if group.id?

@@ -28,12 +28,8 @@ class boardroom.models.Board extends Backbone.Model
     users[user.user_id] = user
     @set 'users', users
 
-  createGroup: ({x, y}, callback) =>
-    group = new boardroom.models.Group
-      boardId: @get '_id'
-      x: x - 10
-      y: y - 10
-      z: @maxZ() + 1
+  createGroup: (coords, callback) =>
+    group = @newGroupAt coords
     @addGroupCallback group, (group) =>
       card =
         creator: @get 'user_id'
@@ -51,16 +47,17 @@ class boardroom.models.Board extends Backbone.Model
     @get('groups').remove child
 
   dropCard: (id) =>
-    z = @maxZ()
     card = @findCard id
-    group =
-      boardId: @get '_id'
-      x: card.get('x')
-      y: card.get('y')
-      z: z + 1
-      cards: [ { _id: id } ]
-    @get('pendingGroups').add(new boardroom.models.Group(group))
-    card.get('group').get('cards').remove card
+    group = card.get('group')
+    coords =
+      x: card.get('x') + group.get('x')
+      y: card.get('y') + group.get('y')
+    group = @newGroupAt coords
+    @addGroupCallback group, (group) =>
+      card.set 'groupId', group.id
+      card.unset 'x'
+      card.unset 'y'
+    @get('pendingGroups').add group
 
   dropGroup: (id) =>
     console.log "board.dropGroup"
@@ -74,6 +71,13 @@ class boardroom.models.Board extends Backbone.Model
     return 0 unless groups? and groups.length > 0
     maxGroup = groups.max (group) -> ( group.get('z') || 0 )
     maxGroup.get('z') || 0
+
+  newGroupAt: ({x, y}) =>
+    new boardroom.models.Group
+      boardId: @get '_id'
+      x: x - 10
+      y: y - 10
+      z: @maxZ() + 1
 
   #
   # Group Callbacks

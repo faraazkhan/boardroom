@@ -92,9 +92,9 @@ class boardroom.views.Base extends Backbone.View
       .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
       .show()
 
-  moveTo: ({x, y}) ->    
+  moveTo: ({x, y}) ->
     if isNaN(Number(x)) or isNaN(Number(y))
-      @$el.css {left: x, top: y}
+      @$el.css {left: (x ? ''), top: (y ? '')}
     else # move to x, y but preserve 12px of margin 
       parentOffset = @$el.offsetParent().offset()
       left = x + parentOffset.left
