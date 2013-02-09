@@ -14,9 +14,21 @@ class boardroom.models.Card extends Backbone.Model
     @set
       x: x
       y: y
-      author: @get('group').get('board').get('user_id')
+      author: @currentUser()
 
   delete: ->
     cards = @get('group').get('cards')
     cards.remove @
     @trigger 'destroy', @, cards, {}
+
+  plusOne: ->
+    @get('group').bringForward()
+    plusAuthors = @get 'plusAuthors'
+    author = @currentUser()
+    unless plusAuthors.indexOf(author) >= 0
+      clone = _.clone(plusAuthors) # need to clone other backbone won't trigger a change event
+      clone.push author
+      @set 'plusAuthors', clone
+
+  currentUser: ->
+    @get('group').get('board').get('user_id')

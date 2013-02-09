@@ -43,6 +43,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @model.on 'change:text', (card, text, options) => @updateText(text, options)
     @model.on 'change:x', (card, x, options) => @updatePosition(x, @model.get('y'), options)
     @model.on 'change:y', (card, y, options) => @updatePosition(@model.get('x') ,y, options)
+    @model.on 'change:plusAuthors', (card, plusAuthors, options) => @updatePlusAuthors(plusAuthors, options)
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
@@ -93,31 +94,10 @@ class boardroom.views.Card extends boardroom.views.Base
       for author in @model.get('authors')
         @addAuthor author
     if @model.has('plusAuthors')
-      for plusAuthor in @model.get('plusAuthors')
-        @addPlusAuthor plusAuthor
+      @updatePlusAuthors @model.get('plusAuthors')
     if @model.get('focus')
       @$('textarea').focus()
     @
-
-  update: (data) =>
-    if data.x?
-      @moveTo x: data.x, y: data.y
-      @showNotice user: data.author, message: data.author
-      @authorLock.lock 500
-    if data.z?
-      @groupView.bringForward() if data.z > @$el.css 'z-index'
-      @$el.css 'z-index', data.z
-    if data.text?
-      @disableEditing 'textarea', data.text
-      @showNotice user: data.author, message: "#{data.author} is typing..."
-      @authorLock.lock()
-      @addAuthor data.author
-      @adjustTextarea()
-    if data.colorIndex?
-      @addAuthor data.author
-      @updateColor data.colorIndex
-    if data.plusAuthor?
-      @addPlusAuthor data.plusAuthor
 
   updateColor: (color) ->
     color = 2 if color == undefined
@@ -126,29 +106,27 @@ class boardroom.views.Card extends boardroom.views.Base
 
   updateText: (text) =>
     @$el.find('textarea').val(text)
+    @showNotice user: @model.get('author'), message: "#{@model.get('author')} is typing..."
 
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
     @showNotice user: @model.get('author'), message: @model.get('author')
     @authorLock.lock 500
 
-  addPlusAuthor: (author) ->
-    avatar = boardroom.models.User.avatar author
-    if @$(".plus-authors img[title='#{user}']").length is 0
-      user = @model.get('board').get('user_id')
-      $plusCount = @$('.plus-count')
-      $plusAuthors = @$('.plus-authors')
-      plusCountValue = parseInt($plusCount.text()) || 0
+  updatePlusAuthors: (plusAuthors, options) =>
+    return if plusAuthors.length == 0
 
-      $plusCount.text("+#{plusCountValue+1}")
-      $plusAuthors.append("<img class='avatar' src='#{avatar}' title='#{_.escape author}'/>")
+    $plusCount = @$('.plus-count')
+    $plusCount.text "+#{plusAuthors.length}"
+    $plusCount.attr 'title', _.map(plusAuthors, (author) -> _.escape(author)).join(', ')
 
-      plusAuthors = []
-      for avatar in $plusAuthors.find('img')
-        plusAuthors.push $(avatar).attr('title')
-      $plusCount.attr('title', plusAuthors.join(', '))
+    $plusAuthors = @$('.plus-authors')
+    $plusAuthors.empty()
+    for plusAuthor in plusAuthors
+      avatar = boardroom.models.User.avatar plusAuthor
+      $plusAuthors.append("<img class='avatar' src='#{avatar}' title='#{_.escape plusAuthor}'/>")
 
-      if author == user
+    if plusAuthors.indexOf(@model.currentUser()) > -1
         @$('.plus1 .btn').remove()
 
   addAuthor: (user) ->
@@ -181,37 +159,18 @@ class boardroom.views.Card extends boardroom.views.Base
     @model.set 'colorIndex', colorIndex
     return
 
-    author = @model.get('board').get('user_id')
-    @updateColor colorIndex
-    @addAuthor author
-    z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, colorIndex, z, author }
-
   hiChangeText: (e)->
     text = @$('textarea').val()
     @model.set 'text', text
     return
-
-    existing = @model.get 'text'
-    @model.set 'text', text
-    if text != existing
-      author = @model.get('board').get('user_id')
-      @addAuthor author
-      @adjustTextarea()
-      z = @bringForward()
-      @socket.emit 'card.update', { _id: @model.id, text, z, author }
 
   hiFocusText: (event)->
     @model.get('group').bringForward()
     @$('textarea').focus()
 
   hiIncrementPlusCount: (e) ->
-    e.stopPropagation()
-    e.preventDefault()
-    plusAuthor = @model.get('board').get('user_id')
-    @addPlusAuthor plusAuthor
-    z = @bringForward()
-    @socket.emit 'card.update', { _id: @model.id, plusAuthor, z }
+    @model.plusOne()
+    return
 
   hiDropOnToGroup: (event, parentGroupView) ->
     event.stopPropagation()
@@ -221,12 +180,3 @@ class boardroom.views.Card extends boardroom.views.Base
     @eventsOff()
     @groupView.eventsOff() if @groupView.cardViews.length is 1
     @boardView.switchGroups @sourcePath, parentGroupView.sourcePath
-
-  hiDropOnToBoard: (event, boardView) ->
-    event.stopPropagation()
-    @eventsOff()
-    @groupView.eventsOff() if @groupView.cardViews.length is 1
-    @boardView.ungroupCard @sourcePath, @coordinateInBoard()
-    # @boardView.createNewGroup @coordinateInContainer(boardView)
-    # @deleteMe()
-
