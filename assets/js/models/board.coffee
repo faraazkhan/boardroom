@@ -54,8 +54,8 @@ class boardroom.models.Board extends Backbone.Model
   dropCard: (id) =>
     card = @findCard id
     coords =
-      x: card.get('x') + @group().get('x')
-      y: card.get('y') + @group().get('y')
+      x: card.get('x') + card.group().get('x')
+      y: card.get('y') + card.group().get('y')
     group = @newGroupAt coords
     @addGroupCallback group, (group) =>
       card.set 'groupId', group.id

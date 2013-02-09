@@ -18,7 +18,6 @@ class boardroom.views.Group extends boardroom.views.Base
     'click .add-card': 'hiRequestNewCard'
 
   initialize: (attributes) ->
-    { @boardView } = attributes
     super attributes
     @model.set('name', '', { silent: true }) unless @model.get('name')
     @render()
@@ -43,11 +42,6 @@ class boardroom.views.Group extends boardroom.views.Base
   onLockPoll: ()=>
     @enableEditing '.name'
 
-  initializeSourcePath: ()->
-    @sourcePath =
-      boardId: @boardView.model.id
-      groupId: @model.id
-
   initializeCards: () ->
     cards = @model.get('cards')
     cards.each (card) =>
@@ -55,8 +49,8 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initializeDraggable: ->
     @$el.draggable
-      minX: @boardView.left() + 12
-      minY: @boardView.top()  + 12
+    #minX: @boardView.left() + 12
+    #minY: @boardView.top()  + 12
       isTarget: (target) ->
         # return false if $(target).is 'input'
         return false if $(target).is '.color'
@@ -84,9 +78,7 @@ class boardroom.views.Group extends boardroom.views.Base
         @model.dropGroup(id) if $(target).is('.group')
         @model.blur()
       shouldBlockHover: (data) =>
-        view = $(data.target).data('view')
-        groupView = view.groupView if view?
-        (@ is groupView) # block a card from dropping onto its own view
+        # block a card from dropping onto its own view - do we need this?
 
   ###
       render
@@ -144,27 +136,20 @@ class boardroom.views.Group extends boardroom.views.Base
       @$el.addClass('single-card') unless @$el.is('single-card')
 
   cardCount: ()->
-    @$('.card').length # +++ count subViews, not DOM elements after viewrefactoring
+    @model.cards().length
 
   displayNewCard: (data) ->
-    return if !data or @$el.has("#"+ data.id).length
     bindings =
       'group': @model
-      'board': (@model.get 'board')
+      'board': @model.board()
     data.set bindings, { silent: true }
 
-    cardView = new boardroom.views.Card
-      model: data
-      groupView: @
-      boardView: @boardView
-      socket: @socket
+    cardView = new boardroom.views.Card { model: data }
     @renderCardInOrder cardView
-    @cardViews.push cardView
     setTimeout ( => cardView.adjustTextarea() ), 100
     @updateGroup()
     @resizeHTML()
-    # set the focus if card was just created by this user
-    cardView.$('textarea').focus() if @boardView.model.get('user_id') is data.get('creator')
+    # set the focus if card was just created by this user - do we need to do this?
 
   renderCardInOrder: (cardView) ->
     elCard = cardView.render().el

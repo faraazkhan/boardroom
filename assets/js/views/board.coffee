@@ -17,10 +17,6 @@ class boardroom.views.Board extends boardroom.views.Base
     @model.get('groups').on 'add', (group) => @displayNewGroup(group)
     @model.get('groups').on 'remove', (group) => @removeGroup(group)
 
-  initializeSourcePath: ()->
-    @sourcePath =
-      boardId: @model.id
-
   initializeGroups: ->
     @model.get('groups').each (group) => @displayNewGroup(group)
 
@@ -33,17 +29,11 @@ class boardroom.views.Board extends boardroom.views.Base
         @$el.removeClass 'stackable'
       onDrop: (mouseEvent, target) =>
         id = $(target).attr('id')
-        if $(target).is('.card')
-          @model.dropCard id
-        else if $(target).is('.group')
-          @model.dropGroup id
+        @model.dropCard(id) if $(target).is('.card')
+        @model.dropGroup(id) if $(target).is('.group')
         @$el.removeClass 'stackable'
       shouldBlockHover: (coordinate) =>
-        (return true if group.containsPoint(coordinate)) for group in @groupViews
-        return false
-
-  sourcePath: ()-> 
-    boardId: @model.id
+        # do we need anything here?
 
   ###
       render
@@ -62,16 +52,11 @@ class boardroom.views.Board extends boardroom.views.Base
 
   displayNewGroup: (data) ->
     data.set 'board', @model, { silent: true }
-
-    groupView = new boardroom.views.Group
-      model: data
-      boardView: @
+    groupView = new boardroom.views.Group { model: data }
     @$el.append groupView.el
-    @groupViews.push groupView
     @resizeHTML()
-    # set the focus if group was just created by this user
-    card = groupView.model?.get('cards')?[0]
-    @findView(card?._id)?.$('textarea').focus() if @model.get('user_id') is card?.creator
+
+    # set the focus if group was just created by this user - do we need to do this?
 
   removeGroup: (group) =>
     $("##{group.id}").remove()

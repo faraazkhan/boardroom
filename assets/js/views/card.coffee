@@ -36,7 +36,6 @@ class boardroom.views.Card extends boardroom.views.Base
     'click .delete-btn': 'hiDelete'
 
   initialize: (attributes) ->
-    { @groupView, @boardView } = attributes
     super attributes
     @initializeDraggable()
     @model.on 'change:colorIndex', (card, colorIndex, options) => @updateColor(colorIndex, options)
@@ -49,16 +48,10 @@ class boardroom.views.Card extends boardroom.views.Base
   onLockPoll: ()=>
     @enableEditing 'textarea'
 
-  initializeSourcePath: ()->
-    @sourcePath =
-      boardId: @boardView.model.id
-      groupId: @groupView.model.id
-      cardId: @model.id
-
   initializeDraggable: ->
     @$el.draggable
-      minX: @boardView.left() + 12
-      minY: @boardView.top()  + 12
+    #minX: @boardView.left() + 12
+    #minY: @boardView.top()  + 12
       isTarget: (target) =>
         # return false if $(target).is 'input'
         # return false if $(target).is '.color'
@@ -66,9 +59,9 @@ class boardroom.views.Card extends boardroom.views.Base
         true
       isOkToDrag: () => 
         # dont allow card to drag if its the only one in its group (allow the group to drag)
-        @model.get('group').get('cards').length > 1
+        @model.group().cards().length > 1
       onMouseDown: =>
-        @model.get('group').bringForward()
+        @model.group().bringForward()
       onMouseMove: =>
         @model.moveTo @left(), @top()
       onMouseUp: =>

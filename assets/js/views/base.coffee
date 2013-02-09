@@ -1,9 +1,6 @@
 class boardroom.views.Base extends Backbone.View
 
   initialize: (attributes) ->
-    @$el.data 'view', @
-    { @socket } = attributes
-    @initializeSourcePath()
     @restingSpot = { left: 0, top: 0 }
     @authorLock = new boardroom.models.CardLock
     @authorLock.poll =>
@@ -11,25 +8,15 @@ class boardroom.views.Base extends Backbone.View
       @onLockPoll()
 
   onLockPoll: ()=> # template and hook
-  initializeSourcePath: ()->
-    throw "initializeSourcePath() not defined!" #template and hook
 
   ###
       util
   ###
-  sourcePath: ()-> throw "sourcPath() not defined!"  # template and hook
-
-  findView: (id) ->
-    $("##{id}").data('view')
-
   enableEditing: (selector)->
     @$(selector).removeAttr 'disabled'
 
   disableEditing: (selector, text) ->
     @$(selector).val(text).attr('disabled', 'disabled')
-
-  eventsOff: ->
-    @$el.off()
 
   containsPoint: (coordinate) ->
     c = @$el.offset()
@@ -74,12 +61,6 @@ class boardroom.views.Base extends Backbone.View
     height = Math.max ( -100 + $(document).height() ),  ( parseInt $('body').css('min-height') )
     $('body').width(width) if $('body').width() isnt $(document).width()
     $('body').height(height)
-
-  destroy: () ->
-    @eventsOff()
-    @unbind()
-    @$el.remove()
-    @remove()
 
   ###
       render
