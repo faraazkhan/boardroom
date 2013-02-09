@@ -130,19 +130,6 @@ class boardroom.views.Base extends Backbone.View
   zIndex: ->
     parseInt(@$el.css('z-index')) || 0
 
-  bringForward: ->
-    siblings = @$el.siblings ".#{@className}"
-    return if siblings.length == 0
-
-    allZs = _.map siblings, (sibling) ->
-      parseInt($(sibling).css('z-index')) || 0
-    maxZ = _.max allZs
-    return if @zIndex() > maxZ
-
-    newZ = maxZ + 1
-    @$el.css 'z-index', newZ
-    newZ
-
   moveBackToRestingSpot: () ->
     @model.set
       x: @restingSpot.left
