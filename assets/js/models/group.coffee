@@ -29,7 +29,12 @@ class boardroom.models.Group extends Backbone.Model
     @set('z', maxZ + 1) unless @get('z') == maxZ
 
   createCard: (data)->
-    @cards().add(new boardroom.models.Card(data))
+    card = new boardroom.models.Card
+      groupId: @get '_id'
+      creator: @currentUser()
+      authors: [ @currentUser() ]
+      focus: true
+    @get('pendingCards').add card
 
   dropCard: (id) =>
     card = @board().findCard id

@@ -198,9 +198,6 @@ class boardroom.views.Group extends boardroom.views.Base
   hiRequestNewCard: (event) ->
     event.stopPropagation()
     return unless 1 < @model.cards().length # don't add new card unless there is already more than 1
-    @model.createCard
-      sourcePath: @sourcePath
-      creator: @boardView.model.get('user_id')
-      focus: true
+    @model.createCard()
 
   hiDropOnToBoard: (event, boardView) -> # noop group can move freely on a board
