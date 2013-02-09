@@ -9,13 +9,21 @@ class boardroom.models.Card extends Backbone.Model
   initialize: (attributes, options) ->
     @.on 'change:groupId', (card, groupId, options) =>
       console.log "card.on change:groupId - #{groupId}"
-      @get('group').get('cards').remove @, options
-      @get('group').get('board').findGroup(groupId).get('cards').add @, options
+      @group().get('cards').remove @, options
+      @board().findGroup(groupId).cards().add @, options
       @touch()
+
+  group: -> @get 'group'
+  board: -> @group().board()
+  currentUser: -> @board().currentUser()
 
   moveTo: (x, y) ->
     @set { x, y }
     @touch()
+
+  drop: ->
+    @unset 'x'
+    @unset 'y'
 
   type: (text) ->
     @set { text }
@@ -26,15 +34,15 @@ class boardroom.models.Card extends Backbone.Model
     @touch()
 
   focus: () ->
-    @get('group').bringForward()
+    @group().bringForward()
 
   delete: ->
-    cards = @get('group').get('cards')
+    cards = @group().get('cards')
     cards.remove @
     @trigger 'destroy', @, cards, {}
 
   plusOne: ->
-    @get('group').bringForward()
+    @group().bringForward()
     plusAuthors = @get 'plusAuthors'
     author = @currentUser()
     unless plusAuthors.indexOf(author) >= 0
@@ -42,9 +50,6 @@ class boardroom.models.Card extends Backbone.Model
       clone.push author
       @set 'plusAuthors', clone
     @touch()
-
-  currentUser: ->
-    @get('group').get('board').get('user_id')
 
   touch: =>
     authors = @get 'authors'

@@ -96,18 +96,21 @@ class boardroom.views.Card extends boardroom.views.Base
     @$('textarea').focus() if @model.get('focus')
     @
 
-  updateColor: (color) ->
+  updateColor: (color, options) ->
     @$el.removeClassMatching /color-\d+/g
     @$el.addClass "color-#{color ? 2}"
 
-  updateText: (text) =>
+  updateText: (text, options) =>
     @$el.find('textarea').val(text)
-    @showNotice user: @model.get('author'), message: "#{@model.get('author')} is typing..."
+    if options.rebroadcast
+      @showNotice user: @model.get('author'), message: "#{@model.get('author')} is typing..."
+      @authorLock.lock 500
 
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
-    @showNotice user: @model.get('author'), message: @model.get('author')
-    @authorLock.lock 500
+    if options.rebroadcast
+      @showNotice user: @model.get('author'), message: @model.get('author')
+      @authorLock.lock 500
 
   updatePlusAuthors: (plusAuthors, options) =>
     return if plusAuthors.length == 0

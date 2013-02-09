@@ -83,7 +83,11 @@ class boardroom.views.Group extends boardroom.views.Base
         @emitRemoveIndicator cssClass:'stackable'
         @updateGroup()
       onDrop: (event, target) =>
-        @model.get('board').mergeGroups @$el.attr('id'), $(target).attr('id')
+        id = $(target).attr 'id'
+        if $(target).is('.card')
+          @model.dropCard id
+        else if $(target).is('.group')
+          @model.dropGroup id
         @$el.removeClass 'stackable'
       shouldBlockHover: (data) =>
         view = $(data.target).data('view')
@@ -105,15 +109,16 @@ class boardroom.views.Group extends boardroom.views.Base
     @
 
   updateName: (name, options) =>
+    @$('.name').val(name).trimInput(80)
     if options.rebroadcast
       @disableEditing '.name', name
       @authorLock.lock()
-    @$('.name').val(name).trimInput(80)
 
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
-    @showNotice user: @model.get('author'), message: @model.get('author')
-    @authorLock.lock 500
+    if options.rebroadcast
+      @showNotice user: @model.get('author'), message: @model.get('author')
+      @authorLock.lock 500
 
   updateZIndex: (z, options) =>
     @$el.css 'z-index', z

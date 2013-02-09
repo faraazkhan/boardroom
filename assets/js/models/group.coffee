@@ -13,21 +13,28 @@ class boardroom.models.Group extends Backbone.Model
     super attributes, options
     @set 'cards', cards
 
-  cards: ()-> @get('cards')
+  cards: -> @get 'cards'
+  board: -> @get 'board'
+  currentUser: -> @board().currentUser()
 
   findCard: (id) ->
-    @get('cards').find (card) ->
+    @cards().find (card) ->
       card.id == id
 
   moveTo: (x, y) ->
-    @set
-      x: x
-      y: y
-      author: @get('board').get('user_id')
+    @set {x, y}
 
   bringForward: ->
-    maxZ = @get('board').maxZ()
+    maxZ = @board().maxZ()
     @set('z', maxZ + 1) unless @get('z') == maxZ
 
   createCard: (data)->
     @cards().add(new boardroom.models.Card(data))
+
+  dropCard: (id) =>
+    card = @board().findCard id
+    card.set 'groupId', @get('_id')
+    card.drop()
+
+  dropGroup: (id) =>
+    @board().mergeGroups @get('_id'), id

@@ -13,14 +13,17 @@ class boardroom.models.Board extends Backbone.Model
     @set 'groups', groups
     groups.on 'add', (group, options) => @handleGroupCallback(group)
 
+  currentUser: -> @get 'user_id'
+  groups: -> @get 'groups'
+
   findCard: (id) ->
     card = null
-    @get('groups').each (group) ->
+    @groups().each (group) ->
       card = group.findCard(id) unless card?
     card
 
   findGroup: (id) ->
-    @get('groups').find (group) ->
+    @groups().find (group) ->
       group.id == id
 
   addUser: (user) =>
@@ -50,15 +53,13 @@ class boardroom.models.Board extends Backbone.Model
 
   dropCard: (id) =>
     card = @findCard id
-    group = card.get('group')
     coords =
-      x: card.get('x') + group.get('x')
-      y: card.get('y') + group.get('y')
+      x: card.get('x') + @group().get('x')
+      y: card.get('y') + @group().get('y')
     group = @newGroupAt coords
     @addGroupCallback group, (group) =>
       card.set 'groupId', group.id
-      card.unset 'x'
-      card.unset 'y'
+      card.drop()
     @get('pendingGroups').add group
 
   dropGroup: (id) =>
