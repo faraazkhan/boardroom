@@ -144,15 +144,9 @@ class boardroom.views.Base extends Backbone.View
     newZ
 
   moveBackToRestingSpot: () ->
-    @socket.emit "#{@className}.update",
-      _id: @model.id
-      x: @restingSpot.left # resting spot may use auto (so do not @emitMove())
+    @model.set
+      x: @restingSpot.left
       y: @restingSpot.top
-      author: @model.get('board').get('user_id')
-    properties = 
-      left: @restingSpot.left
-      top: @restingSpot.top
-    @$el.css properties
 
   ###
       services

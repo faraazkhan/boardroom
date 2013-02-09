@@ -110,12 +110,12 @@ class boardroom.views.Group extends boardroom.views.Base
       @authorLock.lock()
     @$('.name').val(name).trimInput(80)
 
-  updatePosition: (x, y) =>
+  updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
     @showNotice user: @model.get('author'), message: @model.get('author')
     @authorLock.lock 500
 
-  updateZIndex: (z) =>
+  updateZIndex: (z, options) =>
     @$el.css 'z-index', z
 
   updateCards: (cards) =>

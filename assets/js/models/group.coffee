@@ -2,6 +2,9 @@ class boardroom.models.Group extends Backbone.Model
 
   idAttribute: '_id'
 
+  defaults:
+    pendingCards: new Backbone.Collection()
+
   initialize: (attributes, options) ->
     attributes ||= {}
     cards = new Backbone.Collection _.map(attributes.cards, (card) ->

@@ -7,11 +7,6 @@ class Handler
   constructor: (@modelClass, @name) ->
 
   registerAll: ->
-    #broadcastEmit = @socket.broadcast.emit
-    #@socket.broadcast.emit = (event, data) ->
-    #  data.broadcast = true if data?
-    #  broadcastEmit.call @, event, data
-
     @register "#{@name}.create", @handleCreate
     @register "#{@name}.update", @handleUpdate
     @register "#{@name}.delete", @handleDelete
@@ -24,6 +19,7 @@ class Handler
       handler event, data
 
   handleCreate: (event, data) =>
+    console.log "handleCreate: #{event}"
     model = new @modelClass data
     model.save (error, card) =>
       throw error if error?

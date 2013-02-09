@@ -15,35 +15,36 @@ class boardroom.Handler
     @socket.on 'group.update', @onGroupUpdate
     #@socket.on 'group.update-cards', @onGroupUpdateCards
     @socket.on 'group.delete', @onGroupDelete
+    @socket.on 'card.create', @onCardCreate
     @socket.on 'card.update', @onCardUpdate
     @socket.on 'card.delete', @onCardDelete
     #@socket.on 'view.add-indicator', @onAddIndicator
     #@socket.on 'view.remove-indicator', @onRemoveIndicator
 
     @board.on 'change', (board, options) =>
-      unless options.rebroadcast?
-        @send 'board.update', @boardMessage()
+      @send 'board.update', @boardMessage(), options
 
     groups = @board.get 'groups'
-    groups.on 'change', (group, options) =>
-      unless options.rebroadcast?
-        @send 'group.update', @groupMessage(group, _(options.changes).keys())
+    groups.on 'change', (group, options) => @send 'group.update', @groupMessage(group), options
+    groups.on 'remove', (group, groups, options) => @send 'group.delete', group.id, options
 
-    groups.on 'remove', (group, groups, options) =>
-      unless options.rebroadcast?
-        @send 'group.delete', group.id
+    handleCardEvents = (card) =>
+      card.on 'change', (card, options) => @send 'card.update', @cardMessage(card), options
+      card.on 'destroy', (card, cards, options) => @send 'card.delete', card.id, options
 
-    onCardEvents = (group) =>
-      group.get('cards').each (card) =>
-        card.on 'change', (card, options) =>
-          unless options.rebroadcast?
-            @send 'card.update', @cardMessage(card, _(options.changes).keys())
-        card.on 'destroy', (card, cards, options) =>
-          unless options.rebroadcast?
-            @send 'card.delete', card.id
+    handleGroupEvents = (group) =>
+      cards = group.get 'cards'
+      cards.each handleCardEvents
+      cards.on 'add', handleCardEvents
 
-    groups.each (group) => onCardEvents(group)
-    groups.on 'add', onCardEvents # new groups need to handle these events too
+      pendingCards = group.get 'pendingCards'
+      pendingCards.off 'add'
+      pendingCards.on 'add', (card) =>
+        @send 'card.create', @cardMessage(card)
+        pendingCards.remove card
+
+    groups.each handleGroupEvents
+    groups.on 'add', handleGroupEvents
 
     pendingGroups = @board.get 'pendingGroups'
     pendingGroups.on 'add', (group) =>
@@ -53,8 +54,9 @@ class boardroom.Handler
   createSocket: () ->
     io.connect "#{@socketHost()}/boards/#{@board.id}"
 
-  send: (name, message) ->
+  send: (name, message, options) ->
     return unless message?
+    return if options?.rebroadcast
     unless name == 'group.update'
       console.log "send: #{name}"
       console.log message
@@ -104,6 +106,11 @@ class boardroom.Handler
       return
     @board.get('groups').remove group, { rebroadcast: true }
 
+  onCardCreate: (message) =>
+    console.log 'onCardCreate'
+    group = @board.findGroup message.groupId
+    group.get('cards').add(new boardroom.models.Card(message), { rebroadcast: true })
+
   onCardUpdate: (message) =>
     console.log 'onCardUpdate'
     card = @board.findCard message._id
@@ -126,20 +133,23 @@ class boardroom.Handler
   boardMessage: () =>
     _(@board.toJSON()).pick('_id', 'name')
 
-  groupMessage: (group, attrs) =>
+  groupMessage: (group) =>
+    attrs = _(group.changed).keys()
     message = group.toJSON()
-    message = _(message).pick(attrs) if attrs?
+    message = _(message).pick(attrs) if message._id # restrict to changed attrs on updates only
     message = _(message).omit('board')
     return null if _(message).isEmpty()
 
     message._id = group.id if group.id?
+    message.cards = message.cards.toJSON() if message.cards?
     message.boardId = @board.id unless message._id
     message.author = @board.get 'user_id'
     message
 
-  cardMessage: (card, attrs) =>
+  cardMessage: (card) =>
+    attrs = _(card.changed).keys()
     message = card.toJSON()
-    message = _(message).pick(attrs) if attrs?
+    message = _(message).pick(attrs) if message._id # restrict to changed attrs on updates only
     message = _(message).omit('group', 'board')
     return null if _(message).isEmpty()
 

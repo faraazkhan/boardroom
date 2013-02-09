@@ -13,24 +13,16 @@ class boardroom.views.Board extends boardroom.views.Base
     @resizeHTML()
     $(window).resize => @resizeHTML()
 
-    @model.on 'change:status', @displayStatus, @
-
-    @model.get('groups').on 'add', (group) =>
-      console.log 'groups.on add'
-      @displayNewGroup group
-
-    @model.get('groups').on 'remove', (group) =>
-      console.log 'groups.on remove'
-      $("##{group.id}").remove()
+    @model.on 'change:status', (board, status, options) => @displayStatus()
+    @model.get('groups').on 'add', (group) => @displayNewGroup(group)
+    @model.get('groups').on 'remove', (group) => @removeGroup(group)
 
   initializeSourcePath: ()->
-    @sourcePath = 
+    @sourcePath =
       boardId: @model.id
 
   initializeGroups: ->
-    groups = @model.get('groups')
-    groups.each (group) =>
-      @displayNewGroup group
+    @model.get('groups').each (group) => @displayNewGroup(group)
 
   initializeDroppable: ->
     @$el.droppable
@@ -40,7 +32,11 @@ class boardroom.views.Board extends boardroom.views.Base
       onBlur: (event, target) =>
         @$el.removeClass 'stackable'
       onDrop: (mouseEvent, target) =>
-        $(target).data('view').hiDropOnToBoard mouseEvent, @
+        id = $(target).attr('id')
+        if $(target).is('.card')
+          @model.dropCard id
+        else if $(target).is('.group')
+          @model.dropGroup id
         @$el.removeClass 'stackable'
       shouldBlockHover: (coordinate) =>
         (return true if group.containsPoint(coordinate)) for group in @groupViews
@@ -76,6 +72,9 @@ class boardroom.views.Board extends boardroom.views.Base
     # set the focus if group was just created by this user
     card = groupView.model?.get('cards')?[0]
     @findView(card?._id)?.$('textarea').focus() if @model.get('user_id') is card?.creator
+
+  removeGroup: (group) =>
+    $("##{group.id}").remove()
 
   ###
       utils
@@ -121,28 +120,6 @@ class boardroom.views.Board extends boardroom.views.Base
     view = @findView data._id
     view.removeIndicator data if view?
 
-  onGroupUpdate: (data) =>
-    groupView = @findView data._id
-    groupView.update data if groupView?
-
   onGroupUpdateCards: (data) =>
     groupView = @findView data.groupId
     groupView.updateCards data.cards if groupView?
-
-  onGroupDelete: (id) =>
-    groupView = @findView id
-    return unless groupView?
-    groupView.eventsOff() # prevent further clicks and drops during animate the delete
-    groupView.$el.slideUp 'fast', ()->
-      groupView.destroy()
-
-  onCardUpdate: (data) =>
-    cardView = @findView data._id
-    cardView.update data if cardView?
-
-  onCardDelete: (id) =>
-    cardView = @findView id
-    return unless cardView?
-    cardView.eventsOff() # prevent further clicks and drops during animate the delete
-    cardView.destroy()
-    cardView.groupView.updateGroup()

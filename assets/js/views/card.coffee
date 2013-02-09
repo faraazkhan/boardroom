@@ -41,6 +41,8 @@ class boardroom.views.Card extends boardroom.views.Base
     @initializeDraggable()
     @model.on 'change:colorIndex', (card, colorIndex, options) => @updateColor(colorIndex, options)
     @model.on 'change:text', (card, text, options) => @updateText(text, options)
+    @model.on 'change:x', (card, x, options) => @updatePosition(x, @model.get('y'), options)
+    @model.on 'change:y', (card, y, options) => @updatePosition(@model.get('x') ,y, options)
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
@@ -62,11 +64,11 @@ class boardroom.views.Card extends boardroom.views.Base
         true
       isOkToDrag: () => 
         # dont allow card to drag if its the only one in its group (allow the group to drag)
-        1 < @groupView.cardCount()
+        @model.get('group').get('cards').length > 1
       onMouseDown: =>
-        @groupView.model.bringForward()
+        @model.get('group').bringForward()
       onMouseMove: =>
-        @emitMove()
+        @model.moveTo @left(), @top()
       onMouseUp: =>
         nothingToDropOnto = => @moveBackToRestingSpot() if (@$el? and @$el.is(':visible'))
         setTimeout nothingToDropOnto, 350 # move back if nothing picks up the drop
@@ -124,6 +126,11 @@ class boardroom.views.Card extends boardroom.views.Base
 
   updateText: (text) =>
     @$el.find('textarea').val(text)
+
+  updatePosition: (x, y, options) =>
+    @moveTo x: x, y: y
+    @showNotice user: @model.get('author'), message: @model.get('author')
+    @authorLock.lock 500
 
   addPlusAuthor: (author) ->
     avatar = boardroom.models.User.avatar author
@@ -195,7 +202,7 @@ class boardroom.views.Card extends boardroom.views.Base
       @socket.emit 'card.update', { _id: @model.id, text, z, author }
 
   hiFocusText: (event)->
-    @groupView.model.bringForward()
+    @model.get('group').bringForward()
     @$('textarea').focus()
 
   hiIncrementPlusCount: (e) ->

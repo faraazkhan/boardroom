@@ -10,6 +10,12 @@ class boardroom.models.Card extends Backbone.Model
       @get('group').get('cards').remove @, options
       @get('group').get('board').findGroup(groupId).get('cards').add @, options
 
+  moveTo: (x, y) ->
+    @set
+      x: x
+      y: y
+      author: @get('group').get('board').get('user_id')
+
   delete: ->
     cards = @get('group').get('cards')
     cards.remove @
