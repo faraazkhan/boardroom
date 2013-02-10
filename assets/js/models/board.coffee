@@ -37,7 +37,6 @@ class boardroom.models.Board extends Backbone.Model
     @addGroupCallback group, (group) =>
       card =
         creator: creator
-        focus: true
         groupId: group.id
         authors: [ creator ]
       group.get('pendingCards').add(new boardroom.models.Card(card))

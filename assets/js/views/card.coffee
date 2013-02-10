@@ -57,7 +57,7 @@ class boardroom.views.Card extends boardroom.views.Base
         # return false if $(target).is '.color'
         return false if $(target).is '.delete'
         true
-      isOkToDrag: () => 
+      isOkToDrag: () =>
         # dont allow card to drag if its the only one in its group (allow the group to drag)
         @model.group().cards().length > 1
       onMouseDown: =>
@@ -86,7 +86,6 @@ class boardroom.views.Card extends boardroom.views.Base
     @updateColor @model.get('colorIndex')
     @updateAuthors @model.get('authors')
     @updatePlusAuthors @model.get('plusAuthors')
-    @$('textarea').focus() if @model.get('focus')
     @
 
   updateColor: (color, options) ->
@@ -140,6 +139,9 @@ class boardroom.views.Card extends boardroom.views.Base
     $card.removeClass 'i-wish i-like'
     if matches = $textarea.val().match /^i (like|wish)/i
       $card.addClass("i-#{matches[1]}")
+
+  focus: ->
+    @$el.find('textarea').focus()
 
   ###
       human interaction event handlers

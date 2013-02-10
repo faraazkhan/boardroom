@@ -33,7 +33,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
     # in the case of a move, we should move it via jquery
     @model.get('cards').on 'add', (card, options) =>
-      @displayNewCard card
+      @displayNewCard card, options
 
     @model.get('cards').on 'remove', (card, options) =>
       $("##{card.id}").remove()
@@ -117,10 +117,6 @@ class boardroom.views.Group extends boardroom.views.Base
       @$el.removeClass 'stackable'
       @updateGroup()
 
-  updateCards: (cards) =>
-    @displayNewCard card for card in cards
-    @updateGroup()
-
   updateGroup: ()-> # unstyle the group if there is only 1 card
     if 1 < @cardCount()
       fadeComplete = =>
@@ -138,18 +134,14 @@ class boardroom.views.Group extends boardroom.views.Base
   cardCount: ()->
     @model.cards().length
 
-  displayNewCard: (data) ->
-    bindings =
-      'group': @model
-      'board': @model.board()
-    data.set bindings, { silent: true }
-
-    cardView = new boardroom.views.Card { model: data }
+  displayNewCard: (card, options) ->
+    card.set 'group', @model, { silent: true }
+    cardView = new boardroom.views.Card { model: card }
     @renderCardInOrder cardView
     setTimeout ( => cardView.adjustTextarea() ), 100
     @updateGroup()
     @resizeHTML()
-    # set the focus if card was just created by this user - do we need to do this?
+    cardView.focus() if card.get('creator') == @model.currentUser()
 
   renderCardInOrder: (cardView) ->
     elCard = cardView.render().el
@@ -165,7 +157,6 @@ class boardroom.views.Group extends boardroom.views.Base
       $(elCard).insertBefore nextCardView.el # insert in order 
     else 
       @$el.append(elCard) # put it at the end if this is the last card
-
 
   ###
       human interaction event handlers
