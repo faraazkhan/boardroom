@@ -16,42 +16,18 @@ describe 'card.Card', ->
         @card = Factory.sync 'card'
 
       it 'updates its attributes', ->
+        numAuthors = @card.authors.length
+        numPlusAuthors = @card.plusAuthors.length
         attributes =
           text: "#{@card.text}-updated"
           colorIndex: @card.colorIndex + 1
           deleted: ! @card.deleted
+          authors: [ @card.authors... ,  'author1' ]
+          plusAuthors: [ @card.plusAuthors... , 'plusAuthor1']
         @card.sync.updateAttributes attributes
         card = Card.sync.findById @card.id
         expect(card.text).toEqual attributes.text
         expect(card.colorIndex).toEqual attributes.colorIndex
+        expect(card.authors.length).toEqual numAuthors+1
+        expect(card.plusAuthors.length).toEqual numPlusAuthors+1
         expect(card.deleted).toEqual attributes.deleted
-
-    describe 'given a new author to the card', ->
-      beforeEach ->
-        @card = Factory.sync 'card'
-
-      it 'adds them to its authors', ->
-        count = @card.authors.length
-        @card.sync.updateAttributes author: 'author1'
-        expect(@card.authors.length).toEqual count + 1
-
-      it 'does not add duplicate authors', ->
-        count = @card.authors.length
-        @card.sync.updateAttributes author: 'author1'
-        @card.sync.updateAttributes author: 'author1'
-        expect(@card.authors.length).toEqual count + 1
-
-    describe 'given a new plus author to the card', ->
-      beforeEach ->
-        @card = Factory.sync 'card'
-
-      it 'adds them to its plus authors', ->
-        count = @card.authors.length
-        @card.sync.updateAttributes plusAuthor: 'plusAuthor1'
-        expect(@card.plusAuthors.length).toEqual count + 1
-
-      it 'does not add duplicate plus authors', ->
-        count = @card.authors.length
-        @card.sync.updateAttributes plusAuthor: 'plusAuthor1'
-        @card.sync.updateAttributes plusAuthor: 'plusAuthor1'
-        expect(@card.plusAuthors.length).toEqual count + 1
