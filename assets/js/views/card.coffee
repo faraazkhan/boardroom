@@ -29,21 +29,21 @@ class boardroom.views.Card extends boardroom.views.Base
     id: @model.id
 
   events: # human interaction event
-    'click .color': 'hiChangeColor'
-    'keyup textarea': 'hiChangeText'
-    'click textarea': 'hiFocusText'
+    'click .color'     : 'hiChangeColor'
+    'keyup textarea'   : 'hiChangeText'
+    'click textarea'   : 'hiFocusText'
     'click .plus1 .btn': 'hiIncrementPlusCount'
     'click .delete-btn': 'hiDelete'
 
   initialize: (attributes) ->
     super attributes
     @initializeDraggable()
-    @model.on 'change:colorIndex', (card, colorIndex, options) => @updateColor(colorIndex, options)
-    @model.on 'change:text', (card, text, options) => @updateText(text, options)
-    @model.on 'change:x', (card, x, options) => @updatePosition(x, @model.get('y'), options)
-    @model.on 'change:y', (card, y, options) => @updatePosition(@model.get('x') ,y, options)
-    @model.on 'change:plusAuthors', (card, plusAuthors, options) => @updatePlusAuthors(plusAuthors, options)
-    @model.on 'change:authors', (card, authors, options) => @updateAuthors(authors, options)
+    @model.on 'change:colorIndex',  @updateColor, @
+    @model.on 'change:text',        @updateText, @
+    @model.on 'change:x',           @updateX, @
+    @model.on 'change:y',           @updateY, @
+    @model.on 'change:plusAuthors', @updatePlusAuthors, @
+    @model.on 'change:authors',     @updateAuthors, @
 
   onLockPoll: ()=>
     @enableEditing 'textarea'
@@ -79,20 +79,26 @@ class boardroom.views.Card extends boardroom.views.Base
   render: ->
     @$el.html(@template(@model.toJSON()))
     @updatePosition @model.get('x'), @model.get('y')
-    @updateColor @model.get('colorIndex')
-    @updateAuthors @model.get('authors')
-    @updatePlusAuthors @model.get('plusAuthors')
+    @updateColor @model, @model.get('colorIndex')
+    @updateAuthors @model, @model.get('authors')
+    @updatePlusAuthors @model, @model.get('plusAuthors')
     @
 
-  updateColor: (color, options) ->
+  updateColor: (card, color, options) ->
     @$el.removeClassMatching /color-\d+/g
     @$el.addClass "color-#{color ? 2}"
 
-  updateText: (text, options) =>
+  updateText: (card, text, options) =>
     @$el.find('textarea').val(text)
     if options?.rebroadcast
       @showNotice user: @model.get('author'), message: "#{@model.get('author')} is typing..."
       @authorLock.lock 500
+
+  updateX: (card, x, options) =>
+    @updatePosition x, card.get('y'), options
+
+  updateY: (card, y, options) =>
+    @updatePosition card.get('x'), y, options
 
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
@@ -100,7 +106,7 @@ class boardroom.views.Card extends boardroom.views.Base
       @showNotice user: @model.get('author'), message: @model.get('author')
       @authorLock.lock 500
 
-  updatePlusAuthors: (plusAuthors, options) =>
+  updatePlusAuthors: (card, plusAuthors, options) =>
     return if plusAuthors.length == 0
 
     $plusCount = @$('.plus-count')
@@ -116,7 +122,7 @@ class boardroom.views.Card extends boardroom.views.Base
     if plusAuthors.indexOf(@model.currentUser()) > -1
         @$('.plus1 .btn').remove()
 
-  updateAuthors: (authors, options) =>
+  updateAuthors: (card, authors, options) =>
     return if authors.length == 0
 
     $authors = @$('.authors')

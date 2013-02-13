@@ -14,7 +14,7 @@ class boardroom.views.Group extends boardroom.views.Base
     id: @model.id
 
   events:
-    'keyup .name': 'hiChangeGroupName'
+    'keyup .name'    : 'hiChangeGroupName'
     'click .add-card': 'hiRequestNewCard'
 
   initialize: (attributes) ->
@@ -25,11 +25,11 @@ class boardroom.views.Group extends boardroom.views.Base
     @initializeDraggable()
     @initializeDroppable()
 
-    @model.on 'change:name', (group, name, options) => @updateName(name, options)
-    @model.on 'change:x', (group, x, options) => @updatePosition(x, group.get('y'), options)
-    @model.on 'change:y', (group, y, options) => @updatePosition(group.get('x'), y, options)
-    @model.on 'change:z', (group, z, options) => @updateZIndex(z, options)
-    @model.on 'change:hover', (group, hover, options) => @updateHover(hover, options)
+    @model.on 'change:name',  @updateName, @
+    @model.on 'change:x',     @updateX, @
+    @model.on 'change:y',     @updateY, @
+    @model.on 'change:z',     @updateZ, @
+    @model.on 'change:hover', @updateHover, @
 
     # in the case of a move, we should move it via jquery
     @model.get('cards').on 'add', (card, options) =>
@@ -86,15 +86,21 @@ class boardroom.views.Group extends boardroom.views.Base
   render: ->
     @$el.html(@template(@model.toJSON()))
     @updatePosition @model.get('x'), @model.get('y')
-    @updateZIndex @model.get('z')
+    @updateZ @model, @model.get('z')
     @updateGroup()
     @
 
-  updateName: (name, options) =>
+  updateName: (group, name, options) =>
     @$('.name').val(name).trimInput(80)
     if options?.rebroadcast
       @disableEditing '.name', name
       @authorLock.lock()
+
+  updateX: (group, x, options) =>
+    @updatePosition x, group.get('y'), options
+
+  updateY: (group, y, options) =>
+    @updatePosition group.get('x'), y, options
 
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
@@ -102,10 +108,10 @@ class boardroom.views.Group extends boardroom.views.Base
       @showNotice user: @model.get('author'), message: @model.get('author')
       @authorLock.lock 500
 
-  updateZIndex: (z, options) =>
+  updateZ: (group, z, options) =>
     @$el.css 'z-index', z
 
-  updateHover: (hover, options) =>
+  updateHover: (group, hover, options) =>
     if hover
       @$el.addClass 'stackable'
       @$el.removeClass 'single-card'

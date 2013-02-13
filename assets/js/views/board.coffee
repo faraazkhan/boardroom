@@ -13,7 +13,8 @@ class boardroom.views.Board extends boardroom.views.Base
     @resizeHTML()
     $(window).resize => @resizeHTML()
 
-    @model.on 'change:status', (board, status, options) => @displayStatus()
+    @model.on 'change:status', @updateStatus, @
+
     @model.get('groups').on 'add', (group) => @displayNewGroup(group)
     @model.get('groups').on 'remove', (group) => @removeGroup(group)
 
@@ -45,8 +46,7 @@ class boardroom.views.Board extends boardroom.views.Base
   statusDiv: ->
     @$('#connection-status')
 
-  displayStatus: ->
-    status = @model.get 'status'
+  updateStatus: (board, status, options) =>
     @statusDiv().html status
     if status then @statusModalDiv().show() else @statusModalDiv().hide()
 
@@ -55,8 +55,6 @@ class boardroom.views.Board extends boardroom.views.Base
     groupView = new boardroom.views.Group { model: data }
     @$el.append groupView.el
     @resizeHTML()
-
-    # set the focus if group was just created by this user - do we need to do this?
 
   removeGroup: (group) =>
     $("##{group.id}").remove()
