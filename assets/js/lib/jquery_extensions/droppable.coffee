@@ -3,17 +3,16 @@ $.fn.droppable = (opts) ->
 
   settings = $.extend true,
     threshold: 50
+    priority: 0
     onHover: (event, target) ->
     onBlur: (event, target) ->
     onDrop: (event, target) ->
-    shouldBlockHover: (coordinates) -> false
   , opts
 
   hovering = false
 
   isHovering = (data) ->
     return false unless data?
-    return false if settings.shouldBlockHover(data)
     threshold = settings.threshold
     offset = $this.offset()
     (offset.left - threshold) <= data.x <= (offset.left + threshold) and (offset.top - threshold) <= data.y <= (offset.top + threshold)
@@ -36,6 +35,10 @@ $.fn.droppable = (opts) ->
     return unless $this.is(':visible')
 
     if isHovering(data)
-      settings.onDrop data.mouseEvent, data.target
+      drop = ->
+        unless event.isPropagationStopped()
+          event.stopPropagation()
+          settings.onDrop data.mouseEvent, data.target
+      setTimeout drop, settings.priority * 10
 
   $this
