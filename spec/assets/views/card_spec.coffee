@@ -31,7 +31,26 @@ describe 'boardroom.views.Card', =>
       model: @card
       groupView: @groupView
       boardView: @boardView
-    @cardView.render()
+    $('.board').append @cardView.render()
+
+  describe 'render event', =>
+    it 'displays', =>
+      # expect($('.card').length).toBeGreaterThan 0  -- Why doesn't the fixture work?
+      expect(@cardView.$el.children().length).toBeGreaterThan 0
+      
+    it 'redisplays when color changes', =>
+      oldColorIndex = @card.get('colorIndex')
+      colorIndex = oldColorIndex+1
+      expect(@cardView.$el).toHaveClass "color-#{oldColorIndex}"
+
+      @card.set('colorIndex', colorIndex) # set the model
+      expect(@cardView.$el).toHaveClass "color-#{colorIndex}" # expect the view to update
+
+  #   xit 'redisplays when text changes', ->
+  #   xit 'repositions when x changes', ->
+  #   xit 'repositions when y changes', ->
+  #   xit 'redisplays when +1 increments', ->
+  #   xit 'redisplays when there is a new contributor', ->
 
   describe 'hi event', =>
 
@@ -92,12 +111,3 @@ describe 'boardroom.views.Card', =>
   #     it 'deletes the card', ->
   #       expect(@card.get('plusAuthors').length).toEqual @plusAuthorCount+1
   #       expect(@cardView.$('.plus-count').text()).toBe("+#{@plusAuthorCount+1}")
-
-  # describe 'render event', ->
-  #   xit 'displays', ->
-  #   xit 'redisplays when color changes', ->
-  #   xit 'redisplays when text changes', ->
-  #   xit 'repositions when x changes', ->
-  #   xit 'repositions when y changes', ->
-  #   xit 'redisplays when +1 increments', ->
-  #   xit 'redisplays when there is a new contributor', ->
