@@ -36,9 +36,12 @@ $.fn.droppable = (opts) ->
 
     if isHovering(data)
       drop = ->
-        unless event.isPropagationStopped()
+        if event.isPropagationStopped()
+          settings.onBlur event, data.target
+        else
           event.stopPropagation()
           settings.onDrop data.mouseEvent, data.target
+
       setTimeout drop, settings.priority * 10
 
   $this

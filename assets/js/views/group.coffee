@@ -81,7 +81,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @$el.html(@template(@model.toJSON()))
     @updatePosition @model.get('x'), @model.get('y')
     @updateZ @model, @model.get('z')
-    @updateGroup()
+    @updateGroupChrome()
     @
 
   updateName: (group, name, options) =>
@@ -111,10 +111,10 @@ class boardroom.views.Group extends boardroom.views.Base
       @$el.removeClass 'single-card'
     else
       @$el.removeClass 'stackable'
-      @updateGroup()
+      @updateGroupChrome()
 
-  updateGroup: ()-> # unstyle the group if there is only 1 card
-    if 1 < @cardCount()
+  updateGroupChrome: ->
+    if @model.cards().length > 1
       fadeComplete = =>
         if ! @nameDecorated
           @$('.name').trimInput(80)
@@ -127,21 +127,18 @@ class boardroom.views.Group extends boardroom.views.Base
       @$('.add-card').hide()
       @$el.addClass('single-card') unless @$el.is('single-card')
 
-  cardCount: ()->
-    @model.cards().length
-
   displayNewCard: (card, options) =>
     card.set 'group', @model, { silent: true }
     cardView = new boardroom.views.Card { model: card }
     @renderCardInOrder cardView
     setTimeout ( => cardView.adjustTextarea() ), 100
-    @updateGroup()
+    @updateGroupChrome()
     @resizeHTML()
     cardView.focus() if card.get('creator') == @model.currentUser()
 
   removeCard: (card, options) =>
     $("##{card.id}").remove()
-    @updateGroup()
+    @updateGroupChrome()
 
   renderCardInOrder: (cardView) ->
     elCard = cardView.render().el

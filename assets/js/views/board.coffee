@@ -25,16 +25,11 @@ class boardroom.views.Board extends boardroom.views.Base
     @$el.droppable
       threshold: Math.max @$el.height(), @$el.width()
       priority: 1
-      onHover: (event, target) =>
-        @$el.addClass 'stackable' unless @$el.is 'stackable'
-      onBlur: (event, target) =>
-        @$el.removeClass 'stackable'
       onDrop: (mouseEvent, target) =>
         console.log "board.onDrop"
         id = $(target).attr('id')
         @model.dropCard(id)  if $(target).is('.card')
         @model.dropGroup(id) if $(target).is('.group')
-        @$el.removeClass 'stackable'
 
   ###
       render
@@ -64,5 +59,6 @@ class boardroom.views.Board extends boardroom.views.Base
   ###
 
   hiRequestNewCard: (event) ->
+    console.log "hiRequestNewCard: #{event.target.className}"
     return unless event.target.className == 'board'
     @model.createGroup(@coordinateOfEvent event)
