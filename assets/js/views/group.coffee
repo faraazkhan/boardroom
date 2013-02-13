@@ -85,24 +85,21 @@ class boardroom.views.Group extends boardroom.views.Base
   ###
 
   render: ->
-    @$el
-      .html(@template(@model.toJSON()))
-      .css
-        left: @model.get('x')
-        top: @model.get('y')
-        'z-index': @model.get('z')
+    @$el.html(@template(@model.toJSON()))
+    @updatePosition @model.get('x'), @model.get('y')
+    @updateZIndex @model.get('z')
     @updateGroup()
     @
 
   updateName: (name, options) =>
     @$('.name').val(name).trimInput(80)
-    if options.rebroadcast
+    if options?.rebroadcast
       @disableEditing '.name', name
       @authorLock.lock()
 
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
-    if options.rebroadcast
+    if options?.rebroadcast
       @showNotice user: @model.get('author'), message: @model.get('author')
       @authorLock.lock 500
 
