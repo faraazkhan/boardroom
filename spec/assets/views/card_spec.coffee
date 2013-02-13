@@ -67,7 +67,6 @@ describe 'boardroom.views.Card', =>
 
     describe 'clicking +1', =>
       beforeEach =>
-        @card.set('authors', [])
         @authorCount = @card.get('authors').length
         @plusAuthorCount = @card.get('plusAuthors').length
         @cardView
@@ -78,9 +77,9 @@ describe 'boardroom.views.Card', =>
         expect(@card.get('plusAuthors').length).toEqual @plusAuthorCount+1
         expect(@cardView.$('.plus-count').text()).toBe("+#{@plusAuthorCount+1}")
 
-      # it 'does not touch', =>
-      #   expect(@card.get('authors').length).toEqual @authorCount
-      #   expect(@cardView.$('.authors').children().length).toEqual @authorCount
+      it 'does not touch', =>
+        expect(@card.get('authors').length).toEqual @authorCount
+        expect(@cardView.$('.authors').children().length).toEqual @authorCount
 
   #   describe 'clicking delete', =>
   #     beforeEach =>
