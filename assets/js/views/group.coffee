@@ -31,21 +31,15 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:z',     @updateZ, @
     @model.on 'change:hover', @updateHover, @
 
-    # in the case of a move, we should move it via jquery
-    @model.get('cards').on 'add', (card, options) =>
-      @displayNewCard card, options
-
-    @model.get('cards').on 'remove', (card, options) =>
-      $("##{card.id}").remove()
-      @updateGroup()
+    # TODO: in the case of a move, we should move it via jquery
+    @model.cards().on 'add', @displayNewCard, @
+    @model.cards().on 'remove', @removeCard, @
 
   onLockPoll: ()=>
     @enableEditing '.name'
 
   initializeCards: () ->
-    cards = @model.get('cards')
-    cards.each (card) =>
-      @displayNewCard card
+    @model.cards().each @displayNewCard, @
 
   initializeDraggable: ->
     @$el.draggable
@@ -136,7 +130,7 @@ class boardroom.views.Group extends boardroom.views.Base
   cardCount: ()->
     @model.cards().length
 
-  displayNewCard: (card, options) ->
+  displayNewCard: (card, options) =>
     card.set 'group', @model, { silent: true }
     cardView = new boardroom.views.Card { model: card }
     @renderCardInOrder cardView
@@ -144,6 +138,10 @@ class boardroom.views.Group extends boardroom.views.Base
     @updateGroup()
     @resizeHTML()
     cardView.focus() if card.get('creator') == @model.currentUser()
+
+  removeCard: (card, options) =>
+    $("##{card.id}").remove()
+    @updateGroup()
 
   renderCardInOrder: (cardView) ->
     elCard = cardView.render().el

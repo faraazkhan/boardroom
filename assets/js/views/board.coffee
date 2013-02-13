@@ -15,11 +15,11 @@ class boardroom.views.Board extends boardroom.views.Base
 
     @model.on 'change:status', @updateStatus, @
 
-    @model.get('groups').on 'add', (group) => @displayNewGroup(group)
-    @model.get('groups').on 'remove', (group) => @removeGroup(group)
+    @model.groups().on 'add', @displayNewGroup, @
+    @model.groups().on 'remove', @removeGroup, @
 
   initializeGroups: ->
-    @model.get('groups').each (group) => @displayNewGroup(group)
+    @model.groups().each @displayNewGroup, @
 
   initializeDroppable: ->
     @$el.droppable
@@ -50,13 +50,13 @@ class boardroom.views.Board extends boardroom.views.Base
     @statusDiv().html status
     if status then @statusModalDiv().show() else @statusModalDiv().hide()
 
-  displayNewGroup: (data) ->
-    data.set 'board', @model, { silent: true }
-    groupView = new boardroom.views.Group { model: data }
+  displayNewGroup: (group, options) =>
+    group.set 'board', @model, { silent: true }
+    groupView = new boardroom.views.Group { model: group }
     @$el.append groupView.el
     @resizeHTML()
 
-  removeGroup: (group) =>
+  removeGroup: (group, options) =>
     $("##{group.id}").remove()
 
   ###
