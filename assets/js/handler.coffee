@@ -1,6 +1,7 @@
 class boardroom.Handler
 
   constructor: (@board, @user) ->
+    new boardroom.Watcher(@board).watch()
 
   initialize: () ->
     @socket = @createSocket()

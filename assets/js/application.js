@@ -8,6 +8,7 @@
 //= require './vendor/webfonts.js'
 //= require './vendor/jquery.zclip.min.js'
 //= require './boardroom'
+//= require './watcher'
 //= require './handler'
 //= require_tree './lib'
 //= require_tree './utils'
