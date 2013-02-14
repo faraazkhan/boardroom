@@ -50,7 +50,6 @@ class boardroom.models.Card extends Backbone.Model
       clone = _.clone(plusAuthors) # need to clone other backbone won't trigger a change event
       clone.push author
       @set 'plusAuthors', clone
-    @touch()
 
   touch: =>
     authors = @get 'authors'
