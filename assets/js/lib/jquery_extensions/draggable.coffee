@@ -33,10 +33,6 @@ $.fn.draggable = (opts) ->
     # this fixes a WebKit cursor issue (although there may be a better way)
     e.originalEvent.preventDefault() unless $(e.target).is('textarea') || $(e.target).is('input')
     return true unless settings.isTarget(e.target)
-    view = $this.data 'view'
-    view.restingSpot = 
-      left: view.$el.css('left')
-      top:  view.$el.css('top')
 
     origX = lastX = e.pageX
     origY = lastY = e.pageY

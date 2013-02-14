@@ -6,7 +6,6 @@ class boardroom.views.Base extends Backbone.View
     @authorLock.poll =>
       @hideNotice()
       @onLockPoll()
-    @$el.data 'view', @
 
   onLockPoll: ()=> # template and hook
 
@@ -99,10 +98,14 @@ class boardroom.views.Base extends Backbone.View
   bottom: ->
     @top() + @$el.height()
 
-  moveBackToRestingSpot: () ->
-    @model.set
-      x: @restingSpot.left
-      y: @restingSpot.top
+  rememberRestingSpot: =>
+    @model.set 'restingSpot',
+      x: @left()
+      y: @top()
+
+  moveBackToRestingSpot: =>
+    restingSpot = @model.get 'restingSpot'
+    @model.set restingSpot
 
   ###
       debug
