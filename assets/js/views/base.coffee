@@ -2,7 +2,7 @@ class boardroom.views.Base extends Backbone.View
 
   initialize: (attributes) ->
     @restingSpot = { left: 0, top: 0 }
-    @authorLock = new boardroom.models.CardLock
+    @authorLock = new boardroom.models.Lock
     @authorLock.poll =>
       @hideNotice()
       @onLockPoll()
@@ -15,8 +15,8 @@ class boardroom.views.Base extends Backbone.View
   enableEditing: (selector)->
     @$(selector).removeAttr 'disabled'
 
-  disableEditing: (selector, text) ->
-    @$(selector).val(text).attr('disabled', 'disabled')
+  disableEditing: (selector) ->
+    @$(selector).attr('disabled', 'disabled')
 
   containsPoint: (coordinate) ->
     c = @$el.offset()

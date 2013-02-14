@@ -104,7 +104,8 @@ class boardroom.views.Card extends boardroom.views.Base
     if options?.rebroadcast
       @triggerAutosize()
       @showNotice user: @model.get('author'), message: "#{@model.get('author')} is typing..."
-      @authorLock.lock 500
+      @disableEditing 'textarea'
+      @authorLock.lock 5000
 
   updateX: (card, x, options) =>
     @updatePosition x, card.get('y'), options

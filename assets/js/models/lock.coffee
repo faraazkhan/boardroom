@@ -1,4 +1,4 @@
-class boardroom.models.CardLock
+class boardroom.models.Lock
   constructor: ->
     @lock_data = undefined
 

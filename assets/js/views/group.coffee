@@ -92,7 +92,7 @@ class boardroom.views.Group extends boardroom.views.Base
   updateName: (group, name, options) =>
     @$('.name').val(name).trimInput(80)
     if options?.rebroadcast
-      @disableEditing '.name', name
+      @disableEditing '.name'
       @authorLock.lock()
 
   updateX: (group, x, options) =>
