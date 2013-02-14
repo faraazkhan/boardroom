@@ -140,20 +140,20 @@ class boardroom.views.Group extends boardroom.views.Base
     $("##{card.id}").remove()
     @updateGroupChrome()
 
-  renderCardInOrder: (cardView) ->
-    elCard = cardView.render().el
+  renderCardInOrder: (newCardView) ->
+    newCardDiv = newCardView.render().el
 
-    nextCardView = null
-    for card in @$('.card') # identify which card to insert cardView before
-      view = $(card).data('view')
-      if view.model.get('created') > cardView.model.get('created')
-        nextCardView = view
+    divToInsertBefore = null
+    for cardDiv in @$('.card') # identify which card to insert cardView before
+      cardModel = @model.findCard $(cardDiv).attr('id')
+      if cardModel.get('created') > newCardView.model.get('created')
+        divToInsertBefore = cardDiv
         break
 
-    if nextCardView? 
-      $(elCard).insertBefore nextCardView.el # insert in order 
-    else 
-      @$el.append(elCard) # put it at the end if this is the last card
+    if divToInsertBefore?
+      $(newCardDiv).insertBefore divToInsertBefore # insert in order
+    else
+      @$el.append(newCardDiv) # put it at the end if this is the last card
 
   ###
       human interaction event handlers
