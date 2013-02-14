@@ -19,11 +19,9 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
+    @on 'attach', @onAttach, @
+
     @model.set('name', '', { silent: true }) unless @model.get('name')
-    @render()
-    @initializeCards()
-    @initializeDraggable()
-    @initializeDroppable()
 
     @model.on 'change:name',  @updateName, @
     @model.on 'change:x',     @updateX, @
@@ -35,16 +33,23 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.cards().on 'add', @displayNewCard, @
     @model.cards().on 'remove', @removeCard, @
 
-  onLockPoll: ()=>
+  onAttach: =>
+    @render()
+    @initializeCards()
+    @initializeDraggable()
+    @initializeDroppable()
+
+  onLockPoll: =>
     @enableEditing '.name'
 
-  initializeCards: () ->
+  initializeCards: =>
     @model.cards().each @displayNewCard, @
 
   initializeDraggable: ->
+    boardOffset = @$el.closest('.board').offset()
     @$el.draggable
-    #minX: @boardView.left() + 12
-    #minY: @boardView.top()  + 12
+      minX: boardOffset.left + 5
+      minY: boardOffset.top + 5
       isTarget: (target) ->
         # return false if $(target).is 'input'
         return false if $(target).is '.color'
@@ -131,6 +136,7 @@ class boardroom.views.Group extends boardroom.views.Base
     card.set 'group', @model, { silent: true }
     cardView = new boardroom.views.Card { model: card }
     @renderCardInOrder cardView
+    cardView.trigger 'attach'
     @updateGroupChrome()
     @resizeHTML()
     cardView.focus() if card.get('creator') == @model.currentUser()
@@ -140,7 +146,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @updateGroupChrome()
 
   renderCardInOrder: (newCardView) ->
-    newCardDiv = newCardView.render().el
+    newCardDiv = newCardView.el
 
     divToInsertBefore = null
     for cardDiv in @$('.card') # identify which card to insert cardView before

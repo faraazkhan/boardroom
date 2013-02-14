@@ -49,6 +49,7 @@ class boardroom.views.Board extends boardroom.views.Base
     group.set 'board', @model, { silent: true }
     groupView = new boardroom.views.Group { model: group }
     @$el.append groupView.el
+    groupView.trigger 'attach'
     @resizeHTML()
 
   removeGroup: (group, options) =>

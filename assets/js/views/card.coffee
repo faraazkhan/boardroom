@@ -37,7 +37,8 @@ class boardroom.views.Card extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
-    @initializeDraggable()
+    @on 'attach', @onAttach, @
+
     @model.on 'change:colorIndex',  @updateColor, @
     @model.on 'change:text',        @updateText, @
     @model.on 'change:x',           @updateX, @
@@ -45,13 +46,18 @@ class boardroom.views.Card extends boardroom.views.Base
     @model.on 'change:plusAuthors', @updatePlusAuthors, @
     @model.on 'change:authors',     @updateAuthors, @
 
+  onAttach: =>
+    @render()
+    @initializeDraggable()
+
   onLockPoll: ()=>
     @enableEditing 'textarea'
 
   initializeDraggable: ->
+    boardOffset = @$el.closest('.board').offset()
     @$el.draggable
-    #minX: @boardView.left() + 12
-    #minY: @boardView.top()  + 12
+      minX: boardOffset.left + 5
+      minY: boardOffset.top + 5
       isTarget: (target) =>
         # return false if $(target).is 'input'
         # return false if $(target).is '.color'
@@ -81,7 +87,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @$el.html(@template(@model.toJSON()))
     @$el.find('textarea').css('resize', 'none').autosize { append: "\n" }
     @updateText @model, @model.get('text')
-    setTimeout @triggerAutosize, 100
+    setTimeout @triggerAutosize, 10
     @updatePosition @model.get('x'), @model.get('y')
     @updateColor @model, @model.get('colorIndex')
     @updateAuthors @model, @model.get('authors')
