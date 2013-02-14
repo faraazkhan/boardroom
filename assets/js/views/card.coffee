@@ -6,7 +6,7 @@ class boardroom.views.Card extends boardroom.views.Base
       <span class='notice'></span>
       <div class='plus-authors'></div>
     </div>
-    <textarea><%= text %></textarea>
+    <textarea></textarea>
     <div class='footer'>
       <div class='plus-count'></div>
       <div class='toolbar'>
@@ -79,6 +79,9 @@ class boardroom.views.Card extends boardroom.views.Base
 
   render: ->
     @$el.html(@template(@model.toJSON()))
+    @$el.find('textarea').css('resize', 'none').autosize { append: "\n" }
+    @updateText @model, @model.get('text')
+    setTimeout @triggerAutosize, 100
     @updatePosition @model.get('x'), @model.get('y')
     @updateColor @model, @model.get('colorIndex')
     @updateAuthors @model, @model.get('authors')
@@ -91,7 +94,9 @@ class boardroom.views.Card extends boardroom.views.Base
 
   updateText: (card, text, options) =>
     @$el.find('textarea').val(text)
+    @updateILikeIWish()
     if options?.rebroadcast
+      @triggerAutosize()
       @showNotice user: @model.get('author'), message: "#{@model.get('author')} is typing..."
       @authorLock.lock 500
 
@@ -132,16 +137,14 @@ class boardroom.views.Card extends boardroom.views.Base
       avatar = boardroom.models.User.avatar author
       $authors.append("<img class='avatar' src='#{avatar}' title='#{_.escape author}'/>")
 
-  adjustTextarea: ->
-    $textarea = @$ 'textarea'
-    $textarea.autosize()
-    @analyzeText $textarea
-
-  analyzeText: ($textarea) ->
-    $card = $textarea.parents '.card'
-    $card.removeClass 'i-wish i-like'
+  updateILikeIWish: =>
+    $textarea = @$el.find 'textarea'
+    @$el.removeClass 'i-wish i-like'
     if matches = $textarea.val().match /^i (like|wish)/i
-      $card.addClass("i-#{matches[1]}")
+      @$el.addClass("i-#{matches[1]}")
+
+  triggerAutosize: =>
+    @$el.find('textarea').trigger 'autosize'
 
   focus: ->
     @$el.find('textarea').focus()

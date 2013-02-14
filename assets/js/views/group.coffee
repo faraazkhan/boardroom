@@ -131,7 +131,6 @@ class boardroom.views.Group extends boardroom.views.Base
     card.set 'group', @model, { silent: true }
     cardView = new boardroom.views.Card { model: card }
     @renderCardInOrder cardView
-    setTimeout ( => cardView.adjustTextarea() ), 100
     @updateGroupChrome()
     @resizeHTML()
     cardView.focus() if card.get('creator') == @model.currentUser()
