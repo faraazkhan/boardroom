@@ -67,7 +67,7 @@ describe 'boardroom.views.Card', =>
   describe 'render event', =>
 
     it 'displays', =>
-      expect($('.card').children().length).toBeGreaterThan 0
+      expect($('.card').length).toEqual 2
 
     it 'redisplays when color changes', (done)=>
       modelProperty = 'colorIndex'
@@ -180,7 +180,7 @@ describe 'boardroom.views.Card', =>
       it 'deletes the card', =>
         expect(@group.cards().length).toEqual 1
         expect(@groupView.cardViews.length).toEqual 1
-        # test that the DOM element is removed
+        expect($("##{@card.get('_id')}").length).toEqual 0
 
       it 'does not delete the group', =>
         expect(@board.groups().length).toEqual 1
@@ -193,5 +193,5 @@ describe 'boardroom.views.Card', =>
         it 'deletes the group', =>
           expect(@board.groups().length).toEqual 0
           expect(@boardView.groupViews.length).toEqual 0
-          # test that the DOM element is removed
+          expect($("##{@card2.get('_id')}").length).toEqual 0
 
