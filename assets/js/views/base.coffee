@@ -2,16 +2,11 @@ class boardroom.views.Base extends Backbone.View
 
   initialize: (attributes) ->
     @restingSpot = { left: 0, top: 0 }
-    @authorLock = new boardroom.models.Lock
-    @authorLock.poll =>
-      @hideNotice()
-      @onLockPoll()
-
-  onLockPoll: ()=> # template and hook
 
   ###
       util
   ###
+
   enableEditing: (selector)->
     @$(selector).removeAttr 'disabled'
 
@@ -66,7 +61,7 @@ class boardroom.views.Base extends Backbone.View
       render
   ###
 
-  showNotice: ({ user, message }) =>
+  showNotice: (user, message) =>
     notices = @$('.notice')
     notice = if notices.length == 2 then notices.last() else notices.first() # stupid single-card group hack
     notice

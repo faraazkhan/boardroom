@@ -19,6 +19,8 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
+    @initializeLock()
+
     @on 'attach', @onAttach, @
 
     @model.set('name', '', { silent: true }) unless @model.get('name')
@@ -39,8 +41,16 @@ class boardroom.views.Group extends boardroom.views.Base
     @initializeDraggable()
     @initializeDroppable()
 
-  onLockPoll: =>
-    @enableEditing '.name'
+  initializeLock: =>
+    onLock = (user, message) =>
+      @showNotice user, message if user? and message?
+      @disableEditing '.name'
+      @disableEditing '.card textarea'
+    onUnlock = =>
+      @hideNotice()
+      @enableEditing '.name'
+      @enableEditing '.card textarea'
+    @lock = new boardroom.models.Lock onLock, onUnlock
 
   initializeCards: =>
     @model.cards().each @displayNewCard, @
@@ -92,8 +102,7 @@ class boardroom.views.Group extends boardroom.views.Base
   updateName: (group, name, options) =>
     @$('.name').val(name).trimInput(80)
     if options?.rebroadcast
-      @disableEditing '.name'
-      @authorLock.lock()
+      @lock.lock 1000
 
   updateX: (group, x, options) =>
     @updatePosition x, group.get('y'), options
@@ -104,8 +113,7 @@ class boardroom.views.Group extends boardroom.views.Base
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
     if options?.rebroadcast
-      @showNotice user: @model.get('author'), message: @model.get('author')
-      @authorLock.lock 500
+      @lock.lock 1000, @model.get('author'), @model.get('author')
 
   updateZ: (group, z, options) =>
     @$el.css 'z-index', z

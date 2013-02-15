@@ -37,6 +37,8 @@ class boardroom.views.Card extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
+    @initializeLock()
+
     @on 'attach', @onAttach, @
 
     @model.on 'change:colorIndex',  @updateColor, @
@@ -50,10 +52,16 @@ class boardroom.views.Card extends boardroom.views.Base
     @render()
     @initializeDraggable()
 
-  onLockPoll: ()=>
-    @enableEditing 'textarea'
+  initializeLock: =>
+    onLock = (user, message) =>
+      @showNotice user, message if user? and message?
+      @disableEditing 'textarea'
+    onUnlock = =>
+      @hideNotice()
+      @enableEditing 'textarea'
+    @lock = new boardroom.models.Lock onLock, onUnlock
 
-  initializeDraggable: ->
+  initializeDraggable: =>
     boardOffset = @$el.closest('.board').offset()
     @$el.draggable
       minX: boardOffset.left + 5
@@ -103,9 +111,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @updateILikeIWish()
     if options?.rebroadcast
       @triggerAutosize()
-      @showNotice user: @model.get('author'), message: "#{@model.get('author')} is typing..."
-      @disableEditing 'textarea'
-      @authorLock.lock 5000
+      @lock.lock 1000, @model.get('author'), "#{@model.get('author')} is typing..."
 
   updateX: (card, x, options) =>
     @updatePosition x, card.get('y'), options
@@ -116,8 +122,7 @@ class boardroom.views.Card extends boardroom.views.Base
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
     if options?.rebroadcast
-      @showNotice user: @model.get('author'), message: @model.get('author')
-      @authorLock.lock 500
+      @lock.lock 1000, @model.get('author'), @model.get('author')
 
   updatePlusAuthors: (card, plusAuthors, options) =>
     return if plusAuthors.length == 0

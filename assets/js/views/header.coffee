@@ -1,18 +1,26 @@
-class boardroom.views.Header extends Backbone.View
+class boardroom.views.Header extends boardroom.views.Base
   el: '#board-nav'
 
   events:
     'keyup #name': 'hiChangeBoardName'
 
   initialize: (attributes) ->
-    @model.on 'change:name', @onBoardUpdate, @
+    super attributes
+    @initializeLock()
     @$('#name').trimInput(80)
+
+    @model.on 'change:name', @onBoardUpdate, @
+
+  initializeLock: =>
+    onLock = (user, message) => @disableEditing('#name')
+    onUnlock = => @enableEditing('#name')
+    @lock = new boardroom.models.Lock onLock, onUnlock
 
   ###
       human interaction event handlers
   ###
 
-  hiChangeBoardName: (event) ->
+  hiChangeBoardName: (event) =>
     isEnter = event.keyCode is 13
     if isEnter
       @$('#name').blur()
@@ -23,5 +31,7 @@ class boardroom.views.Header extends Backbone.View
       model handlers
   ###
 
-  onBoardUpdate: (model, value) =>
-    @$('#name').val(value).trimInput(80)
+  onBoardUpdate: (board, name, options) =>
+    @$('#name').val(name).trimInput(80)
+    if options?.rebroadcast
+      @lock.lock 1000

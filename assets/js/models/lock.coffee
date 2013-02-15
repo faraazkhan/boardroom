@@ -1,18 +1,20 @@
 class boardroom.models.Lock
-  constructor: ->
-    @lock_data = undefined
+  constructor: (@onLock, @onUnlock) ->
+    @timing = undefined
+    @poll()
 
-  poll: (expirationCallback) ->
+  poll: =>
     checkForExpiredLocks = =>
-      if @lock_data?
+      if @timing?
         currentTime = new Date().getTime()
-        lockExpired = currentTime - @lock_data.locked > @lock_data.timeout
+        lockExpired = currentTime - @timing.locked > @timing.timeout
         if lockExpired
-          delete @lock_data
-          expirationCallback()
+          delete @timing
+          @onUnlock()
 
     setInterval checkForExpiredLocks, 100
 
-  lock: (timeout = 2000) ->
+  lock: (timeout, user, message) =>
     locked = new Date().getTime()
-    @lock_data = { locked, timeout }
+    @timing = { locked, timeout }
+    @onLock user, message
