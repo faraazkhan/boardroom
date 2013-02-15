@@ -62,4 +62,7 @@ class boardroom.views.Board extends boardroom.views.Base
   hiRequestNewCard: (event) ->
     console.log "hiRequestNewCard: #{event.target.className}"
     return unless event.target.className == 'board'
-    @model.createGroup(@coordinateOfEvent event)
+    offset = @$el.offset()
+    @model.createGroup
+      x: event.pageX - offset.left
+      y: event.pageY - offset.top
