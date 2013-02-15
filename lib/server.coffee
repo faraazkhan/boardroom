@@ -1,3 +1,5 @@
+console.log "Starting boardroom - #{new Date()}"
+
 Migrator = require './migrator'
 migrator = new Migrator
 

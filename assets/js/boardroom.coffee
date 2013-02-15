@@ -1,3 +1,4 @@
 @boardroom =
   models: {}
   views: {}
+  utils: {}

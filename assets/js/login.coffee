@@ -26,6 +26,5 @@ addFormInteractivity = ->
     $("form").submit ->
         input = $("#user_id").get(0)
         if input.value is input.defaultValue
-            console.log("match");
             input.value = ""    
         return true;

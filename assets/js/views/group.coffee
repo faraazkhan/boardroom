@@ -80,7 +80,6 @@ class boardroom.views.Group extends boardroom.views.Base
       onBlur: (event, target) =>
         @model.blur()
       onDrop: (event, target) =>
-        console.log "group.onDrop"
         id = $(target).attr 'id'
         @model.dropCard(id)  if $(target).is('.card')
         @model.dropGroup(id) if $(target).is('.group')

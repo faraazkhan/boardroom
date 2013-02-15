@@ -43,7 +43,6 @@ class boardroom.models.Board extends Backbone.Model
     @get('pendingGroups').add group
 
   mergeGroups: (parentId, childId) =>
-    console.log "board.mergeGroups: #{parentId}, #{childId}"
     child = @findGroup childId
     childCards = child.get('cards').toArray()
     for card in childCards
@@ -62,7 +61,6 @@ class boardroom.models.Board extends Backbone.Model
     @get('pendingGroups').add group
 
   dropGroup: (id) =>
-    console.log "board.dropGroup"
 
   #
   # Utility functions

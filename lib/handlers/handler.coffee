@@ -19,7 +19,7 @@ class Handler
       handler event, data
 
   handleCreate: (event, data) =>
-    console.log "handleCreate: #{event}"
+    #console.log "handleCreate: #{event}"
     model = new @modelClass data
     model.save (error, card) =>
       throw error if error?
@@ -27,8 +27,7 @@ class Handler
       @socket.broadcast.emit event, model
 
   handleUpdate: (event, data) =>
-    console.log "handleUpdate: #{event}"
-    console.log data
+    #console.log "handleUpdate: #{event}"
     @modelClass.findById data._id, (error, model) =>
       throw error if error?
       if model
@@ -39,7 +38,7 @@ class Handler
         console.log "WARN: missing model for #{event}: #{id}"
 
   handleDelete: (event, id) =>
-    console.log "handleDelete: #{event} - #{id}"
+    #console.log "handleDelete: #{event} - #{id}"
     count = 0
     doDelete = () =>
       count += 1
@@ -50,10 +49,10 @@ class Handler
             if removable
               model.remove (error) =>
                 throw error if error?
-                console.log "did delete"
+                #console.log "did delete"
                 @socket.broadcast.emit event, id
             else
-              console.log "did not delete"
+              #console.log "did not delete"
               setTimeout doDelete, 100 unless count > 10
         else
           console.log "WARN: missing model for #{event}: #{id}"

@@ -1,7 +1,8 @@
 class boardroom.Handler
 
   constructor: (@board, @user) ->
-    new boardroom.Watcher(@board).watch()
+    @logger = new boardroom.utils.Logger()
+    new boardroom.utils.Watcher(@board).watch()
 
   initialize: () ->
     @socket = @createSocket()
@@ -56,76 +57,76 @@ class boardroom.Handler
   createSocket: () ->
     io.connect "#{@socketHost()}/boards/#{@board.id}"
 
-  send: (name, message, options) ->
+  send: (name, message, options) =>
     return unless message?
     return if options?.rebroadcast
     unless name == 'group.update'
-      console.log "send: #{name}"
-      console.log message
+      @logger.info "send: #{name}"
+      @logger.debug message
     @socket.emit name, message
 
   onConnect: =>
-    console.log 'onConnect'
+    @logger.debug 'onConnect'
     @send 'join', @userMessage()
 
   onDisconnect: =>
-    console.log 'onDisconnect'
+    @logger.debug 'onDisconnect'
     @board.set 'status', 'Disconnected'
 
   onReconnecting: =>
-    console.log 'onReconnecting'
+    @logger.debug 'onReconnecting'
     @board.set 'status', 'Reconnecting...'
 
   onReconnect: =>
-    console.log 'onReconnect'
+    @logger.debug 'onReconnect'
     @board.set 'status', null
 
   onJoin: (message) =>
-    console.log 'onJoin'
+    @logger.debug 'onJoin'
     @board.addUser message
 
   onBoardUpdate: (message) =>
-    console.log 'onBoardUpdate'
+    @logger.debug 'onBoardUpdate'
     @board.set 'name', message.name, { rebroadcast: true }
 
   onGroupCreate: (message) =>
-    console.log 'onGroupCreate'
+    @logger.debug 'onGroupCreate'
     @board.get('groups').add(new boardroom.models.Group(message), { rebroadcast: true })
 
   onGroupUpdate: (message) =>
-    #console.log 'onGroupUpdate'
+    #@logger.debug 'onGroupUpdate'
     group = @board.findGroup message._id
     unless group
-      console.log "Handler: cannot find group #{message._id}"
+      @logger.debug "Handler: cannot find group #{message._id}"
       return
     group.set(_(message).omit('_id'), { rebroadcast: true })
 
   onGroupDelete: (message) =>
-    console.log 'onGroupDelete'
+    @logger.debug 'onGroupDelete'
     group = @board.findGroup message
     unless group
-      console.log "Handler: cannot find group #{message}"
+      @logger.debug "Handler: cannot find group #{message}"
       return
     @board.get('groups').remove group, { rebroadcast: true }
 
   onCardCreate: (message) =>
-    console.log 'onCardCreate'
+    @logger.debug 'onCardCreate'
     group = @board.findGroup message.groupId
     group.get('cards').add(new boardroom.models.Card(message), { rebroadcast: true })
 
   onCardUpdate: (message) =>
-    console.log 'onCardUpdate'
+    @logger.debug 'onCardUpdate'
     card = @board.findCard message._id
     unless card
-      console.log "Handler: cannot find card: #{message._id}"
+      @logger.debug "Handler: cannot find card: #{message._id}"
       return
     card.set(_(message).omit('_id'), { rebroadcast: true })
 
   onCardDelete: (message) =>
-    console.log 'onCardDelete'
+    @logger.debug 'onCardDelete'
     card = @board.findCard message
     unless card
-      console.log "Handler: cannot find card #{message}"
+      @logger.debug "Handler: cannot find card #{message}"
       return
     card.get('group').get('cards').remove card, { rebroadcast: true }
 
