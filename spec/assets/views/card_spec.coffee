@@ -3,9 +3,6 @@
 # A cardView is always rendered inside a groupView
 ###
 
-afterRendering = (validationFunction)->
-  setTimeout validationFunction, 2 # allow 2ms for the model events to be rendered
-
 describe 'boardroom.views.Card', =>
   beforeEach =>
     setFixtures '''
@@ -28,15 +25,10 @@ describe 'boardroom.views.Card', =>
               _id: '3'
               text: 'foo'
               authors: ['@card_maker']
-              plusAuthors: []
               colorIndex: 1
             },
             {
               _id: '4'
-              text: 'bar'
-              authors: ['@foo']
-              plusAuthors: []
-              colorIndex: 2
             }
           ]
         }
@@ -87,8 +79,7 @@ describe 'boardroom.views.Card', =>
 
       newValue = "#{oldValue} + more stuff"
       @card.set(modelProperty, newValue) 
-      afterRendering =>
-        expect(@cardView.$('textarea').val()).toEqual newValue
+      expect(@cardView.$('textarea').val()).toEqual newValue
 
     # use drag-n-drop testing for position changes
     # it 'repositions when x changes', =>
@@ -104,12 +95,10 @@ describe 'boardroom.views.Card', =>
 
       auths = @card.get(modelProperty)
       @card.set(modelProperty, ['liker1', auths...])
-      afterRendering =>
-        expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 20}")
-        @card.set(modelProperty, ['liker2', auths...])
-        afterRendering =>
-          expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 20}") 
-          @card.set(modelProperty, oldValue)
+      expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 1}")
+      @card.set(modelProperty, ['liker2', auths...])
+      expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 1}") 
+      @card.set(modelProperty, oldValue)
 
     it 'redisplays when there is a new contributor', =>
       modelProperty = 'authors'
@@ -119,8 +108,7 @@ describe 'boardroom.views.Card', =>
 
       newValue = ['@space_cadet',  oldValue...]
       @card.set(modelProperty, newValue) 
-      afterRendering =>
-        expect(@card.get('authors').length).toEqual newValue.length
+      expect(@card.get('authors').length).toEqual newValue.length
 
   describe 'hi event', =>
 
