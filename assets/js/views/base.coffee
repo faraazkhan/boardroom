@@ -1,59 +1,14 @@
 class boardroom.views.Base extends Backbone.View
 
-  initialize: (attributes) ->
-    @restingSpot = { left: 0, top: 0 }
-    @authorLock = new boardroom.models.CardLock
-    @authorLock.poll =>
-      @hideNotice()
-      @onLockPoll()
-
-  onLockPoll: ()=> # template and hook
-
   ###
       util
   ###
+
   enableEditing: (selector)->
     @$(selector).removeAttr 'disabled'
 
-  disableEditing: (selector, text) ->
-    @$(selector).val(text).attr('disabled', 'disabled')
-
-  containsPoint: (coordinate) ->
-    c = @$el.offset()
-    c.left < coordinate.x < (c.left + @$el.width()) and c.top < coordinate.y < (c.top + @$el.height())
-
-  coordinateOfEvent: (e, $container) ->
-    coordinate =
-      x:0
-      y:0
-    return coordinate unless e?
-
-    $container = $container.$el if $container?.$el? # if $container is not a jQuery element, assume that it is a view
-    $container ||= @$el # default $container to the jQuery element of this view
-    { left, top } = $container.offset()
-
-    coordinate.x = Math.round(e.pageX - left) 
-    coordinate.y = Math.round(e.pageY - top) 
-    coordinate
-
-  coordinateInContainer: ($container) ->
-    coordinate =
-      x:0
-      y:0
-    return coordinate unless $container?
-
-    $container = $container.$el if $container.$el? # if $container is not a jQuery element, assume that it is a view
-    return coordinate unless $container.offset?()
-    { left, top } = $container.offset()
-
-    myOffset = @$el.offset()
-    coordinate.x = Math.round(myOffset.left - left) 
-    coordinate.y = Math.round(myOffset.top - top) 
-    coordinate
-
-  coordinateInBoard: () ->
-    boardView = @boardView || $('.board').data('view')
-    @coordinateInContainer boardView
+  disableEditing: (selector) ->
+    @$(selector).attr('disabled', 'disabled')
 
   resizeHTML: ()->
     #+++ TODO - this is not working right!
@@ -66,7 +21,7 @@ class boardroom.views.Base extends Backbone.View
       render
   ###
 
-  showNotice: ({ user, message }) =>
+  showNotice: (user, message) =>
     notices = @$('.notice')
     notice = if notices.length == 2 then notices.last() else notices.first() # stupid single-card group hack
     notice
@@ -106,27 +61,3 @@ class boardroom.views.Base extends Backbone.View
   moveBackToRestingSpot: =>
     restingSpot = @model.get 'restingSpot'
     @model.set restingSpot
-
-  ###
-      debug
-  ###
-
-  $debug: ()->
-    unless @$debugEl
-      e = """
-        <div class="debug", style="position:absolute; top:10px; right:10px; border:1px solid black; min-width:100px; min-height:30px;"></div>
-      """
-      @$el.append(e)
-      @$debugEl = @$('.debug')
-    @$debugEl
-
-  debugShowMouse: (event)->
-    c = @coordinateOfEvent event
-    html  = """
-      <div>[#{event.pageX}, #{event.pageY}]</div>
-      <div>[#{Math.round(event.pageX - @$el.offset().left)}, #{Math.round(event.pageY - @$el.offset().top)}]</div>
-      <div>[#{c.x}, #{c.y}]</div>
-    """
-    @$debug().html html
-
-
