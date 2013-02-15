@@ -48,13 +48,17 @@ class boardroom.views.Board extends boardroom.views.Base
   displayNewGroup: (group, options) =>
     group.set 'board', @model, { silent: true }
     groupView = new boardroom.views.Group { model: group }
+    @groupViews.push groupView
+
     @$el.append groupView.el
     groupView.trigger 'attach'
     @resizeHTML()
 
   removeGroup: (group, options) =>
     $("##{group.id}").remove()
+    # +++ !!! see if we can remove groupView from @groupViews and destroy it instead of direct removal from DOM
 
+    
   ###
       human interaction event handlers
   ###

@@ -135,6 +135,7 @@ class boardroom.views.Group extends boardroom.views.Base
   displayNewCard: (card, options) =>
     card.set 'group', @model, { silent: true }
     cardView = new boardroom.views.Card { model: card }
+    @cardViews.push cardView
     @renderCardInOrder cardView
     cardView.trigger 'attach'
     @updateGroupChrome()
@@ -143,6 +144,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   removeCard: (card, options) =>
     $("##{card.id}").remove()
+    # +++ !!! see if we can remove cardView from @cardViews instead of directly from DOM
     @updateGroupChrome()
 
   renderCardInOrder: (newCardView) ->
