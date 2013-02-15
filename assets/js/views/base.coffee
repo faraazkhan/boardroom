@@ -4,7 +4,10 @@ class boardroom.views.Base extends Backbone.View
       util
   ###
 
-  enableEditing: (selector)->
+  initialize: (attributes) ->
+    super attributes
+
+  enableEditing: (selector) ->
     @$(selector).removeAttr 'disabled'
 
   disableEditing: (selector) ->

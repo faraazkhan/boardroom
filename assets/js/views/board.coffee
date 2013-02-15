@@ -1,7 +1,6 @@
 class boardroom.views.Board extends boardroom.views.Base
   el: '.board'
   className: 'board'
-  groupViews: []
 
   events:
     'dblclick': 'hiRequestNewCard'
@@ -19,6 +18,7 @@ class boardroom.views.Board extends boardroom.views.Base
     @model.groups().on 'remove', @removeGroup, @
 
   initializeGroups: ->
+    @groupViews = []
     @model.groups().each @displayNewGroup, @
 
   initializeDroppable: ->
@@ -55,10 +55,10 @@ class boardroom.views.Board extends boardroom.views.Base
     @resizeHTML()
 
   removeGroup: (group, options) =>
-    $("##{group.id}").remove()
-    # +++ !!! see if we can remove groupView from @groupViews and destroy it instead of direct removal from DOM
+    groupView = _(@groupViews).find (gv) -> gv.model == group
+    @groupViews.splice @groupViews.indexOf(groupView), 1
+    groupView.remove()
 
-    
   ###
       human interaction event handlers
   ###

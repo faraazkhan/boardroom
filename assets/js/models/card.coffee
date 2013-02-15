@@ -5,6 +5,7 @@ class boardroom.models.Card extends Backbone.Model
     text: ''
     authors: []
     plusAuthors: []
+    colorIndex: 2
 
   initialize: (attributes, options) ->
     @.on 'change:groupId', (card, groupId, options) =>
@@ -38,7 +39,7 @@ class boardroom.models.Card extends Backbone.Model
     @group().bringForward()
 
   delete: ->
-    cards = @group().get('cards')
+    cards = @group().cards()
     cards.remove @
     @trigger 'destroy', @, cards, {}
 

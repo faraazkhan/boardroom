@@ -12,6 +12,9 @@ class boardroom.models.Group extends Backbone.Model
     )
     super attributes, options
     @set 'cards', cards
+    cards.on 'remove', (card, cards, options) =>
+      unless options?.rebroadcast
+        @delete options if cards.length == 0
 
   cards: -> @get 'cards'
   board: -> @get 'board'
@@ -48,3 +51,8 @@ class boardroom.models.Group extends Backbone.Model
 
   blur: =>
     @set 'hover', false
+
+  delete: =>
+    groups = @board().groups()
+    groups.remove @
+    @trigger 'destroy', @, groups, {} unless options?.rebroadcast

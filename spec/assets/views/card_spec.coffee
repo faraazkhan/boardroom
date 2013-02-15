@@ -17,19 +17,26 @@ describe 'boardroom.views.Card', =>
       </div>
       </body></html>
     '''
-    boardData = 
-      id: 1
+    boardData =
+      _id: '1'
       user_id: '@carbon_five'
       groups: [
         {
-          id: 2
+          _id: '2'
           cards: [
             {
-              id: 3
+              _id: '3'
+              text: 'foo'
               authors: ['@card_maker']
               plusAuthors: []
-              text: 'foo'
-              colorIndex: 1              
+              colorIndex: 1
+            },
+            {
+              _id: '4'
+              text: 'bar'
+              authors: ['@foo']
+              plusAuthors: []
+              colorIndex: 2
             }
           ]
         }
@@ -43,9 +50,10 @@ describe 'boardroom.views.Card', =>
     # Grab a reference to the card model and View for testing
     @groupView = @boardView.groupViews[0]
     @cardView = @groupView.cardViews[0]
+    @cardView2 = @groupView.cardViews[1]
     @group = @groupView.model
     @card = @cardView.model
-    @card2 = @board.groups().at(0).cards().at(0)
+    @card2 = @cardView2.model
 
   ###
   # Render Events
@@ -124,53 +132,66 @@ describe 'boardroom.views.Card', =>
         @cardView.$('textarea').val(@newText).trigger('keyup')
 
       it 'changes text', =>
-        expect(@card.get('text')).toEqual 11
-        expect(@card2.get('text')).toEqual 12
-        # !!! Why are these values different?
-        # something is not initializing properly
-  
-        expect(@cardView.$('textarea').val()).toEqual 11
+        expect(@card.get('text')).toEqual @newText
+        expect(@cardView.$('textarea').val()).toEqual @newText
 
-      # it 'touch', =>
-      #   expect(@card.get('authors').length).toEqual @authorCount+1
-      #   expect(@cardView.$('.authors').children().length).toEqual @authorCount+1
+      it 'touch', =>
+        expect(@card.get('authors').length).toEqual @authorCount+1
+        expect(@cardView.$('.authors').children().length).toEqual @authorCount+1
 
-    # describe 'clicking a color', =>
-    #   beforeEach =>
-    #     @authorCount = @card.get('authors').length
-    #     @colorIndex = 3
-    #     @cardView
-    #       .$(".color-#{@colorIndex}")
-    #       .click()
+    describe 'clicking a color', =>
+      beforeEach =>
+        @authorCount = @card.get('authors').length
+        @colorIndex = 3
+        @cardView
+          .$(".color-#{@colorIndex}")
+          .click()
 
-    #   it 'changes color', =>
-    #     expect(@card.get('colorIndex')).toEqual "#{@colorIndex}"
-    #     expect(@cardView.$el).toHaveClass "color-#{@colorIndex}"
+      it 'changes color', =>
+        expect(@card.get('colorIndex')).toEqual "#{@colorIndex}"
+        expect(@cardView.$el).toHaveClass "color-#{@colorIndex}"
 
-    #   it 'touch', =>
-    #     expect(@card.get('authors').length).toEqual @authorCount+1
-    #     expect(@cardView.$('.authors').children().length).toEqual @authorCount+1
+      it 'touch', =>
+        expect(@card.get('authors').length).toEqual @authorCount+1
+        expect(@cardView.$('.authors').children().length).toEqual @authorCount+1
 
-    # describe 'clicking +1', =>
-    #   beforeEach =>
-    #     @authorCount = @card.get('authors').length
-    #     @plusAuthorCount = @card.get('plusAuthors').length
-    #     @cardView
-    #       .$(".plus1 .btn")
-    #       .click()
+    describe 'clicking +1', =>
+      beforeEach =>
+        @authorCount = @card.get('authors').length
+        @plusAuthorCount = @card.get('plusAuthors').length
+        @cardView
+          .$(".plus1 .btn")
+          .click()
 
-    #   it 'increments +1', =>
-    #     expect(@card.get('plusAuthors').length).toEqual @plusAuthorCount+1
-    #     expect(@cardView.$('.plus-count').text()).toBe("+#{@plusAuthorCount+1}")
+      it 'increments +1', =>
+        expect(@card.get('plusAuthors').length).toEqual @plusAuthorCount+1
+        expect(@cardView.$('.plus-count').text()).toBe("+#{@plusAuthorCount+1}")
 
-    #   it 'does not touch', =>
-    #     expect(@card.get('authors').length).toEqual @authorCount
-    #     expect(@cardView.$('.authors').children().length).toEqual @authorCount
+      it 'does not touch', =>
+        expect(@card.get('authors').length).toEqual @authorCount
+        expect(@cardView.$('.authors').children().length).toEqual @authorCount
 
-    # describe 'clicking delete', =>
+    describe 'clicking delete', =>
+      beforeEach =>
+        @cardView
+          .$(".delete-btn")
+          .click()
 
-    #   it 'deletes the card', ->
+      it 'deletes the card', =>
+        expect(@group.cards().length).toEqual 1
+        expect(@groupView.cardViews.length).toEqual 1
+        # test that the DOM element is removed
 
-    #     @cardView
-    #       .$(".delete-btn")
-    #       .click()
+      it 'does not delete the group', =>
+        expect(@board.groups().length).toEqual 1
+        expect(@boardView.groupViews.length).toEqual 1
+
+      describe 'on the last card in a group', =>
+        beforeEach =>
+          @cardView2.$('.delete-btn').click()
+
+        it 'deletes the group', =>
+          expect(@board.groups().length).toEqual 0
+          expect(@boardView.groupViews.length).toEqual 0
+          # test that the DOM element is removed
+

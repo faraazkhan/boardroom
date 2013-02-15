@@ -54,7 +54,8 @@ helpers:
 #   - **/*[sS]pec.js
 #
 spec_files:
-  - '**/*_spec.coffee'
+#  - '**/*_spec.coffee'
+  - 'views/card_spec.coffee'
 
 # spec_dir
 #

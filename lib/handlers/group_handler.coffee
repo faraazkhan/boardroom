@@ -1,6 +1,5 @@
 Handler = require './handler'
 Group = require '../models/group'
-Card = require '../models/card'
 
 class GroupHandler extends Handler
 

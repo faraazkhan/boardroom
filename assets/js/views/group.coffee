@@ -1,6 +1,5 @@
 class boardroom.views.Group extends boardroom.views.Base
   className: 'group'
-  cardViews: []
   nameDecorated: false
 
   template: _.template """
@@ -53,6 +52,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @lock = new boardroom.models.Lock onLock, onUnlock
 
   initializeCards: =>
+    @cardViews = []
     @model.cards().each @displayNewCard, @
 
   initializeDraggable: ->
@@ -151,8 +151,9 @@ class boardroom.views.Group extends boardroom.views.Base
     cardView.focus() if card.get('creator') == @model.currentUser()
 
   removeCard: (card, options) =>
-    $("##{card.id}").remove()
-    # +++ !!! see if we can remove cardView from @cardViews instead of directly from DOM
+    cardView = _(@cardViews).find (cv) -> cv.model == card
+    @cardViews.splice @cardViews.indexOf(cardView), 1
+    cardView.remove()
     @updateGroupChrome()
 
   renderCardInOrder: (newCardView) ->

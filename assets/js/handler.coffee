@@ -14,20 +14,16 @@ class boardroom.Handler
     @socket.on 'board.update', @onBoardUpdate
     @socket.on 'group.create', @onGroupCreate
     @socket.on 'group.update', @onGroupUpdate
-    #@socket.on 'group.update-cards', @onGroupUpdateCards
     @socket.on 'group.delete', @onGroupDelete
     @socket.on 'card.create', @onCardCreate
     @socket.on 'card.update', @onCardUpdate
     @socket.on 'card.delete', @onCardDelete
-    #@socket.on 'view.add-indicator', @onAddIndicator
-    #@socket.on 'view.remove-indicator', @onRemoveIndicator
 
     @board.on 'change', (board, options) =>
       @send 'board.update', @boardMessage(), options
 
     groups = @board.get 'groups'
-    groups.on 'change', (group, options) => @send 'group.update', @groupMessage(group), options
-    groups.on 'remove', (group, groups, options) => @send 'group.delete', group.id, options
+    #groups.on 'remove', (group, groups, options) => @send 'group.delete', group.id, options
 
     handleCardEvents = (card, cards, options) =>
       unless card.eventsInitialized
@@ -36,6 +32,9 @@ class boardroom.Handler
         card.eventsInitialized = true
 
     handleGroupEvents = (group) =>
+      group.on 'change', (group, options) => @send 'group.update', @groupMessage(group), options
+      group.on 'destroy', (group, groups, options) => @send 'group.delete', group.id, options
+
       cards = group.get 'cards'
       cards.each handleCardEvents
       cards.on 'add', handleCardEvents

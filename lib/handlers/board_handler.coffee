@@ -1,7 +1,5 @@
 Handler = require './handler'
 Board = require '../models/board'
-Group = require '../models/group'
-Card = require '../models/card'
 
 class BoardHandler extends Handler
 
