@@ -44,11 +44,9 @@ class boardroom.views.Group extends boardroom.views.Base
     onLock = (user, message) =>
       @showNotice user, message if user? and message?
       @disableEditing '.name'
-      @disableEditing '.card textarea'
     onUnlock = =>
       @hideNotice()
       @enableEditing '.name'
-      @enableEditing '.card textarea'
     @lock = new boardroom.models.Lock onLock, onUnlock
 
   initializeCards: =>
