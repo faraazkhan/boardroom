@@ -1,3 +1,11 @@
+###
+# Card View
+# A cardView is always rendered inside a groupView
+###
+
+afterRendering = (validationFunction)->
+  setTimeout validationFunction, 2 # allow 2ms for the model events to be rendered
+
 describe 'boardroom.views.Card', =>
   beforeEach =>
     setFixtures '''
@@ -9,32 +17,38 @@ describe 'boardroom.views.Card', =>
       </div>
       </body></html>
     '''
-    @board = new boardroom.models.Board
+    boardData = 
       id: 1
       user_id: '@carbon_five'
+      groups: [
+        {
+          id: 2
+          cards: [
+            {
+              id: 3
+              authors: ['@card_maker']
+              plusAuthors: []
+              text: 'foo'
+              colorIndex: 1              
+            }
+          ]
+        }
+      ]
+
+    # initialize the board
+    @board = new boardroom.models.Board boardData
     @boardView = new boardroom.views.Board
       model: @board
-    @group = new boardroom.models.Group
-      id: 2
-      board: @board
-    @groupView = new boardroom.views.Group
-      model: @group
-      boardView: @boardView
-    @card = new boardroom.models.Card
-      id: 3
-      group: @group
-      authors: ['@card_maker']
-      plusAuthors: []
-      text: 'foo'
-      colorIndex: 1
-    @cardView = new boardroom.views.Card
-      model: @card
-      groupView: @groupView
-      boardView: @boardView
-    # $('.board').append @cardView.render()
+
+    # Grab a reference to the card model and View for testing
+    @groupView = @boardView.groupViews[0]
+    @cardView = @groupView.cardViews[0]
+    @group = @groupView.model
+    @card = @cardView.model
+    @card2 = @board.groups().at(0).cards().at(0)
 
   ###
-  # Render Event
+  # Render Events
   # Test Pattern For A Render Event :
   # 1. grab the (existing) oldValue  from the model
   # 2. verify that elements for the oldValue have been rendered
@@ -45,10 +59,9 @@ describe 'boardroom.views.Card', =>
   describe 'render event', =>
 
     it 'displays', =>
-      # expect($('.card').length).toBeGreaterThan 0  -- Why doesn't the fixture work?
-      expect(@cardView.$el.children().length).toBeGreaterThan 0
-      
-    it 'redisplays when color changes', =>
+      expect($('.card').children().length).toBeGreaterThan 0
+
+    it 'redisplays when color changes', (done)=>
       modelProperty = 'colorIndex'
 
       oldValue = @card.get(modelProperty)
@@ -66,7 +79,8 @@ describe 'boardroom.views.Card', =>
 
       newValue = "#{oldValue} + more stuff"
       @card.set(modelProperty, newValue) 
-      expect(@cardView.$('textarea').val()).toEqual newValue
+      afterRendering =>
+        expect(@cardView.$('textarea').val()).toEqual newValue
 
     # use drag-n-drop testing for position changes
     # it 'repositions when x changes', =>
@@ -80,12 +94,14 @@ describe 'boardroom.views.Card', =>
       @card.set(modelProperty, [])
       expect(@cardView.$('.plus-count').text()).toBe('')
 
-      for idx in [1..10] # like the card 10 times
-        auths = @card.get(modelProperty)
-        @card.set(modelProperty, ['liker#{idx}', auths...])
-        expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 1}")
-
-      @card.set(modelProperty, oldValue)
+      auths = @card.get(modelProperty)
+      @card.set(modelProperty, ['liker1', auths...])
+      afterRendering =>
+        expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 20}")
+        @card.set(modelProperty, ['liker2', auths...])
+        afterRendering =>
+          expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 20}") 
+          @card.set(modelProperty, oldValue)
 
     it 'redisplays when there is a new contributor', =>
       modelProperty = 'authors'
@@ -95,7 +111,8 @@ describe 'boardroom.views.Card', =>
 
       newValue = ['@space_cadet',  oldValue...]
       @card.set(modelProperty, newValue) 
-      expect(@card.get('authors').length).toEqual newValue.length
+      afterRendering =>
+        expect(@card.get('authors').length).toEqual newValue.length
 
   describe 'hi event', =>
 
@@ -107,48 +124,53 @@ describe 'boardroom.views.Card', =>
         @cardView.$('textarea').val(@newText).trigger('keyup')
 
       it 'changes text', =>
-        expect(@card.get('text')).toEqual @newText
+        expect(@card.get('text')).toEqual 11
+        expect(@card2.get('text')).toEqual 12
+        # !!! Why are these values different?
+        # something is not initializing properly
+  
+        expect(@cardView.$('textarea').val()).toEqual 11
 
-      it 'touch', =>
-        expect(@card.get('authors').length).toEqual @authorCount+1
-        expect(@cardView.$('.authors').children().length).toEqual @authorCount+1
+      # it 'touch', =>
+      #   expect(@card.get('authors').length).toEqual @authorCount+1
+      #   expect(@cardView.$('.authors').children().length).toEqual @authorCount+1
 
-    describe 'clicking a color', =>
-      beforeEach =>
-        @authorCount = @card.get('authors').length
-        @colorIndex = 3
-        @cardView
-          .$(".color-#{@colorIndex}")
-          .click()
+    # describe 'clicking a color', =>
+    #   beforeEach =>
+    #     @authorCount = @card.get('authors').length
+    #     @colorIndex = 3
+    #     @cardView
+    #       .$(".color-#{@colorIndex}")
+    #       .click()
 
-      it 'changes color', =>
-        expect(@card.get('colorIndex')).toEqual "#{@colorIndex}"
-        expect(@cardView.$el).toHaveClass "color-#{@colorIndex}"
+    #   it 'changes color', =>
+    #     expect(@card.get('colorIndex')).toEqual "#{@colorIndex}"
+    #     expect(@cardView.$el).toHaveClass "color-#{@colorIndex}"
 
-      it 'touch', =>
-        expect(@card.get('authors').length).toEqual @authorCount+1
-        expect(@cardView.$('.authors').children().length).toEqual @authorCount+1
+    #   it 'touch', =>
+    #     expect(@card.get('authors').length).toEqual @authorCount+1
+    #     expect(@cardView.$('.authors').children().length).toEqual @authorCount+1
 
-    describe 'clicking +1', =>
-      beforeEach =>
-        @authorCount = @card.get('authors').length
-        @plusAuthorCount = @card.get('plusAuthors').length
-        @cardView
-          .$(".plus1 .btn")
-          .click()
+    # describe 'clicking +1', =>
+    #   beforeEach =>
+    #     @authorCount = @card.get('authors').length
+    #     @plusAuthorCount = @card.get('plusAuthors').length
+    #     @cardView
+    #       .$(".plus1 .btn")
+    #       .click()
 
-      it 'increments +1', =>
-        expect(@card.get('plusAuthors').length).toEqual @plusAuthorCount+1
-        expect(@cardView.$('.plus-count').text()).toBe("+#{@plusAuthorCount+1}")
+    #   it 'increments +1', =>
+    #     expect(@card.get('plusAuthors').length).toEqual @plusAuthorCount+1
+    #     expect(@cardView.$('.plus-count').text()).toBe("+#{@plusAuthorCount+1}")
 
-      it 'does not touch', =>
-        expect(@card.get('authors').length).toEqual @authorCount
-        expect(@cardView.$('.authors').children().length).toEqual @authorCount
+    #   it 'does not touch', =>
+    #     expect(@card.get('authors').length).toEqual @authorCount
+    #     expect(@cardView.$('.authors').children().length).toEqual @authorCount
 
-    describe 'clicking delete', =>
+    # describe 'clicking delete', =>
 
-      it 'deletes the card', ->
-        
-        @cardView
-          .$(".delete-btn")
-          .click()
+    #   it 'deletes the card', ->
+
+    #     @cardView
+    #       .$(".delete-btn")
+    #       .click()
