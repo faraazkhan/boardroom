@@ -17,6 +17,7 @@ class boardroom.models.Group extends Backbone.Model
         @delete options if cards.length == 0
 
   cards: -> @get 'cards'
+  pendingCards: -> @get 'pendingCards'
   board: -> @get 'board'
   currentUser: -> @board().currentUser()
 
@@ -56,3 +57,6 @@ class boardroom.models.Group extends Backbone.Model
     groups = @board().groups()
     groups.remove @
     @trigger 'destroy', @, groups, {} unless options?.rebroadcast
+
+  locator: =>
+    "#{@get('x')}-#{@get('y')}-#{@get('z')}"

@@ -1,20 +1,20 @@
 class boardroom.models.Board extends Backbone.Model
 
-  defaults:
-    users: {}
-    pendingGroups: new Backbone.Collection()
-
   initialize: (attributes, options) ->
     attributes ||= {}
-    groups = new Backbone.Collection _.map(attributes.groups, (group) -> 
+    groups = new Backbone.Collection _.map(attributes.groups, (group) ->
       new boardroom.models.Group group
     )
     super attributes, options
+    @set 'users', {}
+    @set 'pendingGroups', new Backbone.Collection()
     @set 'groups', groups
-    groups.on 'add', (group, options) => @handleGroupCallback(group)
+    groups.on 'add', @handleGroupCallback, @
+    @groupCallbacks = {}
 
   currentUser: -> @get 'user_id'
   groups: -> @get 'groups'
+  pendingGroups: -> @get 'pendingGroups'
 
   findCard: (id) ->
     card = null
@@ -31,16 +31,16 @@ class boardroom.models.Board extends Backbone.Model
     users[user.user_id] = user
     @set 'users', users
 
-  createGroup: (coords, callback) =>
+  createGroup: (coords) =>
     group = @newGroupAt coords
-    creator = @get 'user_id'
+    creator = @currentUser()
     @addGroupCallback group, (group) =>
       card =
         creator: creator
         groupId: group.id
         authors: [ creator ]
       group.get('pendingCards').add(new boardroom.models.Card(card))
-    @get('pendingGroups').add group
+    @pendingGroups().add group
 
   mergeGroups: (parentId, childId) =>
     child = @findGroup childId
@@ -58,7 +58,7 @@ class boardroom.models.Board extends Backbone.Model
     @addGroupCallback group, (group) =>
       card.set 'groupId', group.id
       card.drop()
-    @get('pendingGroups').add group
+    @pendingGroups().add group
 
   dropGroup: (id) =>
 
@@ -67,7 +67,7 @@ class boardroom.models.Board extends Backbone.Model
   #
 
   maxZ: =>
-    groups = @get 'groups'
+    groups = @groups()
     return 0 unless groups? and groups.length > 0
     maxGroup = groups.max (group) -> ( group.get('z') || 0 )
     maxGroup.get('z') || 0
@@ -83,18 +83,13 @@ class boardroom.models.Board extends Backbone.Model
   # Group Callbacks
   #
 
-  groupCallbacks: {}
-
-  groupLocator: (group) ->
-    "#{group.get('x')}-#{group.get('y')}-#{group.get('z')}"
-
-  handleGroupCallback: (group) =>
-    gl = @groupLocator group
-    cb = @groupCallbacks[gl]
+  handleGroupCallback: (group, options) =>
+    pendingGroup = @pendingGroups().find (pg) => pg.locator() == group.locator()
+    @pendingGroups().remove pendingGroup
+    cb = @groupCallbacks[group.locator()]
     if cb?
-      delete @groupCallbacks[gl]
-      f = () -> cb(group)
-      setTimeout f, 10
+      delete @groupCallbacks[group.locator()]
+      cb group
 
   addGroupCallback: (group, callback) =>
-    @groupCallbacks[@groupLocator(group)] = callback
+    @groupCallbacks[group.locator()] = callback
