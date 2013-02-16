@@ -1,5 +1,6 @@
 describe 'boardroom.models.Board', ->
   beforeEach ->
+    boardroom.models.Group::defaults.pendingCards.reset()
     group1 = { _id: '1', cards: [ { _id: '11' }, { _id: '12' } ] }
     group2 = { _id: '2', cards: [ { _id: '21' }, { _id: '22' } ] }
     @board = new boardroom.models.Board
