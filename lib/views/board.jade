@@ -1,5 +1,5 @@
 include includes/header
-   
+
 #board-nav
   input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
   .actions
@@ -12,6 +12,8 @@ include includes/header
 
 script(type="text/javascript")
   $(function() {
+    boardroom.utils.Logger.instance.setLevel('#{loglevel}');
+
     var boardAttrs = !{JSON.stringify(board)};
     var board = new boardroom.models.Board(boardAttrs);
 

@@ -1,7 +1,7 @@
 class boardroom.utils.Watcher
 
   constructor: (@board) ->
-    @logger = new boardroom.utils.Logger()
+    @logger = boardroom.utils.Logger.instance
     @cache = {}
 
   watch: ->

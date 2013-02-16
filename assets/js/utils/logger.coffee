@@ -1,7 +1,11 @@
 class boardroom.utils.Logger
 
   constructor: ->
-    @level = ['error', 'warn', 'info', 'debug'].indexOf('debug') || 3
+    @level = 1
+
+  setLevel: (level) =>
+    @level = ['error', 'warn', 'info', 'debug'].indexOf(level)
+    @level = 1 if @level == -1
 
   error: (msg) =>
     @log 'ERROR', msg
@@ -23,3 +27,5 @@ class boardroom.utils.Logger
     else
       console.log "[#{ts} #{level}]"
       console.log msg
+
+boardroom.utils.Logger.instance = new boardroom.utils.Logger()

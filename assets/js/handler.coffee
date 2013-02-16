@@ -1,7 +1,7 @@
 class boardroom.Handler
 
   constructor: (@board, @user) ->
-    @logger = new boardroom.utils.Logger()
+    @logger = boardroom.utils.Logger.instance
     new boardroom.utils.Watcher(@board).watch()
 
   initialize: () ->
@@ -24,7 +24,6 @@ class boardroom.Handler
       @send 'board.update', @boardMessage(), options
 
     groups = @board.get 'groups'
-    #groups.on 'remove', (group, groups, options) => @send 'group.delete', group.id, options
 
     handleCardEvents = (card, cards, options) =>
       unless card.eventsInitialized
