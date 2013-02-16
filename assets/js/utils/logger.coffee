@@ -25,7 +25,7 @@ class boardroom.utils.Logger
     if typeof msg == 'string'
       console.log "[#{ts} #{level}]  #{msg}"
     else
-      console.log "[#{ts} #{level}]"
+      #console.log "[#{ts} #{level}]"
       console.log msg
 
 boardroom.utils.Logger.instance = new boardroom.utils.Logger()
