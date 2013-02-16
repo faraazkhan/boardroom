@@ -12,9 +12,6 @@ BoardSchema = new mongoose.Schema
 BoardSchema.virtual('groups').get () -> @vGroups
 BoardSchema.virtual('groups').set (groups) -> @vGroups = groups
 
-BoardSchema.virtual('cards').get () -> @vCards
-BoardSchema.virtual('cards').set (cards) -> @vCards = cards
-
 BoardSchema.pre 'save', (next) ->
   @created = new Date() unless @created?
   @updated = new Date()
@@ -51,15 +48,20 @@ BoardSchema.statics =
     new Populator().populate callback, "*"
 
 BoardSchema.methods =
+  cards: ->
+    cards = []
+    cards = cards.concat(group.cards) for group in @groups
+    cards
+
   collaborators: ->
     collabs = []
     ( ( collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 ) ) \
-      for user in card.authors ) for card in @cards
+      for user in card.authors ) for card in @cards()
     collabs
 
   lastUpdated: ->
     up = @updated
-    up = ( if up.getTime() > card.updated.getTime() then up else card.updated ) for card in @cards
+    up = ( if up.getTime() > card.updated.getTime() then up else card.updated ) for card in @cards()
     up
 
   updateAttributes: (attributes, callback) ->

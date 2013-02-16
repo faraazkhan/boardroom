@@ -33,7 +33,6 @@ class Populator
     Group.find { boardId: board.id }, (error, groups) =>
       return callback error if error?
       board.groups = []
-      board.cards = []
       return callback error, board if groups.length == 0
       count = 0
       for group in groups
@@ -43,7 +42,6 @@ class Populator
             board.groups.push group
             count += 1
             if count == groups.length
-              ( board.cards = board.cards.concat(group.cards) ) for group in board.groups if board.groups?
               callback null, board 
 
   fillGroup: (group, callback) ->

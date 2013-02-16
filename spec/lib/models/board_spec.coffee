@@ -11,7 +11,6 @@ describe 'board.Board', ->
       expect(boards[0].name).toEqual 'board1'
       expect(boards[0].groups.length).toEqual 1
       expect(boards[0].groups[0].cards.length).toEqual 1
-      expect(boards[0].cards.length).toEqual 1
 
   describe '.collaboratedBy', ->
     beforeEach ->
