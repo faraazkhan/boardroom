@@ -37,7 +37,7 @@ class boardroom.models.Group extends Backbone.Model
       groupId: @get '_id'
       creator: @currentUser()
       authors: [ @currentUser() ]
-    @get('pendingCards').add card
+    @pendingCards().add card
 
   dropCard: (id) =>
     card = @board().findCard id

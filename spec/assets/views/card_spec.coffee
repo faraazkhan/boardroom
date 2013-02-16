@@ -14,25 +14,11 @@ describe 'boardroom.views.Card', =>
       </div>
       </body></html>
     '''
-    boardData =
-      _id: '1'
-      user_id: '@carbon_five'
-      groups: [
-        {
-          _id: '2'
-          cards: [
-            {
-              _id: '3'
-              text: 'foo'
-              authors: ['@card_maker']
-              colorIndex: 1
-            },
-            {
-              _id: '4'
-            }
-          ]
-        }
-      ]
+    card1Data = { _id: '3', text: 'foo', authors: ['@card_maker'], colorIndex: 1 }
+    card2Data = { _id: '4' }
+    cards = [ card1Data, card2Data ]
+    groups = [ { _id: '2', cards } ]
+    boardData = { _id: '1',  user_id: '@carbon_five', groups }
 
     # initialize the board
     @board = new boardroom.models.Board boardData
