@@ -53,15 +53,19 @@ class boardroom.Handler
       @send 'group.create', @groupMessage(group)
       pendingGroups.remove group
 
-  createSocket: () ->
+  createSocket: ->
     io.connect "#{@socketHost()}/boards/#{@board.id}"
 
   send: (name, message, options) =>
     return unless message?
     return if options?.rebroadcast
-    unless name == 'group.update'
-      @logger.info "send: #{name}"
-      @logger.debug message
+
+    logmsg = "send: #{name} - #{JSON.stringify(message)}"
+    if name == 'card.update' or name == 'group.update'
+      @logger.debug logmsg
+    else
+      @logger.info logmsg
+
     @socket.emit name, message
 
   onConnect: =>
