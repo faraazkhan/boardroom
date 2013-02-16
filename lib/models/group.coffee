@@ -40,10 +40,6 @@ GroupSchema.methods =
     @save (error, card) ->
       callback error, card
 
-  addCard: (newCard, callback)->
-    newCard.groupId = @id
-    newCard.save callback
-
   isRemovable: (callback) ->
     Card.findByGroupId @id, (error, cards) ->
       callback(cards.length == 0)

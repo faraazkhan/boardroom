@@ -70,23 +70,6 @@ BoardSchema.methods =
     @save (error, card) ->
       callback error, card
 
-  mergeGroups: (parentGroupId, otherGroupId, callback) ->
-    parentGroup = otherGroup = null
-    for group in @groups
-      parentGroup = group if parentGroupId is group.id
-      otherGroup = group if otherGroupId is group.id
-    return callback (new Error "Parent group not found") unless parentGroup?
-    return callback (new Error "Other group not found") unless otherGroup?
-
-    count = 0
-    for otherCard in otherGroup.cards # add otherCards into parentGroup
-      do (otherCard) ->
-        parentGroup.addCard otherCard, ->
-          count +=1
-          if count == otherGroup.cards.length
-            Group.findById otherGroup.id, (error, model) => model.remove (error) if model? # delete otherGroup
-            Group.findById parentGroup.id, callback
-
 Board = mongoose.model 'Board', BoardSchema
 
 module.exports = Board
