@@ -6,7 +6,7 @@
 describe 'boardroom.views.Card', =>
   beforeEach =>
     setFixtures '''
-      <html><body>
+      <html><body style="width:3000; height:3000">
       <div class="board">
         <div id="connection-status-modal">
           <div id="connection-status"></div>
@@ -14,7 +14,7 @@ describe 'boardroom.views.Card', =>
       </div>
       </body></html>
     '''
-    card1Data = { _id: '3', text: 'foo', authors: ['@card_maker'], colorIndex: 1 }
+    card1Data = { _id: '3', text: 'foo', authors: ['@card_maker'], colorIndex: 1, x: 20, y: 25}
     card2Data = { _id: '4' }
     cards = [ card1Data, card2Data ]
     groups = [ { _id: '2', cards } ]
@@ -67,9 +67,18 @@ describe 'boardroom.views.Card', =>
       @card.set(modelProperty, newValue) 
       expect(@cardView.$('textarea').val()).toEqual newValue
 
-    # use drag-n-drop testing for position changes
-    # it 'repositions when x changes', =>
-    # it 'repositions when y changes', =>
+    it 'moves when x and y change', (done)=>
+      oldXValue = @card.get('x')
+      oldYValue = @card.get('y')
+      expect(@cardView.$el.offset().left).toEqual oldXValue
+      expect(@cardView.$el.offset().top).toEqual oldYValue
+
+      x = 200
+      y = 300
+      @card.set {x, y}
+      expect(@cardView.$el.offset().left).toEqual x
+      expect(@cardView.$el.offset().top).toEqual  y
+
 
     it 'redisplays when +1 increments', =>
       modelProperty = 'plusAuthors'
@@ -97,6 +106,8 @@ describe 'boardroom.views.Card', =>
       expect(@card.get('authors').length).toEqual newValue.length
 
   describe 'hi event', =>
+
+    # +++ use drag-n-drop testing for position changes
 
     describe 'typing a note', =>
       beforeEach =>
