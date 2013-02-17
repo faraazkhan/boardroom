@@ -2,9 +2,6 @@ class boardroom.models.Group extends Backbone.Model
 
   idAttribute: '_id'
 
-  defaults:
-    pendingCards: new Backbone.Collection()
-
   initialize: (attributes, options) ->
     attributes ||= {}
     cards = new Backbone.Collection _.map(attributes.cards, (card) ->
@@ -17,13 +14,14 @@ class boardroom.models.Group extends Backbone.Model
         @delete options if cards.length == 0
 
   cards: -> @get 'cards'
-  pendingCards: -> @get 'pendingCards'
   board: -> @get 'board'
   currentUser: -> @board().currentUser()
 
   findCard: (id) ->
-    @cards().find (card) ->
-      card.id == id
+    @cards().find (card) -> card.id == id
+
+  findCardByCid: (cid) ->
+    @cards().find (card) -> card.cid == cid
 
   moveTo: (x, y) ->
     @set {x, y}
@@ -37,7 +35,7 @@ class boardroom.models.Group extends Backbone.Model
       groupId: @get '_id'
       creator: @currentUser()
       authors: [ @currentUser() ]
-    @pendingCards().add card
+    @cards().add card
 
   dropCard: (id) =>
     card = @board().findCard id
@@ -65,3 +63,4 @@ class boardroom.models.Group extends Backbone.Model
       updated: group.get 'updated'
     @set updates
     @onSaved @ if @onSaved?
+    delete @onSaved

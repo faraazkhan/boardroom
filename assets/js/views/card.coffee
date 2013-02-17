@@ -41,6 +41,7 @@ class boardroom.views.Card extends boardroom.views.Base
 
     @on 'attach', @onAttach, @
 
+    @model.on 'change:_id',         @updateId, @
     @model.on 'change:colorIndex',  @updateColor, @
     @model.on 'change:text',        @updateText, @
     @model.on 'change:x',           @updateX, @
@@ -102,7 +103,10 @@ class boardroom.views.Card extends boardroom.views.Base
     @updatePlusAuthors @model, @model.get('plusAuthors')
     @
 
-  updateColor: (card, color, options) ->
+  updateId: (card, id, options) =>
+    @$el.attr('id', id)
+
+  updateColor: (card, color, options) =>
     @$el.removeClassMatching /color-\d+/g
     @$el.addClass "color-#{color ? 2}"
 

@@ -58,3 +58,10 @@ class boardroom.models.Card extends Backbone.Model
       clone = _.clone(authors)
       clone.push author
       @set 'authors', clone
+
+  realize: (card) =>
+    updates =
+      _id: card.id
+      created: card.get 'created'
+      updated: card.get 'updated'
+    @set updates

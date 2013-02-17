@@ -19,12 +19,10 @@ class boardroom.models.Board extends Backbone.Model
     card
 
   findGroup: (id) ->
-    @groups().find (group) ->
-      group.id == id
+    @groups().find (group) -> group.id == id
 
   findGroupByCid: (cid) ->
-    @groups().find (group) ->
-      group.cid == cid
+    @groups().find (group) -> group.cid == cid
 
   addUser: (user) =>
     users = @get 'users'
@@ -39,7 +37,7 @@ class boardroom.models.Board extends Backbone.Model
         creator: creator
         groupId: group.id
         authors: [ creator ]
-      group.get('pendingCards').add(new boardroom.models.Card(card))
+      group.cards().add(new boardroom.models.Card(card))
     @groups().add group
 
   mergeGroups: (parentId, childId) =>

@@ -38,12 +38,9 @@ class boardroom.Handler
       cards = group.cards()
       cards.each handleCardEvents
       cards.on 'add', handleCardEvents
-
-      pendingCards = group.get 'pendingCards'
-      pendingCards.off 'add'
-      pendingCards.on 'add', (card) =>
+      cards.on 'add', (card) =>
+        return if card.id?
         @send 'card.create', @cardMessage(card)
-        pendingCards.remove card
 
     groups.each handleGroupEvents
     groups.on 'add', handleGroupEvents
@@ -92,7 +89,7 @@ class boardroom.Handler
 
   onGroupCreate: (message) =>
     @logger.debug 'onGroupCreate'
-    group = new boardroom.models.Group(message)
+    group = new boardroom.models.Group message
     existingGroup = @board.findGroupByCid message.cid
     if existingGroup?
       existingGroup.realize group
@@ -118,7 +115,12 @@ class boardroom.Handler
   onCardCreate: (message) =>
     @logger.debug 'onCardCreate'
     group = @board.findGroup message.groupId
-    group.get('cards').add(new boardroom.models.Card(message), { rebroadcast: true })
+    card = new boardroom.models.Card message
+    existingCard = group.findCardByCid message.cid
+    if existingCard?
+      existingCard.realize card
+    else
+      group.cards().add(card, { rebroadcast: true })
 
   onCardUpdate: (message) =>
     @logger.debug 'onCardUpdate'
@@ -146,7 +148,7 @@ class boardroom.Handler
     attrs = _(group.changed).keys()
     message = group.toJSON()
     message = _(message).pick(attrs) if message._id # restrict to changed attrs on updates only
-    message = _(message).omit('board', 'cards', 'pendingCards')
+    message = _(message).omit('board', 'cards', '_id', 'created', 'updated')
     return null if _(message).isEmpty()
 
     message._id = group.id if group.id?
@@ -159,7 +161,7 @@ class boardroom.Handler
     attrs = _(card.changed).keys()
     message = card.toJSON()
     message = _(message).pick(attrs) if message._id # restrict to changed attrs on updates only
-    message = _(message).omit('group', 'board')
+    message = _(message).omit('group', 'board', '_id', 'created', 'updated')
     return null if _(message).isEmpty()
 
     message._id = card.id if card.id?
