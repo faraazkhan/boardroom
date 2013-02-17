@@ -1,6 +1,8 @@
 class boardroom.models.Group extends Backbone.Model
-
   idAttribute: '_id'
+
+  defaults:
+    name: ''
 
   initialize: (attributes, options) ->
     attributes ||= {}
@@ -32,18 +34,18 @@ class boardroom.models.Group extends Backbone.Model
 
   createCard: (data)->
     card = new boardroom.models.Card
-      groupId: @get '_id'
+      groupId: @id
       creator: @currentUser()
       authors: [ @currentUser() ]
     @cards().add card
 
   dropCard: (id) =>
     card = @board().findCard id
-    card.set 'groupId', @get('_id')
+    card.set 'groupId', @id
     card.drop()
 
   dropGroup: (id) =>
-    @board().mergeGroups @get('_id'), id
+    @board().mergeGroups @id, id
 
   hover: =>
     @set 'hover', true

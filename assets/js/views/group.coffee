@@ -22,8 +22,6 @@ class boardroom.views.Group extends boardroom.views.Base
 
     @on 'attach', @onAttach, @
 
-    @model.set('name', '', { silent: true }) unless @model.get('name')
-
     @model.on 'change:_id',   @updateId, @
     @model.on 'change:name',  @updateName, @
     @model.on 'change:x',     @updateX, @
