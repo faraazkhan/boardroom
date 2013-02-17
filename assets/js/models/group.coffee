@@ -58,5 +58,10 @@ class boardroom.models.Group extends Backbone.Model
     groups.remove @
     @trigger 'destroy', @, groups, {} unless options?.rebroadcast
 
-  locator: =>
-    "#{@get('x')}-#{@get('y')}-#{@get('z')}"
+  realize: (group) =>
+    updates =
+      _id: group.id
+      created: group.get 'created'
+      updated: group.get 'updated'
+    @set updates
+    @onSaved @ if @onSaved?

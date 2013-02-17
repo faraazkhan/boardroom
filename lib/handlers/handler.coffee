@@ -23,8 +23,10 @@ class Handler
     model = new @modelClass data
     model.save (error, card) =>
       throw error if error?
-      @socket.emit event, model
-      @socket.broadcast.emit event, model
+      message = model.toJSON()
+      message.cid = data.cid
+      @socket.emit event, message
+      @socket.broadcast.emit event, message
 
   handleUpdate: (event, data) =>
     #console.log "handleUpdate: #{event}"
@@ -35,7 +37,7 @@ class Handler
           throw error if error?
           @socket.broadcast.emit event, data
       else
-        console.log "WARN: missing model for #{event}: #{id}"
+        console.log "WARN: missing model for #{event}: #{data._id}"
 
   handleDelete: (event, id) =>
     #console.log "handleDelete: #{event} - #{id}"

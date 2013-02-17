@@ -7,14 +7,10 @@ class boardroom.models.Board extends Backbone.Model
     )
     super attributes, options
     @set 'users', {}
-    @set 'pendingGroups', new Backbone.Collection()
     @set 'groups', groups
-    groups.on 'add', @handleGroupCallback, @
-    @groupCallbacks = {}
 
   currentUser: -> @get 'user_id'
   groups: -> @get 'groups'
-  pendingGroups: -> @get 'pendingGroups'
 
   findCard: (id) ->
     card = null
@@ -26,6 +22,10 @@ class boardroom.models.Board extends Backbone.Model
     @groups().find (group) ->
       group.id == id
 
+  findGroupByCid: (cid) ->
+    @groups().find (group) ->
+      group.cid == cid
+
   addUser: (user) =>
     users = @get 'users'
     users[user.user_id] = user
@@ -34,20 +34,20 @@ class boardroom.models.Board extends Backbone.Model
   createGroup: (coords) =>
     group = @newGroupAt coords
     creator = @currentUser()
-    @addGroupCallback group, (group) =>
+    group.onSaved = (group) =>
       card =
         creator: creator
         groupId: group.id
         authors: [ creator ]
       group.get('pendingCards').add(new boardroom.models.Card(card))
-    @pendingGroups().add group
+    @groups().add group
 
   mergeGroups: (parentId, childId) =>
     child = @findGroup childId
     childCards = child.get('cards').toArray()
     for card in childCards
       card.set 'groupId', parentId
-    @get('groups').remove child
+    @groups().remove child
 
   dropCard: (id) =>
     card = @findCard id
@@ -55,10 +55,10 @@ class boardroom.models.Board extends Backbone.Model
       x: card.get('x') + card.group().get('x')
       y: card.get('y') + card.group().get('y')
     group = @newGroupAt coords
-    @addGroupCallback group, (group) =>
+    group.onSaved = (group) =>
       card.set 'groupId', group.id
       card.drop()
-    @pendingGroups().add group
+    @groups().add group
 
   dropGroup: (id) =>
 
@@ -74,22 +74,7 @@ class boardroom.models.Board extends Backbone.Model
 
   newGroupAt: ({x, y}) =>
     new boardroom.models.Group
-      boardId: @get '_id'
+      boardId: @id
       x: x - 10
       y: y - 10
       z: @maxZ() + 1
-
-  #
-  # Group Callbacks
-  #
-
-  handleGroupCallback: (group, options) =>
-    pendingGroup = @pendingGroups().find (pg) => pg.locator() == group.locator()
-    @pendingGroups().remove pendingGroup
-    cb = @groupCallbacks[group.locator()]
-    if cb?
-      delete @groupCallbacks[group.locator()]
-      cb group
-
-  addGroupCallback: (group, callback) =>
-    @groupCallbacks[group.locator()] = callback

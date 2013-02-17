@@ -24,6 +24,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
     @model.set('name', '', { silent: true }) unless @model.get('name')
 
+    @model.on 'change:_id',   @updateId, @
     @model.on 'change:name',  @updateName, @
     @model.on 'change:x',     @updateX, @
     @model.on 'change:y',     @updateY, @
@@ -95,6 +96,9 @@ class boardroom.views.Group extends boardroom.views.Base
     @updateZ @model, @model.get('z')
     @updateGroupChrome()
     @
+
+  updateId: (group, id, options) =>
+    @$el.attr('id', id)
 
   updateName: (group, name, options) =>
     @$('.name').val(name).trimInput(80)

@@ -23,7 +23,7 @@ class boardroom.Handler
     @board.on 'change', (board, options) =>
       @send 'board.update', @boardMessage(), options
 
-    groups = @board.get 'groups'
+    groups = @board.groups()
 
     handleCardEvents = (card, cards, options) =>
       unless card.eventsInitialized
@@ -35,7 +35,7 @@ class boardroom.Handler
       group.on 'change', (group, options) => @send 'group.update', @groupMessage(group), options
       group.on 'destroy', (group, groups, options) => @send 'group.delete', group.id, options
 
-      cards = group.get 'cards'
+      cards = group.cards()
       cards.each handleCardEvents
       cards.on 'add', handleCardEvents
 
@@ -47,11 +47,9 @@ class boardroom.Handler
 
     groups.each handleGroupEvents
     groups.on 'add', handleGroupEvents
-
-    pendingGroups = @board.get 'pendingGroups'
-    pendingGroups.on 'add', (group) =>
+    groups.on 'add', (group) =>
+      return if group.id?
       @send 'group.create', @groupMessage(group)
-      pendingGroups.remove group
 
   createSocket: ->
     io.connect "#{@socketHost()}/boards/#{@board.id}"
@@ -94,7 +92,12 @@ class boardroom.Handler
 
   onGroupCreate: (message) =>
     @logger.debug 'onGroupCreate'
-    @board.get('groups').add(new boardroom.models.Group(message), { rebroadcast: true })
+    group = new boardroom.models.Group(message)
+    existingGroup = @board.findGroupByCid message.cid
+    if existingGroup?
+      existingGroup.realize group
+    else
+      @board.groups().add(group, { rebroadcast: true })
 
   onGroupUpdate: (message) =>
     #@logger.debug 'onGroupUpdate'
@@ -147,6 +150,7 @@ class boardroom.Handler
     return null if _(message).isEmpty()
 
     message._id = group.id if group.id?
+    message.cid = group.cid
     message.boardId = @board.id unless message._id
     message.author = @board.currentUser()
     message
@@ -159,6 +163,7 @@ class boardroom.Handler
     return null if _(message).isEmpty()
 
     message._id = card.id if card.id?
+    message.cid = card.cid
     message.author = @board.currentUser()
     message
 

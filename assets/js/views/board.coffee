@@ -44,7 +44,11 @@ class boardroom.views.Board extends boardroom.views.Base
     @statusDiv().html status
     if status then @statusModalDiv().show() else @statusModalDiv().hide()
 
+  findGroupViewByCid: (cid) =>
+    _(@groupViews).find (gv) => gv.model.cid == cid
+
   displayNewGroup: (group, options) =>
+    return if @findGroupViewByCid(group.cid)?  # it's already in there
     group.set 'board', @model, { silent: true }
     groupView = new boardroom.views.Group { model: group }
     @groupViews.push groupView
