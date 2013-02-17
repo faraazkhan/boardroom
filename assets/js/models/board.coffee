@@ -2,6 +2,7 @@ class boardroom.models.Board extends Backbone.Model
 
   initialize: (attributes, options) ->
     groups = new Backbone.Collection _.map(attributes?.groups, (group) -> new boardroom.models.Group(group))
+    groups.each (group) => group.set 'board', @, { silent: true }
     @set 'users', {}
     @set 'groups', groups
 
@@ -29,11 +30,12 @@ class boardroom.models.Board extends Backbone.Model
     group = @newGroupAt coords
     creator = @currentUser()
     group.onSaved = (group) =>
-      card =
-        creator: creator
+      card = new boardroom.models.Card
+        group: group
         groupId: group.id
+        creator: creator
         authors: [ creator ]
-      group.cards().add(new boardroom.models.Card(card))
+      group.cards().add card
     @groups().add group
 
   mergeGroups: (parentId, childId) =>
@@ -68,6 +70,7 @@ class boardroom.models.Board extends Backbone.Model
 
   newGroupAt: ({x, y}) =>
     new boardroom.models.Group
+      board: @
       boardId: @id
       x: x - 10
       y: y - 10

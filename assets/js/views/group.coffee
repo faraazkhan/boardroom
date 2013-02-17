@@ -29,7 +29,6 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:z',     @updateZ, @
     @model.on 'change:hover', @updateHover, @
 
-    # TODO: in the case of a move, we should move it via jquery
     @model.cards().on 'add', @displayNewCard, @
     @model.cards().on 'remove', @removeCard, @
 
@@ -139,21 +138,35 @@ class boardroom.views.Group extends boardroom.views.Base
       @$('.add-card').hide()
       @$el.addClass('single-card') unless @$el.is('single-card')
 
-  displayNewCard: (card, options) =>
-    card.set 'group', @model, { silent: true }
+  findCardView: (card) =>
+    _(@cardViews).find (cv) => cv.model == card
+
+  displayExistingCard: (cardView) =>
+    @displayCard cardView
+
+  displayNewCard: (card, cards, options) =>
+    return if options?.movecard
     cardView = new boardroom.views.Card { model: card }
-    @cardViews.push cardView
-    @renderCardInOrder cardView
+    @displayCard cardView
     cardView.trigger 'attach'
-    @updateGroupChrome()
-    @resizeHTML()
     cardView.focus() if card.get('creator') == @model.currentUser()
 
-  removeCard: (card, options) =>
-    cardView = _(@cardViews).find (cv) -> cv.model == card
-    @cardViews.splice @cardViews.indexOf(cardView), 1
+  displayCard: (cardView) =>
+    @cardViews.push cardView
+    @renderCardInOrder cardView
+    @updateGroupChrome()
+    @resizeHTML()
+
+  removeCard: (card, cards, options) =>
+    return if options?.movecard
+    cardView = @findCardView card
+    @removeCardView card
     cardView.remove()
     @updateGroupChrome()
+
+  removeCardView: (card) =>
+    cardView = @findCardView card
+    @cardViews.splice @cardViews.indexOf(cardView), 1
 
   renderCardInOrder: (newCardView) ->
     newCardDiv = newCardView.el

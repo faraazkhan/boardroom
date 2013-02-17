@@ -6,6 +6,7 @@ class boardroom.models.Group extends Backbone.Model
 
   initialize: (attributes, options) ->
     cards = new Backbone.Collection _.map(attributes?.cards, (card) -> new boardroom.models.Card(card))
+    cards.each (card) => card.set 'group', @, { silent: true }
     @set 'cards', cards
     cards.on 'remove', (card, cards, options) =>
       unless options?.rebroadcast
@@ -30,6 +31,7 @@ class boardroom.models.Group extends Backbone.Model
 
   createCard: (data)->
     card = new boardroom.models.Card
+      group: @
       groupId: @id
       creator: @currentUser()
       authors: [ @currentUser() ]

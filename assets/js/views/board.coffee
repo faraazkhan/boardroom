@@ -13,6 +13,7 @@ class boardroom.views.Board extends boardroom.views.Base
     $(window).resize => @resizeHTML()
 
     @model.on 'change:status', @updateStatus, @
+    @model.on 'move:card', @moveCard, @
 
     @model.groups().on 'add', @displayNewGroup, @
     @model.groups().on 'remove', @removeGroup, @
@@ -44,12 +45,14 @@ class boardroom.views.Board extends boardroom.views.Base
     @statusDiv().html status
     if status then @statusModalDiv().show() else @statusModalDiv().hide()
 
+  findGroupView: (group) =>
+    _(@groupViews).find (gv) => gv.model == group
+
   findGroupViewByCid: (cid) =>
     _(@groupViews).find (gv) => gv.model.cid == cid
 
   displayNewGroup: (group, options) =>
     return if @findGroupViewByCid(group.cid)?  # it's already in there
-    group.set 'board', @model, { silent: true }
     groupView = new boardroom.views.Group { model: group }
     @groupViews.push groupView
 
@@ -58,9 +61,18 @@ class boardroom.views.Board extends boardroom.views.Base
     @resizeHTML()
 
   removeGroup: (group, options) =>
-    groupView = _(@groupViews).find (gv) -> gv.model == group
+    groupView = @findGroupView group
     @groupViews.splice @groupViews.indexOf(groupView), 1
     groupView.remove()
+
+  moveCard: (card, oldGroup, newGroup, options) =>
+    oldGroupView = @findGroupView oldGroup
+    newGroupView = @findGroupView newGroup
+    cardView = oldGroupView.findCardView card
+
+    newGroupView.displayExistingCard cardView
+    oldGroupView.removeCardView card
+    oldGroupView.updateGroupChrome()
 
   ###
       human interaction event handlers
