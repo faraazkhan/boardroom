@@ -5,11 +5,7 @@ class boardroom.models.Group extends Backbone.Model
     name: ''
 
   initialize: (attributes, options) ->
-    attributes ||= {}
-    cards = new Backbone.Collection _.map(attributes.cards, (card) ->
-      new boardroom.models.Card card
-    )
-    super attributes, options
+    cards = new Backbone.Collection _.map(attributes?.cards, (card) -> new boardroom.models.Card(card))
     @set 'cards', cards
     cards.on 'remove', (card, cards, options) =>
       unless options?.rebroadcast

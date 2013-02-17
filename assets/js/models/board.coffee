@@ -1,11 +1,7 @@
 class boardroom.models.Board extends Backbone.Model
 
   initialize: (attributes, options) ->
-    attributes ||= {}
-    groups = new Backbone.Collection _.map(attributes.groups, (group) ->
-      new boardroom.models.Group group
-    )
-    super attributes, options
+    groups = new Backbone.Collection _.map(attributes?.groups, (group) -> new boardroom.models.Group(group))
     @set 'users', {}
     @set 'groups', groups
 
