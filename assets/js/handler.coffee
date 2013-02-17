@@ -91,7 +91,7 @@ class boardroom.Handler
     @logger.debug 'onGroupCreate'
     group = new boardroom.models.Group message
     existingGroup = @board.findGroupByCid message.cid
-    if existingGroup?
+    if existingGroup? and existingGroup.id == undefined
       existingGroup.realize group
     else
       @board.groups().add(group, { rebroadcast: true })
@@ -117,7 +117,7 @@ class boardroom.Handler
     group = @board.findGroup message.groupId
     card = new boardroom.models.Card message
     existingCard = group.findCardByCid message.cid
-    if existingCard?
+    if existingCard? and existingCard.id == undefined
       existingCard.realize card
     else
       group.cards().add(card, { rebroadcast: true })
