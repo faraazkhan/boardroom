@@ -29,32 +29,14 @@ describe 'boardroom.models.Board', ->
 
   describe '#createGroup', ->
     beforeEach ->
+      @groupCount = @board.groups().length
       @board.createGroup { x: 50, y: 50 }
 
-    it 'creates a new pending group', ->
-      expect(@board.pendingGroups().length).toEqual 1
-
-    describe 'and receive the created group from the server', ->
-      beforeEach ->
-        pendingGroup = @board.pendingGroups().at(0)
-        @board.groups().add new boardroom.models.Group
-          _id: '3'
-          x: pendingGroup.get 'x'
-          y: pendingGroup.get 'y'
-          z: pendingGroup.get 'z'
-        @group = @board.findGroup '3'
-        expect(@group).toBeDefined()
-
-      it 'creates a new card in that group', ->
-        expect(@group.pendingCards().length).toEqual 1
-        card = @group.pendingCards().at(0)
-        expect(card.get('groupId')).toEqual '3'
-        expect(card.get('creator')).toEqual @board.currentUser()
-        expect(card.get('authors')).toEqual [ @board.currentUser() ]
-
-      it 'removes the pending group', ->
-        expect(@board.pendingGroups().length).toEqual 0
-
+    it 'creates a new group with a cid but no id', ->
+      expect(@board.groups().length).toEqual @groupCount + 1
+      group = @board.groups().at(@groupCount)
+      expect(group.cid).toBeDefined()
+      expect(group.id).toBeUndefined()
 
   describe '#mergeGroups', ->
 
