@@ -158,10 +158,10 @@ class boardroom.views.Group extends boardroom.views.Base
     @resizeHTML()
 
   removeCard: (card, cards, options) =>
-    return if options?.movecard
-    cardView = @findCardView card
-    @removeCardView card
-    cardView.remove()
+    unless options?.movecard
+      cardView = @findCardView card
+      @removeCardView card
+      cardView.remove()
     @updateGroupChrome()
 
   removeCardView: (card) =>
