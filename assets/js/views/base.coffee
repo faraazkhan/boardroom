@@ -6,6 +6,7 @@ class boardroom.views.Base extends Backbone.View
 
   initialize: (attributes) ->
     super attributes
+    @logger = boardroom.utils.Logger.instance
 
   enableEditing: (selector) ->
     @$(selector).removeAttr 'disabled'
@@ -42,6 +43,8 @@ class boardroom.views.Base extends Backbone.View
     @resizeHTML()
 
   hideNotice: ->
+    #@logger.debug "base.hideNotice"
+    #@logger.debug @$el
     @$('.notice').fadeOut 100
 
   left: ->

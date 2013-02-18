@@ -8,7 +8,7 @@ class boardroom.models.Card extends Backbone.Model
     colorIndex: 2
 
   initialize: (attributes, options) ->
-    @.on 'change:groupId', (card, groupId, options) => @moveToGroup groupId
+    @.on 'change:groupId', @moveToGroup, @
 
   group: -> @get 'group'
   board: -> @group().board()
@@ -24,12 +24,13 @@ class boardroom.models.Card extends Backbone.Model
   # div from one group to another instead of removing it and creating another.  this will
   # allow one person to be typing on a card while another person moves it to a new group
   # without losing any of the typing.
-  moveToGroup: (groupId) =>
+  moveToGroup: (card, groupId, options) =>
     oldGroup = @group()
     newGroup = @board().findGroup groupId
     @board().trigger 'move:card', @, oldGroup, newGroup
-    oldGroup.cards().remove @, { movecard: true }
-    newGroup.cards().add @, { movecard: true }
+    moveOptions = _(options).extend { movecard: true }
+    oldGroup.cards().remove @, moveOptions
+    newGroup.cards().add @, moveOptions
     @set 'group', newGroup, { silent: true }
     @drop()
     @touch()

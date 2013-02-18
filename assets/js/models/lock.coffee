@@ -1,5 +1,6 @@
 class boardroom.models.Lock
   constructor: (@onLock, @onUnlock) ->
+    @logger = boardroom.utils.Logger.instance
     @data = undefined
     @poll()
 

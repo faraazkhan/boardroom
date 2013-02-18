@@ -5,7 +5,7 @@ class boardroom.utils.Watcher
     @cache = {}
 
   watch: ->
-    setInterval @watchForEmptyGroups, 250
+    setInterval @watchForEmptyGroups, 2000
 
   watchForEmptyGroups: =>
     key = 'emptyGroup'
