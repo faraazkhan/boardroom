@@ -16,7 +16,6 @@ class boardroom.models.Card extends Backbone.Model
 
   moveTo: (x, y) ->
     @set { x, y }
-    @touch()
 
   # we are doing an optimization.  instea of letting the remove() and add() handle the
   # move (via listeners in the views), we are making those silent and triggering a
@@ -33,7 +32,7 @@ class boardroom.models.Card extends Backbone.Model
     newGroup.cards().add @, moveOptions
     @set 'group', newGroup, { silent: true }
     @drop()
-    @touch()
+    @touch() unless options?.rebroadcast
 
   drop: ->
     @unset 'x'
