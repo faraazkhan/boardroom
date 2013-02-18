@@ -4,10 +4,10 @@ Card = require "./card"
 Group = require "./group"
 
 BoardSchema = new mongoose.Schema
-  name: String
-  creator: String
-  created: Date
-  updated: Date
+  name    : { type: String, required: true }
+  creator : { type: String, required: true }
+  created : { type: Date }
+  updated : { type: Date }
 
 BoardSchema.virtual('groups').get () -> @vGroups
 BoardSchema.virtual('groups').set (groups) -> @vGroups = groups

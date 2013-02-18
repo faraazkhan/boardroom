@@ -36,6 +36,10 @@ class Logger
     clientMsg = -> clc.xterm(110)("CLIENT [#{user}]") + "  " + msg
     @log level, clientMsg
 
+  logValidationErrors: (errors) =>
+    for property, error of errors
+      @error -> error.message
+
   timestamp: =>
     d = new Date()
     pad = (i) -> if i < 10 then "0#{i}" else "#{i}"

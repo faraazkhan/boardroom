@@ -1,16 +1,14 @@
 { mongoose } = require './db'
 
 CardSchema = new mongoose.Schema
-  groupId: String
-  creator: String
-  authors: Array
-  plusAuthors: Array
-  text: String
-  colorIndex: Number
-  deleted: Boolean
-  focus: Boolean
-  created: Date
-  updated: Date
+  groupId     : { type: String, required: true }
+  creator     : { type: String, required: true }
+  authors     : { type: Array, default: [] }
+  plusAuthors : { type: Array, default: [] }
+  text        : { type: String, default: '' }
+  colorIndex  : { type: Number, required: true, min: 0, max: 4 }
+  created     : { type: Date }
+  updated     : { type: Date }
 
 CardSchema.pre 'save', (next) ->
   @created = new Date() unless @created?
@@ -23,7 +21,7 @@ CardSchema.statics =
 
 CardSchema.methods =
   updateAttributes: (attributes, callback) ->
-    for attribute in ['text', 'colorIndex', 'deleted', 'groupId', 'plusAuthors', 'authors'] when attributes[attribute]?
+    for attribute in ['text', 'colorIndex', 'groupId', 'plusAuthors', 'authors'] when attributes[attribute]?
       @[attribute] = attributes[attribute]
     @save (error, card) ->
       callback error, card

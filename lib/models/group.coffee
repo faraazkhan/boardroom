@@ -2,13 +2,13 @@
 Card = require './card'
 
 GroupSchema = new mongoose.Schema
-  boardId: String
-  name: String
-  x: Number
-  y: Number
-  z: Number
-  created: Date
-  updated: Date
+  boardId : { type: String, required: true }
+  name    : { type: String, default: '' }
+  x       : { type: Number, required: true }
+  y       : { type: Number, required: true }
+  z       : { type: Number, required: true }
+  created : { type: Date }
+  updated : { type: Date }
 
 GroupSchema.virtual('cards').set (cards) ->
   @vCards = cards
