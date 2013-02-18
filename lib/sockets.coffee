@@ -1,4 +1,5 @@
 sockets = require 'socket.io'
+logger = require './utils/logger'
 CardHandler = require './handlers/card_handler'
 GroupHandler = require './handlers/group_handler'
 BoardHandler = require './handlers/board_handler'
@@ -26,6 +27,9 @@ class Sockets
         socket.on 'join', (user) =>
           @users[user.user_id] = user
           boardNamespace.emit 'join', user
+
+        socket.on 'log', ({user, level, msg}) =>
+          logger.log level, -> "CLIENT [#{user}]  #{msg}"
 
     @boards[boardId] = @users
 

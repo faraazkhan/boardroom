@@ -1,5 +1,6 @@
 fs = require 'fs'
 helper = require '../migrations/helper'
+logger = require './utils/logger'
 
 class Migrator
   constructor: ->
@@ -13,7 +14,7 @@ class Migrator
         return callback()
 
       migration = @migrations.shift()
-      console.log "[Migrate] #{migration.split('/').pop()}"
+      logger.info -> "migrate: #{migration.split('/').pop()}"
       m = require migration
       m.up next
 

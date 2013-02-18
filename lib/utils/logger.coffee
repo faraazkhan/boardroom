@@ -1,4 +1,4 @@
-class boardroom.utils.Logger
+class Logger
 
   constructor: ->
     @level = 1
@@ -9,11 +9,9 @@ class boardroom.utils.Logger
 
   error: (msg) =>
     @log 'ERROR', msg
-    @serverLog 'ERROR', msg
 
   warn: (msg) =>
     @log 'WARN ', msg if @level >= 1
-    @serverLog 'WARN', msg
 
   info: (msg) =>
     @log 'INFO ', msg if @level >= 2
@@ -26,10 +24,9 @@ class boardroom.utils.Logger
     ts = "#{d.getFullYear()}-#{d.getMonth()}-#{d.getDate()} #{d.getHours()}:#{d.getMinutes()}:#{d.getSeconds()}"
     if typeof msg == 'string'
       console.log "[#{ts} #{level}]  #{msg}"
+    else if typeof msg == 'function'
+      console.log "[#{ts} #{level}]  #{msg()}"
     else
       console.log msg
 
-  serverLog: (level, msg) =>
-    @socket.emit 'log', { user: @user.get('user_id'), level, msg }
-
-boardroom.utils.Logger.instance = new boardroom.utils.Logger()
+module.exports = new Logger()

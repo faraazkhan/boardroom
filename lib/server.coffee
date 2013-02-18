@@ -1,4 +1,6 @@
-console.log "Starting boardroom - #{new Date()}"
+logger = require './utils/logger'
+logger.setLevel 'info'
+logger.warn -> 'Starting Boardroom'
 
 Migrator = require './migrator'
 migrator = new Migrator
