@@ -22,14 +22,18 @@ class Logger
     @log 'DEBUG', msg if @level >= 3
 
   log: (level, msg) =>
+    unless typeof msg == 'function'
+      console.log 'LOGGING ERROR: You must pass a function to the logger'
+      console.log '  Example: @logger.warn -> "cannot find object #{foo}"'
+      return
+
     d = new Date()
     level = if level.length == 4 then "#{level} " else level
     preamble = "[#{@timestamp()} #{@colorize(level) level}]"
-    body = if typeof msg == 'function' then msg() else msg
-    console.log "#{preamble}  #{body}"
+    console.log "#{preamble}  #{msg()}"
 
   logClient: (user, level, msg) =>
-    clientMsg = clc.xterm(110)("CLIENT [#{user}]") + "  " + msg
+    clientMsg = -> clc.xterm(110)("CLIENT [#{user}]") + "  " + msg
     @log level, clientMsg
 
   timestamp: =>
