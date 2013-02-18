@@ -20,7 +20,8 @@
     "less": "1",
     "coffee-script": "1.4",
     "mongoose": "3",
-    "mongodb": "1.2"
+    "mongodb": "1.2",
+    "cli-color": "latest"
   },
   "devDependencies": {
     "jasmine-node": "1.1",

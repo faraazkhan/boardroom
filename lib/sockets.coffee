@@ -29,7 +29,7 @@ class Sockets
           boardNamespace.emit 'join', user
 
         socket.on 'log', ({user, level, msg}) =>
-          logger.log level, -> "CLIENT [#{user}]  #{msg}"
+          logger.logClient user, level, msg
 
     @boards[boardId] = @users
 

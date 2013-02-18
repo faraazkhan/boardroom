@@ -12,22 +12,28 @@ class boardroom.utils.Logger
     @serverLog 'ERROR', msg
 
   warn: (msg) =>
-    @log 'WARN ', msg if @level >= 1
+    @log 'WARN', msg if @level >= 1
     @serverLog 'WARN', msg
 
   info: (msg) =>
-    @log 'INFO ', msg if @level >= 2
+    @log 'INFO', msg if @level >= 2
+    @serverLog 'INFO', msg if @level >= 2
 
   debug: (msg) =>
     @log 'DEBUG', msg if @level >= 3
 
   log: (level, msg) =>
     d = new Date()
-    ts = "#{d.getFullYear()}-#{d.getMonth()}-#{d.getDate()} #{d.getHours()}:#{d.getMinutes()}:#{d.getSeconds()}"
+    level = if level.length == 4 then "#{level} " else level
     if typeof msg == 'string'
-      console.log "[#{ts} #{level}]  #{msg}"
+      console.log "[#{@timestamp()} #{level}]  #{msg}"
     else
       console.log msg
+
+  timestamp: =>
+    d = new Date()
+    pad = (i) -> if i < 10 then "0#{i}" else "#{i}"
+    "#{d.getFullYear()}-#{pad d.getMonth()}-#{pad d.getDate()} #{pad d.getHours()}:#{pad d.getMinutes()}:#{pad d.getSeconds()}"
 
   serverLog: (level, msg) =>
     @socket.emit 'log', { user: @user.get('user_id'), level, msg }
