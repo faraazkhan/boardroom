@@ -1,6 +1,6 @@
 fs = require 'fs'
-helper = require '../migrations/helper'
-logger = require './utils/logger'
+helper = require '../../migrations/helper'
+logger = require '../utils/logger'
 
 class Migrator
   constructor: ->
@@ -28,6 +28,6 @@ class Migrator
       "#{@migrationsDir()}/#{file}"
 
   migrationsDir: ->
-    "#{__dirname}/../migrations"
+    "#{__dirname}/../../migrations"
 
 module.exports = Migrator

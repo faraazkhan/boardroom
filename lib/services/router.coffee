@@ -3,21 +3,21 @@ cookies = require 'cookie-sessions'
 connectAssets = require 'connect-assets'
 fibrous = require 'fibrous'
 Sockets = require './sockets'
-HomeController = require './controllers/home'
-ContentsController = require './controllers/contents'
-SessionsController = require './controllers/sessions'
-BoardsController = require './controllers/boards'
-UsersController = require './controllers/users'
+HomeController = require '../controllers/home'
+ContentsController = require '../controllers/contents'
+SessionsController = require '../controllers/sessions'
+BoardsController = require '../controllers/boards'
+UsersController = require '../controllers/users'
 
 class Router
   constructor: ->
     @app = express.createServer()
     @app.configure =>
-      @app.set 'views', "#{__dirname}/views"
+      @app.set 'views', "#{__dirname}/../views"
       @app.set 'view engine', 'jade'
-      @app.use connectAssets(src: "#{__dirname}/../assets")
+      @app.use connectAssets(src: "#{__dirname}/../../assets")
       @app.use express.bodyParser()
-      @app.use express.static "#{__dirname}/../public"
+      @app.use express.static "#{__dirname}/../../public"
       @app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889',
                        session_key: 'boardroom')
       @app.use fibrous.middleware

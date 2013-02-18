@@ -1,8 +1,9 @@
 sockets = require 'socket.io'
-logger = require './utils/logger'
-CardHandler = require './handlers/card_handler'
-GroupHandler = require './handlers/group_handler'
-BoardHandler = require './handlers/board_handler'
+logger = require '../utils/logger'
+Handler = require '../services/handler'
+Board = require '../models/board'
+Group = require '../models/group'
+Card = require '../models/card'
 
 class Sockets
   @boards: {}
@@ -12,21 +13,25 @@ class Sockets
       @createBoard boardId
 
   @createBoard: (boardId) ->
-    handlers = [ CardHandler, GroupHandler, BoardHandler ]
+    handlers = [
+      new Handler(Board, 'board')
+      new Handler(Group, 'group')
+      new Handler(Card, 'card')
+    ]
     @users = {}
 
     boardNamespace = @io
       .of("/boards/#{boardId}")
       .on 'connection', (socket) =>
-        for Handler in handlers
-          do (Handler) ->
-            handler = new Handler()
+        for handler in handlers
+          do (handler) ->
             handler.socket = socket
             handler.registerAll()
 
         socket.on 'join', (user) =>
           @users[user.user_id] = user
           boardNamespace.emit 'join', user
+          logger.info -> "#{user.user_id} has joined board #{boardId}"
 
         socket.on 'log', ({user, level, msg}) =>
           logger.logClient user, level, msg

@@ -1,9 +1,9 @@
 require 'fibrous'
-Sockets = require './../sockets'
+Sockets = require '../services/sockets'
 ApplicationController = require './application'
-Board = require './../models/board'
-Group = require './../models/group'
-Card = require './../models/card'
+Board = require '../models/board'
+Group = require '../models/group'
+Card = require '../models/card'
 util = require 'util'
 
 class BoardsController extends ApplicationController

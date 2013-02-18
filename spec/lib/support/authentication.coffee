@@ -1,4 +1,4 @@
-Router = require "#{__dirname}/../../../lib/router"
+Router = require "../../../lib/services/router"
 
 routers = []
 

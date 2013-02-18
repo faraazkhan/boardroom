@@ -2,11 +2,11 @@ logger = require './utils/logger'
 logger.setLevel 'info'
 logger.warn -> 'Starting Boardroom'
 
-Migrator = require './migrator'
+Migrator = require './services/migrator'
 migrator = new Migrator
 
 migrator.migrate (error) ->
   throw error if error?
-  Router = require './router'
+  Router = require './services/router'
   router = new Router
   router.start()
