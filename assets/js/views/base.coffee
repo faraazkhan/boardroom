@@ -27,10 +27,13 @@ class boardroom.views.Base extends Backbone.View
 
   showNotice: (user, message) =>
     notices = @$('.notice')
-    notice = if notices.length == 2 then notices.last() else notices.first() # stupid single-card group hack
-    notice
+    @visibleNotice = if notices.length == 2 then notices.last() else notices.first() # stupid single-card group hack
+    @visibleNotice
       .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
       .show()
+
+  hideNotice: ->
+    @visibleNotice?.fadeOut 100
 
   moveTo: ({x, y}) ->
     if isNaN(Number(x)) or isNaN(Number(y))
@@ -41,11 +44,6 @@ class boardroom.views.Base extends Backbone.View
       top = y + parentOffset.top
       @$el.offset { left: left, top: top }
     @resizeHTML()
-
-  hideNotice: ->
-    #@logger.debug "base.hideNotice"
-    #@logger.debug @$el
-    @$('.notice').fadeOut 100
 
   left: ->
     @$el.position()?.left || 0
