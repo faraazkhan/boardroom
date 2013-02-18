@@ -92,6 +92,7 @@ class boardroom.Handler
   onGroupCreate: (message) =>
     @logger.debug 'onGroupCreate'
     group = new boardroom.models.Group message
+    group.set 'board', @board, { silent: true }
     existingGroup = @board.findGroupByCid message.cid
     if existingGroup? and existingGroup.id == undefined
       existingGroup.realize group
@@ -118,6 +119,7 @@ class boardroom.Handler
     @logger.debug 'onCardCreate'
     group = @board.findGroup message.groupId
     card = new boardroom.models.Card message
+    card.set 'group', group, { silent: true }
     existingCard = group.findCardByCid message.cid
     if existingCard? and existingCard.id == undefined
       existingCard.realize card
