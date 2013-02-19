@@ -13,20 +13,19 @@ class Sockets
       @createBoard boardId
 
   @createBoard: (boardId) ->
-    handlers = [
-      new Handler(Board, 'board')
-      new Handler(Group, 'group')
-      new Handler(Card, 'card')
-    ]
+    handlers =
+      board: Board
+      group: Group
+      card : Card
     @users = {}
 
     boardNamespace = @io
       .of("/boards/#{boardId}")
       .on 'connection', (socket) =>
-        for handler in handlers
-          do (handler) ->
-            handler.socket = socket
-            handler.registerAll()
+        for name, modelClass of handlers
+          handler = new Handler modelClass, name
+          handler.socket = socket
+          handler.registerAll()
 
         socket.on 'join', (user) =>
           @users[user.user_id] = user
