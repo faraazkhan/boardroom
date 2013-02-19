@@ -12,9 +12,7 @@ class boardroom.views.Header extends boardroom.views.Base
     @model.on 'change:name', @onBoardUpdate, @
 
   initializeLock: =>
-    onLock = (user, message) => @disableEditing('#name')
-    onUnlock = => @enableEditing('#name')
-    @lock = new boardroom.models.Lock onLock, onUnlock
+    @editLock = @createEditLock '#name'
 
   ###
       human interaction event handlers
@@ -34,4 +32,4 @@ class boardroom.views.Header extends boardroom.views.Base
   onBoardUpdate: (board, name, options) =>
     @$('#name').val(name).trimInput(80)
     if options?.rebroadcast
-      @lock.lock 1000
+      @editLock.lock 1000

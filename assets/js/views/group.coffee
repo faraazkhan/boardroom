@@ -18,7 +18,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
-    @initializeLock()
+    @initializeLocks()
 
     @on 'attach', @onAttach, @
 
@@ -38,14 +38,9 @@ class boardroom.views.Group extends boardroom.views.Base
     @initializeDraggable()
     @initializeDroppable()
 
-  initializeLock: =>
-    onLock = (user, message) =>
-      @showNotice user, message if user? and message?
-      @disableEditing '.name'
-    onUnlock = =>
-      @hideNotice()
-      @enableEditing '.name'
-    @lock = new boardroom.models.Lock onLock, onUnlock
+  initializeLocks: =>
+    @dragLock = @createDragLock()
+    @editLock = @createEditLock '.name'
 
   initializeCards: =>
     @cardViews = []
@@ -100,7 +95,7 @@ class boardroom.views.Group extends boardroom.views.Base
   updateName: (group, name, options) =>
     @$('.name').val(name).trimInput(80)
     if options?.rebroadcast
-      @lock.lock 1000
+      @editLock.lock 1000, @model.get('author'), "#{@model.get('author')} is typing..."
 
   updateX: (group, x, options) =>
     @updatePosition x, group.get('y'), options
@@ -111,7 +106,7 @@ class boardroom.views.Group extends boardroom.views.Base
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
     if options?.rebroadcast
-      @lock.lock 1000, @model.get('author'), @model.get('author')
+      @dragLock.lock 1000, @model.get('author'), @model.get('author')
 
   updateZ: (group, z, options) =>
     @$el.css 'z-index', z

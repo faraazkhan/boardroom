@@ -37,7 +37,7 @@ class boardroom.views.Card extends boardroom.views.Base
 
   initialize: (attributes) ->
     super attributes
-    @initializeLock()
+    @initializeLocks()
 
     @on 'attach', @onAttach, @
 
@@ -53,14 +53,9 @@ class boardroom.views.Card extends boardroom.views.Base
     @render()
     @initializeDraggable()
 
-  initializeLock: =>
-    onLock = (user, message) =>
-      @showNotice user, message if user? and message?
-      @disableEditing 'textarea'
-    onUnlock = =>
-      @hideNotice()
-      @enableEditing 'textarea'
-    @lock = new boardroom.models.Lock onLock, onUnlock
+  initializeLocks: =>
+    @dragLock = @createDragLock()
+    @editLock = @createEditLock 'textarea'
 
   initializeDraggable: =>
     boardOffset = @$el.closest('.board').offset()
@@ -115,7 +110,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @updateILikeIWish()
     if options?.rebroadcast
       @triggerAutosize()
-      @lock.lock 1000, @model.get('author'), "#{@model.get('author')} is typing..."
+      @editLock.lock 1000, @model.get('author'), "#{@model.get('author')} is typing..."
 
   updateX: (card, x, options) =>
     @updatePosition x, card.get('y'), options
@@ -126,7 +121,7 @@ class boardroom.views.Card extends boardroom.views.Base
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
     if options?.rebroadcast
-      @lock.lock 1000, @model.get('author'), @model.get('author')
+      @dragLock.lock 1000, @model.get('author'), @model.get('author')
 
   updatePlusAuthors: (card, plusAuthors, options) =>
     return if plusAuthors.length == 0

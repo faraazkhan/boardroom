@@ -1,29 +1,30 @@
 class boardroom.views.Base extends Backbone.View
 
-  ###
-      util
-  ###
-
   initialize: (attributes) ->
     super attributes
     @logger = boardroom.utils.Logger.instance
+
+  createDragLock: ->
+    onLock = (user, message) =>
+      @showNotice user, message if user? and message?
+    onUnlock = =>
+      @hideNotice()
+    new boardroom.models.Lock onLock, onUnlock
+
+  createEditLock: (selector) ->
+    onLock = (user, message) =>
+      @showNotice user, message if user? and message?
+      @disableEditing selector
+    onUnlock = =>
+      @hideNotice()
+      @enableEditing selector
+    new boardroom.models.Lock onLock, onUnlock
 
   enableEditing: (selector) ->
     @$(selector).removeAttr 'disabled'
 
   disableEditing: (selector) ->
     @$(selector).attr('disabled', 'disabled')
-
-  resizeHTML: ()->
-    #+++ TODO - this is not working right!
-    width =  Math.max ( $(document).width()  ),  ( parseInt $('body').css('min-width') )
-    height = Math.max ( -100 + $(document).height() ),  ( parseInt $('body').css('min-height') )
-    $('body').width(width) if $('body').width() isnt $(document).width()
-    $('body').height(height)
-
-  ###
-      render
-  ###
 
   showNotice: (user, message) =>
     notices = @$('.notice')
@@ -56,6 +57,13 @@ class boardroom.views.Base extends Backbone.View
 
   bottom: ->
     @top() + @$el.height()
+
+  resizeHTML: ()->
+    #+++ TODO - this is not working right!
+    width =  Math.max ( $(document).width()  ),  ( parseInt $('body').css('min-width') )
+    height = Math.max ( -100 + $(document).height() ),  ( parseInt $('body').css('min-height') )
+    $('body').width(width) if $('body').width() isnt $(document).width()
+    $('body').height(height)
 
   rememberRestingSpot: =>
     @model.set 'restingSpot',
