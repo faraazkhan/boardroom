@@ -6,7 +6,7 @@ CardSchema = new mongoose.Schema
   authors     : { type: Array, default: [] }
   plusAuthors : { type: Array, default: [] }
   text        : { type: String, default: '' }
-  colorIndex  : { type: Number, required: true, min: 0, max: 4 }
+  colorIndex  : { type: Number, default: 2, min: 0, max: 4 }
   created     : { type: Date }
   updated     : { type: Date }
 
