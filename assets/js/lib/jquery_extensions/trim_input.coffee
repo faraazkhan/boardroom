@@ -1,5 +1,10 @@
 $.fn.textMetrics = () ->
-  html = $(@).html() || $(@).val() || $(@).attr('placeholder') || ''
+  if $(@).is 'input' or $(@).is 'textarea'
+    html = $(@).val()
+    html = $(@).attr('placeholder') if html == ''
+  else
+    html = $(@).html()
+  html ?= ''
   $div = $("<div>#{html}</div>").
     css({ position: 'absolute', left: -1000, top: -1000, display: 'none' }).
     appendTo($('body'))

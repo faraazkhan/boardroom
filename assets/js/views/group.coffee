@@ -3,9 +3,9 @@ class boardroom.views.Group extends boardroom.views.Base
   nameDecorated: false
 
   template: _.template """
-    <div class="background"></div>
+    <div class='background'></div>
     <div class='notice'></div>
-    <input type='text' class='name' value="<%=name%>" placeholder="group name"></input>
+    <input type='text' class='name' placeholder='group name'></input>
     <button class='add-card'>+</button>
   """
 
@@ -86,7 +86,8 @@ class boardroom.views.Group extends boardroom.views.Base
   ###
 
   render: ->
-    @$el.html(@template(@model.toJSON()))
+    @$el.html(@template())
+    @updateName @model, @model.get('name')
     @updatePosition @model.get('x'), @model.get('y')
     @updateZ @model, @model.get('z')
     @updateGroupChrome()

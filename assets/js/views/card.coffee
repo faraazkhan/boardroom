@@ -89,7 +89,7 @@ class boardroom.views.Card extends boardroom.views.Base
   ###
 
   render: ->
-    @$el.html(@template(@model.toJSON()))
+    @$el.html(@template())
     @$el.find('textarea').css('resize', 'none').autosize { append: "\n" }
     @updateText @model, @model.get('text')
     setTimeout @triggerAutosize, 10
