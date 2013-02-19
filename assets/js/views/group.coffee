@@ -52,9 +52,12 @@ class boardroom.views.Group extends boardroom.views.Base
       minX: boardOffset.left + 5
       minY: boardOffset.top + 5
       isTarget: (target) ->
-        # return false if $(target).is 'input'
-        return false if $(target).is '.color'
-        return false if $(target).is '.delete'
+        return false if $(target).is '.name'
+        return false if $(target).is '.add-card'
+        return false if $(target).is '.card textarea'
+        return false if $(target).is '.card .color'
+        return false if $(target).is '.card .plus1 .btn'
+        return false if $(target).is '.card .delete'
         true
       onMouseDown: =>
         @model.bringForward()

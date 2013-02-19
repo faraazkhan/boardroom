@@ -63,8 +63,9 @@ class boardroom.views.Card extends boardroom.views.Base
       minX: boardOffset.left + 5
       minY: boardOffset.top + 5
       isTarget: (target) =>
-        # return false if $(target).is 'input'
-        # return false if $(target).is '.color'
+        return false if $(target).is 'textarea'
+        return false if $(target).is '.color'
+        return false if $(target).is '.plus1 .btn'
         return false if $(target).is '.delete'
         true
       isOkToDrag: () =>
