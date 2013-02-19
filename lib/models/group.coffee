@@ -6,7 +6,7 @@ GroupSchema = new mongoose.Schema
   name    : { type: String, default: '' }
   x       : { type: Number, required: true }
   y       : { type: Number, required: true }
-  z       : { type: Number, required: true }
+  z       : { type: Number, default: 0 }
   created : { type: Date }
   updated : { type: Date }
 

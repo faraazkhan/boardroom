@@ -1,4 +1,4 @@
-logger = require './utils/logger'
+logger = require './services/logger'
 logger.setLevel 'info'
 logger.warn -> 'Starting Boardroom'
 

@@ -1,6 +1,6 @@
 fs = require 'fs'
 helper = require '../../migrations/helper'
-logger = require '../utils/logger'
+logger = require './logger'
 
 class Migrator
   constructor: ->

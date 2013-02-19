@@ -1,4 +1,4 @@
-logger = require '../utils/logger'
+logger = require './logger'
 
 class Handler
 

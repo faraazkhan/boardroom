@@ -8,12 +8,14 @@ Factory.define 'board', Board,
   creator: 'board-creator-1'
 
 Factory.define 'group', Group,
+  boardId: 0
   name: 'group-1'
   x: 100
   y: 100
   z: 1
 
 Factory.define 'card', Card,
+  groupId: 0
   creator: 'card-creator-1'
   text: 'text'
   colorIndex: 2

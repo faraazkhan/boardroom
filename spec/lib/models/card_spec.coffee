@@ -30,4 +30,3 @@ describe 'card.Card', ->
         expect(card.colorIndex).toEqual attributes.colorIndex
         expect(card.authors.length).toEqual numAuthors+1
         expect(card.plusAuthors.length).toEqual numPlusAuthors+1
-        expect(card.deleted).toEqual attributes.deleted
