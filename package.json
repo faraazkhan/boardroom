@@ -21,7 +21,8 @@
     "coffee-script": "1.4",
     "mongoose": "3",
     "mongodb": "1.2",
-    "cli-color": "latest"
+    "cli-color": "latest",
+    "nodemon": "~0.7.2"
   },
   "devDependencies": {
     "jasmine-node": "1.1",
@@ -30,6 +31,6 @@
     "supertest": "latest",
     "jsdom": "latest",
     "socket.io-client": "latest",
-    "fibrous" : "0.3"
+    "fibrous": "0.3"
   }
 }
