@@ -2,18 +2,17 @@ logger = require './logger'
 
 class Handler
 
-  socket: null
-
-  constructor: (@modelClass, @name) ->
+  constructor: (@modelClass, @name, @boardId, @socket) ->
 
   registerAll: ->
     @register "#{@name}.create", @handleCreate
     @register "#{@name}.update", @handleUpdate
     @register "#{@name}.delete", @handleDelete
 
-  register: (event, handler) ->
-    @socket.on event, (data) ->
+  register: (event, handler) =>
+    @socket.on event, (data) =>
       logger.debug -> "handle: #{event} - #{JSON.stringify(data)}"
+      logger.rememberEvent @boardId, event, data
       handler event, data
 
   handleCreate: (event, data) =>
@@ -41,11 +40,11 @@ class Handler
       else
         logger.error => "#{event}: missing #{@name}: #{data._id}"
 
-  handleDelete: (event, id) =>
+  handleDelete: (event, data) =>
     count = 0
     doDelete = () =>
       count += 1
-      @modelClass.findById id, (err, model) =>
+      @modelClass.findById data._id, (err, model) =>
         throw err if err?
         if model
           model.isRemovable (removable) =>
@@ -53,12 +52,12 @@ class Handler
               model.remove (err) =>
                 throw err if err?
                 logger.debug -> "#{event}: deleted successfully"
-                @socket.broadcast.emit event, id
+                @socket.broadcast.emit event, data
             else
               logger.debug -> "#{event}: unable to delete, try again in 100ms"
               setTimeout doDelete, 100 unless count > 10
         else
-          logger.error => "#{event}: missing #{@name}: #{id}"
+          logger.error => "#{event}: missing #{@name}: #{data._id}"
 
     doDelete()
 

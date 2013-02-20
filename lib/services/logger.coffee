@@ -4,10 +4,21 @@ class Logger
 
   constructor: ->
     @level = 1
+    @eventHistory = {}
 
   setLevel: (level) =>
     @level = ['error', 'warn', 'info', 'debug'].indexOf(level)
     @level = 1 if @level == -1
+
+  rememberEvent: (boardId, event, message) =>
+    unless message.author?
+      @warn -> "Cannot remember event with no author: #{event}"
+      return
+
+    events = @eventHistory[boardId] || []
+    events.push [event, message]
+    events.splice 0, (events.length - 10)
+    @eventHistory[boardId] = events
 
   error: (msg) =>
     @log 'ERROR', msg
@@ -25,6 +36,7 @@ class Logger
     unless typeof msg == 'function'
       console.log 'LOGGING ERROR: You must pass a function to the logger'
       console.log '  Example: @logger.warn -> "cannot find object #{foo}"'
+      console.log "  Your message is: '#{msg}'"
       return
 
     d = new Date()
@@ -32,13 +44,22 @@ class Logger
     preamble = "[#{@timestamp()} #{@colorize(level) level}]"
     console.log "#{preamble}  #{msg()}"
 
-  logClient: (user, level, msg) =>
+  logClient: (user, boardId, level, msg) =>
     clientMsg = -> clc.xterm(110)("CLIENT [#{user}]") + "  " + msg
     @log level, clientMsg
+    @logBoardHistory boardId if level == 'ERROR'
 
   logValidationErrors: (errors) =>
     for property, error of errors
       @error -> error.message
+
+  logBoardHistory: (boardId) =>
+    events = @eventHistory[boardId] || []
+    console.log ""
+    console.log "----- last #{events.length} events for board #{boardId} -----"
+    for [event, message] in events
+      console.log "  #{event} : #{JSON.stringify(message)}"
+    console.log ""
 
   timestamp: =>
     d = new Date()

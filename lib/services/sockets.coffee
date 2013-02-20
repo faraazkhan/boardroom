@@ -23,8 +23,7 @@ class Sockets
       .of("/boards/#{boardId}")
       .on 'connection', (socket) =>
         for name, modelClass of handlers
-          handler = new Handler modelClass, name
-          handler.socket = socket
+          handler = new Handler modelClass, name, boardId, socket
           handler.registerAll()
 
         socket.on 'join', (user) =>
@@ -32,8 +31,8 @@ class Sockets
           boardNamespace.emit 'join', user
           logger.info -> "#{user.user_id} has joined board #{boardId}"
 
-        socket.on 'log', ({user, level, msg}) =>
-          logger.logClient user, level, msg
+        socket.on 'log', ({user, boardId, level, msg}) =>
+          logger.logClient user, boardId, level, msg
 
     @boards[boardId] = @users
 
