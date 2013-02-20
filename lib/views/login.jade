@@ -9,15 +9,15 @@ html
     title Boardroom - Real-time Reflection and Story Boarding
 
   body#login-page
-
     include includes/header
 
     form#login(action='/login', method='post')
       h2 WELCOME TO
       h1 BOARDROOM
       input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
-      .inset
+      .button-container.inset
         button GET ON BOARD
+
       hr
       blockquote
         em
