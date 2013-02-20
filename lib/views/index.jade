@@ -8,18 +8,16 @@ include includes/header
           form#create-board(id='create-board', method='post', action='/boards')
             input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
             .button-container.inset
-              button create a board
+              button Create a board
 
           .note
-            h2 Welcome to Boardroom
-            p Use Boardroom for remote facilitations, brainstorming, story mapping, or anytime you want your team to contribute to a whiteboard.
             h4 Quick Start
+            p Use Boardroom for remote facilitations, brainstorming, story mapping, or anytime you want your team to contribute to a whiteboard.
             ol
-              li Create a board.
-              li Share your board URL with anyone, anywhere.
-              li Post your thoughts in real-time.
-              li Edit and group each other's thoughts.
-              li Discuss what you find!   
+              li Invite others to view your board, from anywhere.
+              li Post thoughts in real-time with your team.
+              li Edit and group each other’s thoughts on the fly.
+              li Discover a great new way to collaborate remotely!
 
         .board-list.span4
           - if (created.length)
