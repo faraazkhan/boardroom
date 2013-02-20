@@ -32,7 +32,6 @@ class boardroom.models.Card extends Backbone.Model
     newGroup.cards().add @, moveOptions
     @set 'group', newGroup, { silent: true }
     @drop()
-    @touch() unless options?.rebroadcast
 
   drop: ->
     @unset 'x'
