@@ -32,6 +32,9 @@ include includes/header
 
 
 script
+  $("#board-name").mousedown(function() {
+    $(this).val('');
+  });
   $(".copy-url").each(function() {
     $(this).zclip({
       path: "/swf/ZeroClipboard.swf",
