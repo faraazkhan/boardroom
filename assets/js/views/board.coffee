@@ -18,6 +18,8 @@ class boardroom.views.Board extends boardroom.views.Base
     @model.groups().on 'add', @displayNewGroup, @
     @model.groups().on 'remove', @removeGroup, @
 
+    @updateStatus @, @model.get('status')
+    
   initializeGroups: ->
     @groupViews = []
     @model.groups().each @displayNewGroup, @
