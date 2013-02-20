@@ -38,7 +38,6 @@ class Router
     @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
     @app.post '/boards/:id', @authenticate, boardsController.destroy
     @app.post '/boards', @authenticate, boardsController.create
-    @app.get '/boards/:board/info', @authenticate, boardsController.info
 
     usersController = new UsersController
     @app.get '/user/avatar/:user_id', usersController.avatar
