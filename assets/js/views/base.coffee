@@ -29,9 +29,10 @@ class boardroom.views.Base extends Backbone.View
   showNotice: (user, message) =>
     notices = @$('.notice')
     @visibleNotice = if notices.length == 2 then notices.last() else notices.first() # stupid single-card group hack
-    @visibleNotice
-      .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
-      .show()
+    unless @visibleNotice.is ':visible'
+      @visibleNotice
+        .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
+        .show()
 
   hideNotice: ->
     @visibleNotice?.fadeOut 100
