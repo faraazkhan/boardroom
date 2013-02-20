@@ -117,12 +117,17 @@ describe 'boardroom.views.Board', =>
 
     describe 'dblclick', =>
       beforeEach =>
-        @boardView.$el.trigger('dblclick')
+        @numGroups = $('.group').length
+        @numCards = $('.card').length
 
-      # it 'adds a new group with 1 card', =>
-      #   # The board starts with 2 groups and 2 cards (1 card in each group)
-      #   # dblclick should add 1 more group with 1 card in it
-      #   setTimeout (=> console.log $('.group').parent().$('.group') ), 10 
-      #   expect($('.board').length).toBeGreaterThan 0
-      #   expect($('.group').length).toEqual 3
-      #   expect($('.card').length).toEqual 3
+        e = new jQuery.Event("dblclick");
+        e.pageX = 2000;
+        e.pageY = 2000;        
+        # $('.board').dblclick(e)
+        @boardView.$el.trigger(e)
+
+      it 'adds a new group with 1 card', =>
+        setTimeout (=> console.log $('.group').parent().$('.group') ), 10 
+        expect($('.group').length).toEqual numGroups + 1
+        # expect($('.card').length).toEqual numCards + 1  <--- does it make sense ato see this also work ?
+  
