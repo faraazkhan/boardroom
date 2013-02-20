@@ -17,6 +17,8 @@ script(type="text/javascript")
     var boardAttrs = !{JSON.stringify(board)};
     var board = new boardroom.models.Board(boardAttrs);
 
+    boardroom.utils.Logger.instance.setBoard(board);
+
     var userAttrs = !{JSON.stringify(user)};
     var user = new boardroom.models.User(userAttrs);
 

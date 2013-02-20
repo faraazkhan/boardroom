@@ -30,12 +30,12 @@ class boardroom.Handler
     handleCardEvents = (card, cards, options) =>
       unless card.eventsInitialized
         card.on 'change', (card, options) => @send 'card.update', @cardMessage(card), options
-        card.on 'destroy', (card, cards, options) => @send 'card.delete', card.id, options
+        card.on 'destroy', (card, cards, options) => @send 'card.delete', @deleteMessage(card), options
         card.eventsInitialized = true
 
     handleGroupEvents = (group) =>
       group.on 'change', (group, options) => @send 'group.update', @groupMessage(group), options
-      group.on 'destroy', (group, groups, options) => @send 'group.delete', group.id, options
+      group.on 'destroy', (group, groups, options) => @send 'group.delete', @deleteMessage(group), options
 
       cards = group.cards()
       cards.each handleCardEvents
@@ -109,9 +109,9 @@ class boardroom.Handler
 
   onGroupDelete: (message) =>
     @logger.debug 'onGroupDelete'
-    group = @board.findGroup message
+    group = @board.findGroup message._id
     unless group
-      @logger.debug "Handler: cannot find group #{message}"
+      @logger.debug "Handler: cannot find group #{message._id}"
       return
     @board.get('groups').remove group, { rebroadcast: true }
 
@@ -136,9 +136,9 @@ class boardroom.Handler
 
   onCardDelete: (message) =>
     @logger.debug 'onCardDelete'
-    card = @board.findCard message
+    card = @board.findCard message._id
     unless card
-      @logger.debug "Handler: cannot find card #{message}"
+      @logger.debug "Handler: cannot find card #{message._id}"
       return
     card.get('group').get('cards').remove card, { rebroadcast: true }
 
@@ -157,7 +157,7 @@ class boardroom.Handler
 
     message._id = group.id if group.id?
     message.cid = group.cid
-    message.boardId = @board.id unless message._id
+    message.boardId = @board.id
     message.author = @board.currentUser()
     message
 
@@ -170,7 +170,15 @@ class boardroom.Handler
 
     message._id = card.id if card.id?
     message.cid = card.cid
+    message.boardId = @board.id
     message.author = @board.currentUser()
+    message
+
+  deleteMessage: (model) =>
+    message =
+      _id: model.id
+      boardId: @board.id
+      author: @board.currentUser()
     message
 
   # We can dump this when nginx starts supporting websockets

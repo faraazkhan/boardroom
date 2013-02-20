@@ -2,10 +2,13 @@ class boardroom.utils.Logger
 
   constructor: ->
     @level = 1
+    @board = null
 
   setLevel: (level) =>
     @level = ['error', 'warn', 'info', 'debug'].indexOf(level)
     @level = 1 if @level == -1
+
+  setBoard: (@board) =>
 
   error: (msg) =>
     @log 'ERROR', msg
@@ -36,6 +39,6 @@ class boardroom.utils.Logger
     "#{d.getFullYear()}-#{pad d.getMonth()}-#{pad d.getDate()} #{pad d.getHours()}:#{pad d.getMinutes()}:#{pad d.getSeconds()}"
 
   serverLog: (level, msg) =>
-    @socket.emit 'log', { user: @user.get('user_id'), level, msg }
+    @socket.emit 'log', { user: @user.get('user_id'), boardId: @board.id, level, msg }
 
 boardroom.utils.Logger.instance = new boardroom.utils.Logger()

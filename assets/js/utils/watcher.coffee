@@ -15,7 +15,7 @@ class boardroom.utils.Watcher
         if not n
           @cache[key] = 1
         else if n >= 1
-          @logger.warn "empty group: #{group.id}"
+          @logger.error "empty group: #{group.id}"
           @cache[key] = -1
 
 
