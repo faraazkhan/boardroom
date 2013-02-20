@@ -45,6 +45,8 @@ describe 'boardroom.views.Card', =>
   describe 'render event', =>
 
     it 'displays', =>
+      expect($('.board').length).toEqual 1
+      expect($('.group').length).toEqual 1
       expect($('.card').length).toEqual 2
 
     it 'redisplays when color changes', (done)=>
