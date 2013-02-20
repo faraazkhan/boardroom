@@ -10,18 +10,21 @@ html
 
   body#login-page
     include includes/header
+    .container
+      h1
+        span
+          | Welcome to
+        | Boardroom
 
-    form#login(action='/login', method='post')
-      h2 WELCOME TO
-      h1 BOARDROOM
-      input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
-      .button-container.inset
-        button GET ON BOARD
+      form#login(action='/login', method='post')
+        input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
+        .button-container.inset
+          button Get on Board
 
-      hr
-      blockquote
-        em
-          | &ldquo;
-        | Better than stickies on a wall.
-        em
-          | &rdquo;
+        hr
+        blockquote
+          em
+            | &ldquo;
+          | Better than stickies on a wall.
+          em
+            | &rdquo;

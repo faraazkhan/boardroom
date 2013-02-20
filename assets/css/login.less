@@ -1,4 +1,3 @@
-//******* CUSTOM FORMS
 body#login-page {
   .box-shadow(~"0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.8) inset");
   margin: 0;
@@ -16,25 +15,43 @@ body#login-page {
     }
   }
 
-  hr {
-    float: right;
-    display: block;
-    margin: 50px auto;
-    height: 1px;
-    width: 100%;
-    background-color: @grayDark;
-    .box-shadow(0 1px -1px @white);
-    .opacity(60);
-  }
-
-  form#login {
-    .landing-page-form;
-    top: 140px;
+  .container {
+    padding: 140px;
     width: 40%;
-    text-align: center;
 
-    .button-container.inset {
+    h1 {
+      text-align: center;
+
+      span {
+        display: block;
+        font-size: 16px;
+      }
+    }
+
+    hr {
       float: right;
+      display: block;
+      margin: 50px auto;
+      height: 1px;
+      width: 100%;
+      background-color: @grayDark;
+      .box-shadow(0 1px -1px @white);
+      .opacity(60);
+    }
+
+    form#login {
+      .landing-page-form;
+      text-align: center;
+
+      input#user_id {
+        width: 94%;
+        padding: 6px 2.5%;
+        margin: 45px auto 25px auto;
+      }
+
+      .button-container.inset {
+        float: right;
+      }
     }
   }
 }

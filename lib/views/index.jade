@@ -2,34 +2,34 @@ include includes/header
 
 #index-page.container
   .row
-    .span12
-      .row
-        .span6
-          form#create-board(id='create-board', method='post', action='/boards')
-            input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
-            .button-container.inset
-              button Create a board
+    .span8
+      h2 Create a New Board
+      form#create-board(id='create-board', method='post', action='/boards')
+        input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
+        .button-container.inset
+          button Go
 
-          .note
-            h4 Quick Start
-            p Use Boardroom for remote facilitations, brainstorming, story mapping, or anytime you want your team to contribute to a whiteboard.
-            ol
-              li Invite others to view your board, from anywhere.
-              li Post thoughts in real-time with your team.
-              li Edit and group each other’s thoughts on the fly.
-              li Discover a great new way to collaborate remotely!
+      .board-list
+        - if (created.length)
+          h4 My Boards
+          ul.created
+            boards = created
+            include includes/board_list
+        - if (collaborated.length)
+          h4 COLLABORATOR
+          ul.collaborated
+            boards = collaborated
+            include includes/board_list
 
-        .board-list.span4
-          - if (created.length)
-            h4 OWNER
-            ul.created
-              boards = created
-              include includes/board_list
-          - if (collaborated.length)
-            h4 COLLABORATOR
-            ul.collaborated
-              boards = collaborated
-              include includes/board_list
+    .span4.note
+      h4 Quick Start
+      p Use Boardroom for remote facilitations, brainstorming, story mapping, or anytime you want your team to contribute to a whiteboard.
+      ol
+        li Invite others to view your board, from anywhere.
+        li Post thoughts in real-time with your team.
+        li Edit and group each other’s thoughts on the fly.
+        li Discover a great new way to collaborate remotely!
+
 
 script
   $(".copy-url").each(function() {

@@ -12,24 +12,40 @@
 
 form#create-board {
   .landing-page-form;
+  .clearfix;
+
+  input#board-name {
+    float: left;
+    margin-right: 1%;
+    width: 75%;
+    padding: 5px 2.5%;
+  }
+
+  .inset {
+    float: right;
+    width: 15%;
+
+    button {
+      width: 100%;
+    }
+  }
 }
 
 .board-list {
-  padding-left: 160px;
   a { text-decoration: none;}
-
-  h4 {
-    border-bottom: 2px solid @grayDark;
-    line-height: 28px;
-    margin-bottom: 28px;
-    font-size: 1.5em;
-  }
 
   h2 {
     text-align: center;
     font-weight: bold;
     font-size: 1.5em;
     text-shadow: 2px 2px 2px rgba(0,0,0,0.4);
+  }
+
+  h4 {
+    font-size: 1.5em;
+    line-height: 28px;
+    margin-bottom: 28px;
+    border-bottom: 2px solid @grayLight;
   }
 
   ul {
