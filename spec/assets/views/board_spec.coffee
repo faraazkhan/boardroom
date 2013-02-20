@@ -81,7 +81,7 @@ describe 'boardroom.views.Board', =>
 
     #   it 'redisplays when a card moves between groups', =>
     #     expect(true).toEqual false
-        
+
     #   #drag n drop
     #   # it 'creates a new group when a card is drops onto the board' 
 
@@ -120,13 +120,12 @@ describe 'boardroom.views.Board', =>
         @numGroups = $('.group').length
         @numCards = $('.card').length
 
-        e = new jQuery.Event("dblclick");
-        e.pageX = 2000;
-        e.pageY = 2000;        
-        # $('.board').dblclick(e)
+        e = new jQuery.Event("dblclick")
+        e.pageX = 2000
+        e.pageY = 2000
         @boardView.$el.trigger(e)
 
       it 'adds a new group with 1 card', =>
         expect($('.group').length).toEqual numGroups + 1
         # expect($('.card').length).toEqual numCards + 1  <--- does it make sense ato see this also work ?
-  
+
