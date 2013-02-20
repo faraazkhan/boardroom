@@ -8,7 +8,7 @@ class LoggedOutRouter extends Router
     super()
 
   stop: ->
-    @app.close()
+    process.exit 0
 
 class LoggedInRouter extends LoggedOutRouter
   constructor: (user = 'user') ->

@@ -11,7 +11,7 @@ UsersController = require '../controllers/users'
 
 class Router
   constructor: ->
-    @app = express.createServer()
+    @app = express()
     @app.configure =>
       @app.set 'views', "#{__dirname}/../views"
       @app.set 'view engine', 'jade'
@@ -21,7 +21,7 @@ class Router
       @app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889',
                        session_key: 'boardroom')
       @app.use fibrous.middleware
-      @app.error @render500Page
+      @app.use @catchPathErrors
 
     homeController = new HomeController
     @app.get '/', @authenticate, homeController.index
@@ -38,12 +38,11 @@ class Router
     @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
     @app.post '/boards/:id', @authenticate, boardsController.destroy
     @app.post '/boards', @authenticate, boardsController.create
-    @app.get '/boards/:board/info', @authenticate, boardsController.info
 
     usersController = new UsersController
     @app.get '/user/avatar/:user_id', usersController.avatar
 
-  render500Page: (error, request, response) ->
+  catchPathErrors: (error, request, response, next) ->
     console.error(error.message)
     if error.stack
       console.error error.stack.join("\n")
@@ -62,7 +61,7 @@ class Router
     next()
 
   start: ->
-    @app.listen parseInt(process.env.PORT) || 7777
-    Sockets.start @app
+    server = @app.listen parseInt(process.env.PORT) || 7777
+    Sockets.start server
 
 module.exports = Router

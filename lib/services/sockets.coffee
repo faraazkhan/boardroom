@@ -36,8 +36,8 @@ class Sockets
 
     @boards[boardId] = @users
 
-  @start: (app) ->
-    @io = sockets.listen app
+  @start: (server) ->
+    @io = sockets.listen server
     @io.set 'log level', 1
 
 module.exports = Sockets

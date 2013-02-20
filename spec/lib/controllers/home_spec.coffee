@@ -14,10 +14,9 @@ describe 'HomeController', ->
           .sync
           .end()
         expect(response.ok).toBeTruthy()
-        window = jsdom.sync.env response.text
-        expect($('.board-list', window.document).length).toEqual 1
-        expect($('.board-list ul.created li', window.document).length).toEqual 1
-        expect($('.board-list ul.collaborated li', window.document).length).toEqual 2
+        expect($('.board-list', response.text).length).toEqual 1
+        expect($('.board-list ul.created li', response.text).length).toEqual 1
+        expect($('.board-list ul.collaborated li', response.text).length).toEqual 2
 
     describe 'when logged out', ->
       beforeEach ->
