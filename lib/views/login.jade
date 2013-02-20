@@ -7,21 +7,24 @@ html
     meta(name="viewport", content="width=device-width initial-scale=1.0")
     link(href='http://fonts.googleapis.com/css?family=Lato:400,700|Inconsolata:400,700', rel='stylesheet', type='text/css')
     title Boardroom - Real-time Reflection and Story Boarding
-  
-  body.login
 
+  body#login-page
     include includes/header
+    .container
+      h1
+        span
+          | Welcome to
+        | Boardroom
 
-    form#login(action='/login', method='post')
-      h2 WELCOME TO
-      h1 BOARDROOM
-      input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
-      .inset
-        button GET ON BOARD
-      hr
-      blockquote
-        em
-          | &ldquo;
-        | Better than stickies on a wall.
-        em
-          | &rdquo;
+      form#login(action='/login', method='post')
+        input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
+        .button-container.inset
+          button Get on Board
+
+        hr
+        blockquote
+          em
+            | &ldquo;
+          | Better than stickies on a wall.
+          em
+            | &rdquo;

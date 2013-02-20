@@ -767,7 +767,6 @@ legend + .control-group {
   }
 }
 
-
 fieldset {
   .btn,input {
     float: left;
@@ -854,6 +853,105 @@ form.dark {
       box-shadow: 0px 0px 5px @offWhite;
     }
   }
+}
 
+.landing-page-form {
+  position: relative;
+  margin: 0px auto;
 
+  h1, h2, blockquote {
+    font-family: @fontMain;
+    color: @grayNevada;
+    font-size: 48px;
+    text-shadow: 0 0 0 @grayShadow, 1px 2px 1px rgba(255, 255, 255, 0.6);
+  }
+
+  h2 {
+    font-size: 14px;
+    line-height: 26px;
+  }
+
+  input[type="text"], button {
+    color: @grayNevada;
+    font-size: 24px;
+    font-family: @fontMain;
+
+    float: right;
+    display: block;
+    height: 50px;
+
+    background-color: @white;
+    border: 1px solid @grayMid;
+    .border-radius(2px);
+    .box-shadow(inset 2px 3px 3px @grayDark);
+
+    &:focus {
+      color: @grayDark;
+      background-color: @white;
+    }
+  }
+
+  input[type="text"] {
+    .opacity(50);
+    background-color: @grayLight;
+  }
+
+  .inset {
+    padding: 6px;
+    .border-radius(2px);
+    .box-shadow(inset 1px 1px 4px 4px rgba(0, 0, 0, .1));
+  }
+
+  button {
+    display: block;
+    width: auto;
+    padding: 0 1.3em;
+    margin: 0;
+    border: 1px solid @yellowLight;
+    border-radius: 2px;
+
+    color: @graySirocco;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
+    text-shadow: none;
+    text-transform: uppercase;
+
+    background: @yellowLight;
+    .box-shadow(inset 0 0 1px 1px @yellowLight);
+    .box-shadow(1px 1px 4px rgba(0, 0, 0, .4));
+
+    &:hover {
+      background: @yellowMid;
+      border: 1px solid @yellowMid;
+      .box-shadow(inset 0 0 1px 1px darken(@yellowMid,10%));
+      .box-shadow(1px 1px 4px rgba(0, 0, 0, .4));
+      cursor: pointer;
+    }
+
+    &:active {
+      background: @yellowLight;
+      .box-shadow(inset 0 0 1px 1px darken(@yellowLight,10%));
+      .box-shadow(1px 1px 4px rgba(0, 0, 0, .4));
+      color: @graySirocco;
+    }
+  }
+
+  blockquote {
+    clear: both;
+    color: @grayNevada;
+    font-size: 30px;
+    line-height: 40px;
+    font-family: "Georgia";
+    font-style: italic;
+    font-weight: normal;
+
+    margin: 0;
+    text-shadow: 0 0 0 @grayShadow, 1px 2px 1px rgba(255, 255, 255, 0.6);
+
+    em {
+      font-size: 52px;
+    }
+  }
 }

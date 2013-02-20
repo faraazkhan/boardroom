@@ -1,8 +1,8 @@
-//******* CUSTOM FORMS
-body.login {
+body#login-page {
   .box-shadow(~"0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.8) inset");
   margin: 0;
   position: relative;
+  color: @grayNevada;
 
   .navbar {
     height: 44px;
@@ -15,108 +15,44 @@ body.login {
     }
   }
 
-  hr {
-    float: right;
-    display: block;
-    margin: 50px auto;
-    height: 1px;
-    width: 100%;
-    background-color: @grayDark;
-    .box-shadow(0 1px -1px @white);
-    .opacity(60);
-  }
-
-  form#login {
-    position: relative;
-    top: 140px;
+  .container {
+    padding: 140px;
     width: 40%;
-    margin: 0px auto;
-    text-align: center;
-    h1,h2,blockquote {
-      font-family: @fontMain;
-      color: @grayShadow;
-      font-size: 48px;
-      text-shadow: 0 0 0 @grayShadow, 1px 2px 1px rgba(255, 255, 255, 0.6);
+
+    h1 {
+      text-align: center;
+
+      span {
+        display: block;
+        font-size: 16px;
+      }
     }
-    h2 {
-      font-size: 14px;
-      line-height: 26px;
-    }
-    input[type="text"],button {
-      font-size: 24px;
-      font-family: @fontMain;
-      height: 50px;
-      width: 94%;
-      padding: 6px 2.5%;
-      margin: 45px auto 25px auto;
+
+    hr {
       float: right;
       display: block;
-
-      color: #000;
-      background-color: @white;
-      border: 1px solid @grayMid;
-      .border-radius(2px);
-      .box-shadow(inset 2px 3px 3px @grayDark);
-
-      &:focus {
-        color: @grayDark;
-        background-color: @white;
-      }
-    }
-    input[type="text"] {
-      .opacity(50);
-      background-color: @grayLight;
-    }
-    .inset {
-      float: right;
-      width: 25%;
-      padding: 6px;
-      .border-radius(2px);
-      .box-shadow(inset 1px 1px 4px 4px rgba(0,0,0,0.15));
-    }
-    button {
+      margin: 50px auto;
+      height: 1px;
       width: 100%;
-      padding: 0;
-      margin: 0;
-      border: 1px solid @yellowLight;
-      border-radius: 2px;
-      text-shadow: none;
-      font-size: 14px;
-      line-height: 16px;
+      background-color: @grayDark;
+      .box-shadow(0 1px -1px @white);
+      .opacity(60);
+    }
+
+    form#login {
+      .landing-page-form;
       text-align: center;
-      font-weight: bold;
 
-      background: @yellowLight;
-      .box-shadow(inset 0 0 1px 1px @yellowLight);
-      color: #7a7f80;
-    }
-    button:hover {
-      background: @yellowMid;
-      border: 1px solid @yellowMid;
-      .box-shadow(inset 0 0 1px 1px darken(@yellowMid,10%));
-      cursor: pointer;
-    }
-    button:active {
-      background: @yellowLight;
-      .box-shadow(inset 0 0 1px 1px darken(@yellowLight,10%));
-      color: @grayLight;
-    }
+      input#user_id {
+        width: 94%;
+        padding: 6px 2.5%;
+        margin: 45px auto 25px auto;
+      }
 
-    blockquote {
-      clear: both;
-      font-size: 30px;
-      line-height: 40px;
-      font-family: "Georgia";
-      font-style: italic;
-      font-weight: normal;
-      margin: 0;
-      text-shadow: 0 0 0 @grayShadow, 1px 2px 1px rgba(255, 255, 255, 0.6);
-      em {
-        font-size: 52px;
+      .button-container.inset {
+        float: right;
       }
     }
-
-
   }
 }
 
