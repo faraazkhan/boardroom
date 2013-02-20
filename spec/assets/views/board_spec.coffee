@@ -127,7 +127,6 @@ describe 'boardroom.views.Board', =>
         @boardView.$el.trigger(e)
 
       it 'adds a new group with 1 card', =>
-        setTimeout (=> console.log $('.group').parent().$('.group') ), 10 
         expect($('.group').length).toEqual numGroups + 1
         # expect($('.card').length).toEqual numCards + 1  <--- does it make sense ato see this also work ?
   
