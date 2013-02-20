@@ -1,8 +1,9 @@
 //******* CUSTOM FORMS
-body.login {
+body#login-page {
   .box-shadow(~"0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.8) inset");
   margin: 0;
   position: relative;
+  color: @grayNevada;
 
   .navbar {
     height: 44px;
@@ -32,9 +33,10 @@ body.login {
     width: 40%;
     margin: 0px auto;
     text-align: center;
-    h1,h2,blockquote {
+
+    h1, h2, blockquote {
       font-family: @fontMain;
-      color: @grayShadow;
+      color: @grayNevada;
       font-size: 48px;
       text-shadow: 0 0 0 @grayShadow, 1px 2px 1px rgba(255, 255, 255, 0.6);
     }
@@ -42,17 +44,18 @@ body.login {
       font-size: 14px;
       line-height: 26px;
     }
-    input[type="text"],button {
+    input[type="text"], button {
+      color: @grayNevada;
       font-size: 24px;
       font-family: @fontMain;
+
+      float: right;
+      display: block;
       height: 50px;
       width: 94%;
       padding: 6px 2.5%;
       margin: 45px auto 25px auto;
-      float: right;
-      display: block;
 
-      color: #000;
       background-color: @white;
       border: 1px solid @grayMid;
       .border-radius(2px);
@@ -88,7 +91,7 @@ body.login {
 
       background: @yellowLight;
       .box-shadow(inset 0 0 1px 1px @yellowLight);
-      color: #7a7f80;
+      color: @graySirocco;
     }
     button:hover {
       background: @yellowMid;
@@ -104,6 +107,7 @@ body.login {
 
     blockquote {
       clear: both;
+      color: @grayNevada;
       font-size: 30px;
       line-height: 40px;
       font-family: "Georgia";
@@ -115,8 +119,6 @@ body.login {
         font-size: 52px;
       }
     }
-
-
   }
 }
 

@@ -1,6 +1,6 @@
 include includes/header
 
-#main-content.container
+#index-page.container
   .row
     .span12
       .row
@@ -8,7 +8,7 @@ include includes/header
           form#create-board.dark(id='create-board', method='post', action='/boards')
             input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
             button(class='btn') create a board
-          
+
           .note
             h2 Welcome to Boardroom
             p Use Boardroom for remote facilitations, brainstorming, story mapping, or anytime you want your team to contribute to a whiteboard.
@@ -19,7 +19,7 @@ include includes/header
               li Post your thoughts in real-time.
               li Edit and group each other's thoughts.
               li Discuss what you find!   
-          
+
         .board-list.span4
           - if (created.length)
             h4 OWNER

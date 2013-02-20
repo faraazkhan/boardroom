@@ -1,14 +1,19 @@
+#index-page {
+  margin-top: 63px;
+
+  color: @grayNevada;
+}
+
 .note {
   ol {
     margin: 0 0 5px 18px;
   }
 }
 
-
 form#create-board {
   margin-top: 39px;
   margin-bottom: 16px;
-  
+
   input[type="text"] {
     width: 95%;
   }
@@ -17,14 +22,14 @@ form#create-board {
 .board-list {
   padding-left: 160px;
   a { text-decoration: none;}
-  
+
   h4 {
     border-bottom: 2px solid @grayDark;
     line-height: 28px;
     margin-bottom: 28px;
     font-size: 1.5em;
   }
-  
+
   h2 {
     text-align: center;
     font-weight: bold;
@@ -60,7 +65,7 @@ form#create-board {
         background-color: @grayLight;
         padding: 0 10px;
         margin-right: 10px;
-        
+
         .counts {
           position:relative;
           top:50%;
@@ -68,12 +73,12 @@ form#create-board {
           margin-top:-45px;
           font-size: 20px;
         }
-        
+
         .count {
           line-height: 46px;
           padding-left: 3px;
         }
-        
+
         .notes { border-bottom: 1px solid @grayDark;}
       }
 
@@ -90,7 +95,7 @@ form#create-board {
         position: relative;
         width: 65%;
         height: 95%;
-        
+
         img.creator {
           display: inline;
           float: left;
@@ -102,7 +107,7 @@ form#create-board {
           width: 30px;
           height: 30px;
         }
-      
+
         .title {
           text-transform: uppercase;
           float: left;
@@ -113,7 +118,7 @@ form#create-board {
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        
+
         .date {
           float:left;
           margin-left: 10px;
@@ -126,18 +131,18 @@ form#create-board {
           }
         }
       }
-      
+
       .actions {
         position: absolute;
         top: 0px;
         right: -1px;
         cursor: pointer;
         background-color: @grayLight;
-        
+
         > * {
           margin: 0;
         }
-        
+
         .copy-url {
           &.hover .icon-link {
             color: @yellowLight;
