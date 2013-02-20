@@ -18,6 +18,8 @@ class boardroom.views.Board extends boardroom.views.Base
     @model.groups().on 'add', @displayNewGroup, @
     @model.groups().on 'remove', @removeGroup, @
 
+    @updateStatus @, @model.get('status')
+
   initializeGroups: ->
     @groupViews = []
     @model.groups().each @displayNewGroup, @
@@ -52,7 +54,8 @@ class boardroom.views.Board extends boardroom.views.Base
     _(@groupViews).find (gv) => gv.model.cid == cid
 
   displayNewGroup: (group, options) =>
-    return if @findGroupViewByCid(group.cid)?  # it's already in there
+    group.set 'board', @model, { silent: true }
+    return if @findGroupViewByCid(group.cid)?  # it's already in there +++ update the div's id
     groupView = new boardroom.views.Group { model: group }
     @groupViews.push groupView
 

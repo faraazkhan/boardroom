@@ -57,6 +57,7 @@ spec_files:
 #  - '**/*_spec.coffee'
   - 'views/card_spec.coffee'
   - 'views/group_spec.coffee'
+  - 'views/board_spec.coffee'
   - 'models/*_spec.coffee'
 
 # spec_dir
