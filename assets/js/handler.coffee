@@ -92,7 +92,7 @@ class boardroom.Handler
   onGroupCreate: (message) =>
     @logger.debug 'onGroupCreate'
     group = new boardroom.models.Group message
-    group.set 'board', @board, { silent: true }
+    # group.set 'board', @board, { silent: true }  <- this line now executed by boardView.displayNewGroup
     existingGroup = @board.findGroupByCid message.cid
     if existingGroup? and existingGroup.id == undefined
       existingGroup.realize group
