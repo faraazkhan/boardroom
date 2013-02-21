@@ -42,6 +42,9 @@ $.fn.droppable = (opts) ->
           event.stopPropagation()
           settings.onDrop data.mouseEvent, data.target
 
-      setTimeout drop, settings.priority * 10
+      if settings.priority == 0
+        drop()
+      else
+        setTimeout drop, settings.priority * 10
 
   $this

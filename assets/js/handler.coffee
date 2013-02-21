@@ -151,7 +151,8 @@ class boardroom.Handler
   groupMessage: (group) =>
     attrs = _(group.changed).keys()
     message = group.toJSON()
-    message = _(message).pick(attrs) if message._id # restrict to changed attrs on updates only
+    message = _(message).pick(attrs) if message._id                   # restrict to changed attrs on updates only
+    ( message[attr] = null unless message[attr]? ) for attr in attrs  # add in any deleted attrs
     message = _(message).omit('board', 'cards', '_id', 'created', 'updated')
     return null if _(message).isEmpty()
 
@@ -164,7 +165,8 @@ class boardroom.Handler
   cardMessage: (card) =>
     attrs = _(card.changed).keys()
     message = card.toJSON()
-    message = _(message).pick(attrs) if message._id # restrict to changed attrs on updates only
+    message = _(message).pick(attrs) if message._id                   # restrict to changed attrs on updates only
+    ( message[attr] = null unless message[attr]? ) for attr in attrs  # add in any deleted attrs
     message = _(message).omit('group', 'board', '_id', 'created', 'updated')
     return null if _(message).isEmpty()
 
