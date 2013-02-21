@@ -425,6 +425,23 @@
   user-select: @select;
 }
 
+// skip for firefix: user-select: none can not be overriden by sub elements
+.user-select-text-off() {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.user-select-text-on() {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+}
+
+
 // Resize anything
 .resizable(@direction) {
   resize: @direction; // Options: horizontal, vertical, both
