@@ -1,15 +1,26 @@
 .navbar.navbar-fixed-top
-  .navbar-inner
+  #board-nav.navbar-inner
     - if (typeof(user) !== 'undefined')
       a.btn.btn-navbar(data-toggle='collapse', data-target='.navbar-responsive-collapse')
         span.icon-bar
         span.icon-bar
-    a.title(href="/") BOARDROOM
+    .title
+      a.room-logo(href="/") BOARDROOM
+      - if (typeof(board) !== 'undefined')
+        input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
+
     - if (typeof(user) !== 'undefined')
       #user-info.nav-collapse.collapse.navbar-responsive-collapse
         ul.nav
           li
-            div.user-id #{user.user_id}
+            span.copy-url.icon-link(data-left-title="Copy URL for this board.") &nbsp;
           li
-            span.logout
-              a(href='/logout') logout
+            span.help.icon-info(data-left-title='Invite others to participate by copying the url or clicking on the link icon to the right.<br/><br/>Double-click your board to add a note.<br/><br/>Drag notes onto one another to create a group.')
+          - if (typeof(board) !== 'undefined')
+            li
+              div.user-id
+                img.avatar(src="#{user.avatar}", title="#{user.user_id}")
+                span #{user.user_id}
+            li
+              span.logout
+                a(href='/logout') logout
