@@ -10,10 +10,12 @@ class HomeController extends ApplicationController
       collaborated = (Board.sync.collaboratedBy user) || []
       cmp = (a, b) ->
         a.name.toLowerCase().localeCompare b.name.toLowerCase()
+
       response.render 'index',
         user: request.session
         created: created.sort cmp
         collaborated: collaborated.sort cmp
+
     catch error
       return @throw500 response, error
 
