@@ -38,9 +38,11 @@ class boardroom.views.Base extends Backbone.View
     @visibleNotice?.fadeOut 100
 
   moveTo: ({x, y}) ->
-    if isNaN(Number(x)) or isNaN(Number(y))
-      @$el.css {left: (x ? ''), top: (y ? '')}
-    else # move to x, y but preserve 12px of margin 
+    if !x? or !y?
+      @$el.css { left: '', top: '' }
+    else if isNaN(Number(x)) or isNaN(Number(y))
+      @$el.css { left: (x ? ''), top: (y ? '') }
+    else
       parentOffset = @$el.offsetParent().offset()
       left = x + parentOffset.left
       top = y + parentOffset.top
@@ -65,12 +67,3 @@ class boardroom.views.Base extends Backbone.View
     height = Math.max ( -100 + $(document).height() ),  ( parseInt $('body').css('min-height') )
     $('body').width(width) if $('body').width() isnt $(document).width()
     $('body').height(height)
-
-  rememberRestingSpot: =>
-    @model.set 'restingSpot',
-      x: @left()
-      y: @top()
-
-  moveBackToRestingSpot: =>
-    restingSpot = @model.get 'restingSpot'
-    @model.set restingSpot

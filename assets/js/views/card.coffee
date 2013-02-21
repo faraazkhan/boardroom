@@ -73,15 +73,11 @@ class boardroom.views.Card extends boardroom.views.Base
         @model.group().cards().length > 1
       onMouseDown: =>
         @model.group().bringForward()
-        #@rememberRestingSpot()
       onMouseMove: =>
         @model.moveTo @left(), @top()
-      onMouseUp: =>
-        #nothingToDropOnto = => @moveBackToRestingSpot() if (@$el? and @$el.is(':visible'))
-        #setTimeout nothingToDropOnto, 350 # move back if nothing picks up the drop
-      startedDragging:()=>
+      startedDragging: =>
         @$el.addClass('dragging')
-      stoppedDragging: ()=>
+      stoppedDragging: =>
         @$el.removeClass('dragging')
 
   ###
