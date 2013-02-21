@@ -1,11 +1,5 @@
 include includes/header
 
-#board-nav
-  input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
-  .actions
-    span.copy-url.icon-link(data-left-title="Copy URL for this board.") &nbsp;
-    span.help.icon-info(data-left-title='Invite others to participate by copying the url or clicking on the link icon to the right.<br/><br/>Double-click your board to add a note.<br/><br/>Drag notes onto one another to create a group.')
-
 .board
   #connection-status-modal(style="display:none")
     #connection-status
