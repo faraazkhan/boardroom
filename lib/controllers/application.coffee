@@ -6,7 +6,6 @@ class ApplicationController
     response.end()
 
   throw500: (response, error) =>
-    #console.log error.stack
     response.writeHead 500,
       'Content-Type': 'text/plain'
     response.write '500 Error\n'

@@ -1,31 +1,30 @@
 { Factory, Board, LoggedInRouter, request, jsdom, url, $ } =
   require '../support/controller_test_support'
 
+BoardsController = require '../../../lib/controllers/boards'
+
 describe 'BoardsController', ->
   describe '#create', ->
     beforeEach ->
       @router = new LoggedInRouter
+      @name = 'name-1'
 
-    it 'creates a new board', ->
-      name = 'name-1'
+    it 'creates a default board and redirects to it', ->
       response = request(@router.app)
         .post('/boards')
-        .send(name: name)
+        .send(name: @name)
         .sync
         .end()
-      count = Board.sync.count()
-      expect(count).toEqual 1
-      board = Board.sync.findOne {}
-      board = Board.sync.findById board.id
-      board = board.toObject getters: true
-      expect(board.name).toEqual name
-      expect(board.creator).toEqual 'user'
-      expect(board.groups[0].cards.length).toEqual 1
-      card = board.groups[0].cards[0]
-      expect(card.creator).toEqual 'user'
-      expect(card.authors[0]).toEqual '@carbonfive'
-      expect(card.text).toContain 'Welcome to your virtual whiteboard!'
 
+      expect(response.redirect).toBeTruthy()
+
+      boardCount = Board.sync.count()
+      expect(boardCount).toEqual 1
+
+      board = Board.sync.findOne { creator: @router.user }
+      redirect = url.parse response.headers.location
+      expect(redirect.path).toEqual "/boards/#{board.id}"
+      expect(board.name).toEqual @name
 
   describe '#show', ->
     beforeEach ->
@@ -70,3 +69,27 @@ describe 'BoardsController', ->
       expect(redirect.pathname).toEqual '/'
       board = Board.sync.findById @board.id
       expect(board).toBeNull()
+
+  describe '#build', ->
+    beforeEach ->
+      @name = 'name-1'
+      @creator = 'board-creator-1'
+      boardsController = new BoardsController
+      boardsController.build @name, @creator
+
+    it 'creates a new board', ->
+      count = Board.sync.count()
+      expect(count).toEqual 1
+
+      board = Board.sync.findOne {}
+      board = Board.sync.findById board.id
+      board = board.toObject getters: true
+      expect(board.name).toEqual @name
+      expect(board.creator).toEqual @creator
+      expect(board.groups[0].cards.length).toEqual 1
+
+      card = board.groups[0].cards[0]
+      expect(card.creator).toEqual @creator
+      expect(card.authors[0]).toEqual '@carbonfive'
+      expect(card.text).toContain 'Welcome to your virtual whiteboard!'
+
