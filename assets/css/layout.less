@@ -25,6 +25,7 @@ body {
   color: @grayLight;
   padding-left: 15px;
   z-index: 999999;
+  .user-select-text-off();
 
   #name {
     border: none;
@@ -84,7 +85,8 @@ img.avatar {
   position: relative;
   height: 100%;
   padding: 20px 0;
-  .user-select(none);
+  .user-select-text-off();
+
   &.stackable {
   }
 }
@@ -127,7 +129,7 @@ img.avatar {
 // -----------------------------------------------
 
 @media (max-width: @navbarCollapseWidth) {
-  #board-nav {
+   #board-nav {
     margin-top: 28px;
   }
 }
