@@ -22,6 +22,12 @@ class boardroom.Handler
     @socket.on 'card.update', @onCardUpdate
     @socket.on 'card.delete', @onCardDelete
 
+    $(window).on 'beforeunload', => # don't show disconnect status for user initiated page reload
+      @socket.removeListener 'disconnect', @onDisconnect
+      @socket.removeListener 'reconnecting', @onReconnecting
+      @socket.removeListener 'reconnect', @onReconnect
+      undefined # avoids popup confirmation for leaving page
+
     @board.on 'change', (board, options) =>
       @send 'board.update', @boardMessage(), options
 
