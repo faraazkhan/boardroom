@@ -33,13 +33,3 @@ for board in boards
 
   script
     $('#form-#{board._id}').on('submit', function(){ return confirm('WARNING: This will delete all cards this board!!  You cannot get this board back.\n\nAre you sure you want to do this?') })
-
-    $(".zclip").each(function() {
-      $(this).mouseover(function() {
-        $(this).closest(".actions").find(".copy-url a").mouseover();
-      });
-
-      $(this).mouseout(function() {
-        $(this).closest(".actions").find(".copy-url a").mouseout();
-      });
-    });
