@@ -1,4 +1,5 @@
 include includes/header
+!= js('index')
 
 #index-page.container
   .row
@@ -29,37 +30,3 @@ include includes/header
         li Post thoughts in real-time with your team.
         li Edit and group each other’s thoughts on the fly.
         li Discover a great new way to collaborate remotely!
-
-
-script
-  $("#board-name").mousedown(function() {
-    $(this).val('');
-  });
-  $(".copy-url").each(function() {
-    $(this).zclip({
-      path: "/swf/ZeroClipboard.swf",
-      copy: window.document.location.href + $(this).closest("li").find(".info a").attr("href").slice(1),
-      afterCopy: function() {
-        var el_shown = $('.copy-url a').filter(function() {
-          return $(this).data("tooltip").isShown(true);
-        });
-        var tooltip_api = el_shown.data("tooltip")
-        tooltip_api.getTip().html("URL copied!");
-      }
-    })
-  });
-
-  $(".zclip").each(function() {
-    $(this).mouseover(function() {
-      var associatedEl = $(this).closest(".actions").find(".copy-url");
-      $(this).closest(".actions").find(".copy-url a").mouseover();
-    });
-
-    $(this).mouseout(function() {
-      var associatedEl = $(this).closest(".actions").find(".copy-url");
-      $(this).closest(".actions").find(".copy-url a").mouseout();
-    });
-  });
-  
-  
-
