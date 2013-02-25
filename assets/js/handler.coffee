@@ -152,7 +152,9 @@ class boardroom.Handler
     @user.toJSON()
 
   boardMessage: () =>
-    _(@board.toJSON()).pick('_id', 'name')
+    message = _(@board.toJSON()).pick('_id', 'name')
+    message.author = @board.currentUser()
+    message
 
   groupMessage: (group) =>
     attrs = _(group.changed).keys()
