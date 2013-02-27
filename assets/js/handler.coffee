@@ -3,11 +3,11 @@ class boardroom.Handler
   constructor: (@board, @user) ->
     @logger = boardroom.utils.Logger.instance
     @logger.user = @user
-    new boardroom.utils.Watcher(@board).watch()
 
   initialize: () ->
     @socket = @createSocket()
     @logger.socket = @socket
+    new boardroom.utils.Watcher(@user, @board, @socket).watch()
 
     @socket.on 'connect', @onConnect
     @socket.on 'join', @onJoin

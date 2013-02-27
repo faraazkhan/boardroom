@@ -34,6 +34,9 @@ class Sockets
         socket.on 'log', ({user, boardId, level, msg}) =>
           logger.logClient user, boardId, level, msg
 
+        socket.on 'marker', ({user, boardId}) =>
+          logger.rememberEvent boardId, 'marker', { author: user }
+
     @boards[boardId] = @users
 
   @start: (server) ->
