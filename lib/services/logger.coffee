@@ -11,13 +11,10 @@ class Logger
     @level = 1 if @level == -1
 
   rememberEvent: (boardId, event, message) =>
-    unless message.author?
-      @warn -> "Cannot remember event with no author: #{event}"
-      return
-
+    date = new Date()
     events = @eventHistory[boardId] || []
-    events.push [event, message]
-    events.splice 0, (events.length - 10)
+    events.push { date, event, message }
+    events.splice 0, (events.length - 50)
     @eventHistory[boardId] = events
 
   error: (msg) =>
@@ -34,40 +31,55 @@ class Logger
 
   log: (level, msg) =>
     unless typeof msg == 'function'
-      console.log 'LOGGING ERROR: You must pass a function to the logger'
-      console.log '  Example: @logger.warn -> "cannot find object #{foo}"'
-      console.log "  Your message is: '#{msg}'"
-      return
+      @warn -> '***** Please pass functions to the logger *****'
+      msg = -> msg
 
     d = new Date()
     level = if level.length == 4 then "#{level} " else level
-    preamble = "[#{@timestamp()} #{@colorize(level) level}]"
+    preamble = "[#{@datetimestamp(d)} #{@colorize(level) level}]"
     console.log "#{preamble}  #{msg()}"
 
   logClient: (user, boardId, level, msg) =>
     clientMsg = -> clc.xterm(110)("CLIENT [#{user}]") + "  " + msg
     @log level, clientMsg
-    @logBoardHistory boardId if level == 'ERROR'
+    @logBoardHistory user, boardId if level == 'ERROR'
 
   logValidationErrors: (errors) =>
     for property, error of errors
       @error -> error.message
 
-  logBoardHistory: (boardId) =>
-    events = @eventHistory[boardId] || []
-    console.log ""
+  logBoardHistory: (user, boardId) =>
+    events = @getBoardHistory user, boardId
     console.log "----- last #{events.length} events for board #{boardId} -----"
-    for [event, message] in events
-      console.log "  #{event} : #{JSON.stringify(message)}"
+    for {date, event, message} in events
+      author = message.author
+      delete message.boardId
+      delete message.cid
+      delete message.author
+      console.log "  #{@timestamp(date)} (#{event} - #{author}) : #{JSON.stringify(message)}"
     console.log ""
 
-  timestamp: =>
-    d = new Date()
-    pad = (i) -> if i < 10 then "0#{i}" else "#{i}"
-    date = "#{d.getFullYear()}-#{pad d.getMonth()}-#{pad d.getDate()}"
-    time = "#{pad d.getHours()}:#{pad d.getMinutes()}:#{pad d.getSeconds()}"
+  getBoardHistory: (user, boardId) =>
+    events = @eventHistory[boardId] || []
+    for {date, event, message}, i in events
+      last = i if message.author == user and event == 'marker'
+    first = last - 9
+    first = 0 if first < 0
+    events.slice first, last + 1
+
+  datetimestamp: (d) =>
+    date = "#{d.getFullYear()}-#{@pad d.getMonth(), 2}-#{@pad d.getDate(), 2}"
+    time = "#{@pad d.getHours(), 2}:#{@pad d.getMinutes(), 2}:#{@pad d.getSeconds(), 2}"
     #clc.xterm(228) "#{date} #{time}"
     "#{date} #{time}"
+
+  timestamp: (d) =>
+    "#{@pad d.getHours(), 2}:#{@pad d.getMinutes(), 2}:#{@pad d.getSeconds(), 2}.#{@pad d.getMilliseconds(), 3}"
+
+  pad: (num, digits) ->
+    s = "#{num}"
+    s = "0#{num}" while s.length < digits
+    s
 
   colors:
     DEBUG: 255
