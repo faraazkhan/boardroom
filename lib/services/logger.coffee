@@ -14,7 +14,7 @@ class Logger
     date = new Date()
     events = @eventHistory[boardId] || []
     events.push { date, event, message }
-    events.splice 0, (events.length - 50)
+    events.splice 0, (events.length - 500)
     @eventHistory[boardId] = events
 
   error: (msg) =>

@@ -15,9 +15,10 @@ class boardroom.utils.Watcher
         @log "empty-group-#{group.id}", 2000, "empty group: #{group.id}"
 
   watchForMisplacedCards: =>
-    @board.cards().each (card) =>
-      if card.get('x')? or card.get('y')?
-        @log "misplaced-card-#{card.id}", 2000, "misplaced card: #{card.id}"
+    @board.groups().each (group) =>
+      group.cards().each (card) =>
+        if card.get('x')? or card.get('y')?
+          @log "misplaced-card-#{card.id}", 5000, "misplaced card: #{card.id}"
 
   log: (key, delay, msg) =>
     return if @cache[key] < 0
