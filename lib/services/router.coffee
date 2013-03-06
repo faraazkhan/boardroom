@@ -13,6 +13,7 @@ class Router
   constructor: ->
     @app = express()
     @app.configure =>
+      @app.use @redirectHandler
       @app.set 'views', "#{__dirname}/../views"
       @app.set 'view engine', 'jade'
       @app.use connectAssets(src: "#{__dirname}/../../assets")
@@ -23,24 +24,25 @@ class Router
       @app.use fibrous.middleware
       @app.use @catchPathErrors
 
+
     homeController = new HomeController
-    @app.get '/', @redirectHandler, @authenticate, homeController.index
+    @app.get '/', @authenticate, homeController.index
 
     contentsController = new ContentsController
-    @app.get '/styles', @redirectHandler, @authenticate, contentsController.styles
+    @app.get '/styles', @authenticate, contentsController.styles
 
     sessionsController = new SessionsController
-    @app.get '/login', @redirectHandler, sessionsController.new
-    @app.post '/login', @redirectHandler, sessionsController.create
-    @app.get '/logout', @redirectHandler, sessionsController.destroy
+    @app.get '/login', sessionsController.new
+    @app.post '/login', sessionsController.create
+    @app.get '/logout', sessionsController.destroy
 
     boardsController = new BoardsController
-    @app.get '/boards/:id', @redirectHandler, @authenticate, @createSocketNamespace, boardsController.show
-    @app.post '/boards/:id', @redirectHandler, @authenticate, boardsController.destroy
-    @app.post '/boards', @redirectHandler, @authenticate, boardsController.create
+    @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
+    @app.post '/boards/:id', @authenticate, boardsController.destroy
+    @app.post '/boards', @authenticate, boardsController.create
 
     usersController = new UsersController
-    @app.get '/user/avatar/:user_id', @redirectHandler, usersController.avatar
+    @app.get '/user/avatar/:user_id', usersController.avatar
 
   catchPathErrors: (error, request, response, next) ->
     console.error(error.message)
