@@ -24,23 +24,23 @@ class Router
       @app.use @catchPathErrors
 
     homeController = new HomeController
-    @app.get '/', @authenticate, homeController.index
+    @app.get '/', @redirectHandler, @authenticate, homeController.index
 
     contentsController = new ContentsController
-    @app.get '/styles', @authenticate, contentsController.styles
+    @app.get '/styles', @redirectHandler, @authenticate, contentsController.styles
 
     sessionsController = new SessionsController
-    @app.get '/login', sessionsController.new
-    @app.post '/login', sessionsController.create
-    @app.get '/logout', sessionsController.destroy
+    @app.get '/login', @redirectHandler, sessionsController.new
+    @app.post '/login', @redirectHandler, sessionsController.create
+    @app.get '/logout', @redirectHandler, sessionsController.destroy
 
     boardsController = new BoardsController
-    @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
-    @app.post '/boards/:id', @authenticate, boardsController.destroy
-    @app.post '/boards', @authenticate, boardsController.create
+    @app.get '/boards/:id', @redirectHandler, @authenticate, @createSocketNamespace, boardsController.show
+    @app.post '/boards/:id', @redirectHandler, @authenticate, boardsController.destroy
+    @app.post '/boards', @redirectHandler, @authenticate, boardsController.create
 
     usersController = new UsersController
-    @app.get '/user/avatar/:user_id', usersController.avatar
+    @app.get '/user/avatar/:user_id', @redirectHandler, usersController.avatar
 
   catchPathErrors: (error, request, response, next) ->
     console.error(error.message)
@@ -48,6 +48,15 @@ class Router
       console.error error.stack.join("\n")
     response.render '500', status: 500, error: error
 
+  redirectHandler: (request, response, next) ->
+    if request.headers.host.split(':')[0] == 'betterthanstickies.com'
+      url = 'http://boardroom.carbonfive.com' + request.url
+      response.statusCode = 302
+      response.setHeader('Content-Type', 'text/plain')
+      response.setHeader('Location', url)
+      response.end('Redirecting to '+ url)
+    else
+      next()
   authenticate: (request, response, next) ->
     request.session ?= {}
     if request.session.user_id
