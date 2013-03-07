@@ -51,7 +51,7 @@ class Router
     response.render '500', status: 500, error: error
 
   redirectHandler: (request, response, next) ->
-    if request.host.split(':')[0] == 'betterthanstickies.com'
+    if request.host.match /.*betterthanstickies.com$/
       url = 'http://boardroom.carbonfive.com' + request.url
       response.redirect(url)
     else
