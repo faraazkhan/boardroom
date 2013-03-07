@@ -51,12 +51,9 @@ class Router
     response.render '500', status: 500, error: error
 
   redirectHandler: (request, response, next) ->
-    if request.headers.host.split(':')[0] == 'betterthanstickies.com'
+    if request.host.split(':')[0] == 'betterthanstickies.com'
       url = 'http://boardroom.carbonfive.com' + request.url
-      response.statusCode = 302
-      response.setHeader('Content-Type', 'text/plain')
-      response.setHeader('Location', url)
-      response.end('Redirecting to '+ url)
+      response.redirect(url)
     else
       next()
   authenticate: (request, response, next) ->
