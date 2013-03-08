@@ -28,6 +28,7 @@
     "jasmine-node": "1.1",
     "sinon": "1.4",
     "factory-lady": "git://github.com/carbonfive/factory-lady.git",
+    "superagent": "latest",
     "supertest": "latest",
     "jsdom": "latest",
     "socket.io-client": "latest",

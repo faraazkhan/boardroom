@@ -14,7 +14,7 @@ class SessionsController extends ApplicationController
     createdBoards      = (Board.sync.createdBy user_id) || []
     collaboratedBoards = (Board.sync.collaboratedBy user_id) || []
 
-    if (createdBoards + collaboratedBoards).length > 0
+    if (createdBoards.length + collaboratedBoards.length > 0) or redirect_url != '/'
       response.redirect redirect_url
     else
       boardsController = new BoardsController
