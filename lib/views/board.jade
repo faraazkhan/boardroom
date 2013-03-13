@@ -20,28 +20,4 @@ script(type="text/javascript")
 
     var roomView = new boardroom.views.Room({ model: board });
     roomView.render();
-
-    $(".copy-url").each(function() {
-      $(this).zclip({
-        path: "/swf/ZeroClipboard.swf",
-        copy: window.document.location.href,
-        afterCopy: function() {
-          var el_shown = $('.copy-url').filter(function() {
-            return $(this).data("tooltip").isShown(true);
-          });
-          var tooltip_api = el_shown.data("tooltip")
-          tooltip_api.getTip().html("URL copied!");
-        }
-      })
-    });
-
-    $(".zclip").each(function() {
-      $(this).mouseover(function() {
-        $(this).closest("#user-info").find(".copy-url").mouseover();
-      });
-
-      $(this).mouseout(function() {
-        $(this).closest("#user-info").find(".copy-url").mouseout();
-      });
-    });
-  });
+  })

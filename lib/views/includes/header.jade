@@ -14,15 +14,26 @@ include ../layout.jade
     - if (typeof(user) !== 'undefined')
       #user-info.nav-collapse.collapse.navbar-responsive-collapse
         ul.nav
-          li
-            span.copy-url.icon-link(data-left-title="Copy URL for this board.") &nbsp;
-          li
-            span.help.icon-info(data-left-title='Invite others to participate by copying the url or clicking on the link icon to the right.<br/><br/>Double-click your board to add a note.<br/><br/>Drag notes onto one another to create a group.')
           - if (typeof(board) !== 'undefined')
             li
+              span.copy-url
+                span.icon-link
+                span.tooltip Copy URL for this board.
+          li
+            span.help.icon-info
+              span.tooltip 
+                | Invite others to participate by copying the url or clicking on the link icon to the right.
+                br
+                br
+                | Double-click your board to add a note.
+                br
+                br
+                |Drag notes onto one another to create a group.
+          - if (typeof(user) !== 'undefined')
+            li
               div.user-id
-                img.avatar(src="#{user.avatar}", title="#{user.user_id}")
+                img.avatar(src="/user/avatar/#{encodeURIComponent(user.user_id)}", title="#{user.user_id}")
                 span #{user.user_id}
             li
-              span.logout
+              .logout
                 a(href='/logout') logout
