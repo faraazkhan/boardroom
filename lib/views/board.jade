@@ -1,11 +1,5 @@
 include includes/header
 
-#board-nav
-  input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
-  .actions
-    span.copy-url.icon-link(data-left-title="Copy URL for this board.") &nbsp;
-    span.help.icon-info(data-left-title='Invite others to participate by copying the url or clicking on the link icon to the right.<br/><br/>Double-click your board to add a note.<br/><br/>Drag notes onto one another to create a group.')
-
 .board
   #connection-status-modal(style="display:none")
     #connection-status
@@ -26,28 +20,4 @@ script(type="text/javascript")
 
     var roomView = new boardroom.views.Room({ model: board });
     roomView.render();
-
-    $(".copy-url").each(function() {
-      $(this).zclip({
-        path: "/swf/ZeroClipboard.swf",
-        copy: window.document.location.href,
-        afterCopy: function() {
-          var el_shown = $('.copy-url').filter(function() {
-            return $(this).data("tooltip").isShown(true);
-          });
-          var tooltip_api = el_shown.data("tooltip")
-          tooltip_api.getTip().html("URL copied!");
-        }
-      })
-    });
-
-    $(".zclip").each(function() {
-      $(this).mouseover(function() {
-        $(this).closest("#user-info").find(".copy-url").mouseover();
-      });
-
-      $(this).mouseout(function() {
-        $(this).closest("#user-info").find(".copy-url").mouseout();
-      });
-    });
-  });
+  })

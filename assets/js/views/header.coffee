@@ -7,9 +7,20 @@ class boardroom.views.Header extends boardroom.views.Base
   initialize: (attributes) ->
     super attributes
     @initializeLock()
-    @$('#name').trimInput(80)
+    @$('#name').trimInput(80, 300)
 
     @model.on 'change:name', @onBoardUpdate, @
+
+    @$('.copy-url').zclip(
+        path: "/swf/ZeroClipboard.swf"
+        copy: window.document.location.href
+        afterCopy: => @$('.copy-url .tooltip').html "URL copied!"
+      ).mouseout => @$('.copy-url .tooltip').html "Copy URL for this board."
+
+    @$(".zclip")
+      .mouseover( -> $(@).closest("#user-info").find(".copy-url").mouseover() )
+      .mouseout( -> $(@).closest("#user-info").find(".copy-url").mouseout() )
+
 
   initializeLock: =>
     @editLock = @createEditLock '#name'
