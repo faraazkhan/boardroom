@@ -7,7 +7,7 @@ class boardroom.views.Header extends boardroom.views.Base
   initialize: (attributes) ->
     super attributes
     @initializeLock()
-    @$('#name').trimInput(80)
+    @$('#name').trimInput(80, 300)
 
     @model.on 'change:name', @onBoardUpdate, @
 
