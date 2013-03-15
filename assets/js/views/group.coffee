@@ -170,6 +170,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   renderCardInOrder: (newCardView) ->
     newCardDiv = newCardView.el
+    wasFocused = newCardView.model.focused
 
     divToInsertBefore = null
     for cardDiv in @$('.card') # identify which card to insert cardView before
@@ -182,6 +183,7 @@ class boardroom.views.Group extends boardroom.views.Base
       $(newCardDiv).insertBefore divToInsertBefore # insert in order
     else
       @$el.append(newCardDiv) # put it at the end if this is the last card
+    newCardView.focus() if wasFocused
 
   ###
       human interaction event handlers
