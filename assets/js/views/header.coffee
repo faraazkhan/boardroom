@@ -7,7 +7,7 @@ class boardroom.views.Header extends boardroom.views.Base
   initialize: (attributes) ->
     super attributes
     @initializeLock()
-    @$('#name').trimInput(80, 300)
+    @$('#name').trimInput(80)
 
     @model.on 'change:name', @onBoardUpdate, @
 
@@ -41,6 +41,7 @@ class boardroom.views.Header extends boardroom.views.Base
   ###
 
   onBoardUpdate: (board, name, options) =>
-    @$('#name').val(name).trimInput(80)
+    if @$('#name').val() != name
+      @$('#name').val(name).adjustWidth()
     if options?.rebroadcast
       @editLock.lock 1000
