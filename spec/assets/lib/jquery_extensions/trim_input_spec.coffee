@@ -11,7 +11,7 @@ describe '$', ->
         $('#trimmable').css(
           padding: 0
           border: 'none'
-        ).trimInput(20, 500) # this should all work without passing these params (but it doesn't)
+        ).trimInput(20)
 
       it 'sets a minimum width when there is no text', ->
         expect($('#trimmable').css('width')).toEqual '20px'

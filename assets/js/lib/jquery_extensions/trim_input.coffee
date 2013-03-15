@@ -5,32 +5,38 @@ $.fn.textMetrics = () ->
   else
     html = $(@).html()
   html ?= ''
-  $div = $("<div>#{html}</div>").
-    css({ position: 'absolute', left: -1000, top: -1000, display: 'none' }).
+  $div = $("<div></div>").
+    text(html).
+    css({ position: 'absolute', left: -1000, top: -1000 }).
     appendTo($('body'))
   styles = [ 'font-size', 'font-style', 'font-weight', 'font-family', 'line-height', 'text-transform', 'letter-spacing' ]
   $div.css style, $(@).css(style) for style in styles
-  metrics = { height: $div.outerHeight(), width: $div.outerWidth() }
+  metrics = { height: $div.innerHeight(), width: $div.innerWidth() }
   $div.remove()
   metrics
 
-$.fn.trimInput = (minWidth, maxWidth) ->
-  @each ->
-    unless maxWidth
-      curWidth = parseInt $(@).css('width')
-      $(@).css 'width', 'inherit'
-      maxWidth = $(@).width()
-      $(@).css 'width', curWidth
+$.fn.adjustWidth = ->
+  if $(@).is(':focus')
+    return
+  width = $(@).textMetrics().width + 3
+  width = Math.min width, $(@).data('maxWidth')
+  width = Math.max width, $(@).data('minWidth')
+  $(@).css 'width', width
 
-    setWidth = =>
-      width = $(@).textMetrics().width + 3
-      width = Math.max width, 20
-      width = Math.min width, maxWidth
-      $(@).css 'width', width
+$.fn.trimInput = (minWidth) ->
+  @each ->    
+    originalWidth = $(@).css('width')
+    
+    maxWidth = $(@).innerWidth()
+    
+    $(@).data('maxWidth', maxWidth)
+    $(@).data('minWidth', minWidth)
 
-    setWidth() if not $(@).is(':focus')
+    $(@).adjustWidth() if not $(@).is(':focus')
 
-    $(@).blur setWidth
+    $(@).blur =>
+      $(@).adjustWidth()
 
     $(@).focus =>
-      $(@).css 'width', maxWidth
+      $(@).css 'width', ''
+      $(@).data('maxWidth', $(@).innerWidth())

@@ -97,7 +97,8 @@ class boardroom.views.Group extends boardroom.views.Base
     @$el.attr('id', id)
 
   updateName: (group, name, options) =>
-    @$('.name').val(name).trimInput(80)
+    if @$('.name').val() != name
+      @$('.name').val(name).trimInput(80)
     if options?.rebroadcast
       @editLock.lock 1000, @model.get('author'), "#{@model.get('author')} is typing..."
 
@@ -127,7 +128,7 @@ class boardroom.views.Group extends boardroom.views.Base
     if @model.cards().length > 1
       fadeComplete = =>
         if ! @nameDecorated
-          @$('.name').trimInput(80)
+          @$('.name').adjustWidth()
           @nameDecorated = true
       @$('.name').fadeIn('slow', fadeComplete).find('input').focus() unless @$('.name').is(':visible')
       @$('.add-card').show()
