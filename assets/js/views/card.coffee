@@ -31,7 +31,8 @@ class boardroom.views.Card extends boardroom.views.Base
   events: # human interaction event
     'click .color'     : 'hiChangeColor'
     'keyup textarea'   : 'hiChangeText'
-    'click textarea'   : 'hiFocusText'
+    'focus textarea'   : 'hiFocusText'
+    'blur textarea'    : 'hiUnFocusText'
     'click .plus1 .btn': 'hiIncrementPlusCount'
     'click .delete-btn': 'hiDelete'
 
@@ -156,6 +157,7 @@ class boardroom.views.Card extends boardroom.views.Base
 
   focus: ->
     @$el.find('textarea').focus()
+    @model.focus()
 
   ###
       human interaction event handlers
@@ -173,6 +175,9 @@ class boardroom.views.Card extends boardroom.views.Base
 
   hiFocusText: (event)->
     @model.focus()
+
+  hiUnFocusText: (event)->
+    @model.unfocus()
 
   hiIncrementPlusCount: (e) ->
     @model.plusOne()

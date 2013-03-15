@@ -46,7 +46,11 @@ class boardroom.models.Card extends Backbone.Model
     @touch()
 
   focus: () ->
+    @focused = true
     @group().bringForward()
+
+  unfocus: () ->
+    @focused = false
 
   delete: ->
     cards = @group().cards()
