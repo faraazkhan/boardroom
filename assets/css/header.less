@@ -46,6 +46,20 @@
         vertical-align: top;
         .placeholder(#999);
         -webkit-font-smoothing: antialiased;
+        padding-right: 25px;
+        position: relative;
+        z-index:1;
+      }
+
+      #name + .icon-edit {
+        position: relative;
+        left: -20px;
+        font-size: 18px;
+        top: 1px;
+      }
+
+      #name:focus + .icon-edit {
+        display: none;
       }
     }
 

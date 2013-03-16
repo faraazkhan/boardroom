@@ -10,6 +10,7 @@ include ../layout.jade
       a.room-logo(href="/") BOARDROOM
       - if (typeof(board) !== 'undefined')
         input#name(type="text", value="#{board.name}", placeholder="Enter Title", autocomplete="off")
+        span.icon-edit
 
     - if (typeof(user) !== 'undefined')
       #user-info.nav-collapse.collapse.navbar-responsive-collapse
@@ -19,16 +20,16 @@ include ../layout.jade
               span.copy-url
                 span.icon-link
                 span.tooltip Copy URL for this board.
-          li
-            span.help.icon-info
-              span.tooltip 
-                | Invite others to participate by copying the url or clicking on the link icon to the right.
-                br
-                br
-                | Double-click your board to add a note.
-                br
-                br
-                |Drag notes onto one another to create a group.
+            li
+              span.help.icon-info
+                span.tooltip 
+                  | Invite others to participate by copying the url or clicking on the link icon to the right.
+                  br
+                  br
+                  | Double-click your board to add a note.
+                  br
+                  br
+                  |Drag notes onto one another to create a group.
           - if (typeof(user) !== 'undefined')
             li
               div.user-id
