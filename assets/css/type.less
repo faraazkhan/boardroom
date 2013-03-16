@@ -32,7 +32,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"]:before {
 */
-.icon-users:before, .icon-stickies:before, .icon-star:before, .icon-link:before, .icon-info:before, .icon-draw:before, .icon-draw-alt:before, .icon-delete:before, .icon-delete-alt:before, .icon-add:before {
+.icon-users:before, .icon-stickies:before, .icon-star:before, .icon-link:before, .icon-info:before, .icon-draw:before, .icon-draw-alt:before, .icon-delete:before, .icon-delete-alt:before, .icon-add:before, .icon-edit:before {
   font-family: 'boardroom';
   speak: none;
   font-style: normal;
@@ -68,7 +68,10 @@ you can use the generic selector below, but it's slower:
   content: "\e008";
 }
 .icon-add:before {
-  content: "\e009";
+  content: "\e00a";
+}
+.icon-edit:before {
+  content: "\e00b";
 }
 
 // Body

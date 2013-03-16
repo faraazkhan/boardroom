@@ -165,6 +165,19 @@ form#create-board {
           }
         }
 
+        .copy-url .icon-link {
+          background-color: transparent;
+          padding: 5px 5px 1px 8px;
+          font-size: 18px;
+          color: #999;          
+        }
+
+        .copy-url:hover, .copy-url.hover {
+          .icon-link {
+            color: @yellowLight;
+          }
+        }
+
         form, .copy-url {
           &.active, &:active {
             background-color: @grayMid;
