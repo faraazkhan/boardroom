@@ -22,7 +22,8 @@
     "mongoose": "3",
     "mongodb": "1.2",
     "cli-color": "latest",
-    "nodemon": "~0.7.2"
+    "nodemon": "~0.7.2",
+    "oauth": "0.9.x"
   },
   "devDependencies": {
     "jasmine-node": "1.1",

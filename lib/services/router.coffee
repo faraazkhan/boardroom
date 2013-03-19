@@ -34,6 +34,8 @@ class Router
     sessionsController = new SessionsController
     @app.get '/login', sessionsController.new
     @app.post '/login', sessionsController.create
+    @app.get '/auth/twitter_callback', sessionsController.twitterCallback
+    @app.get '/auth/google_callback', sessionsController.googleCallback
     @app.get '/logout', sessionsController.destroy
 
     boardsController = new BoardsController

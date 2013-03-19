@@ -13,6 +13,7 @@ BoardSchema.virtual('groups').get () -> @vGroups
 BoardSchema.virtual('groups').set (groups) -> @vGroups = groups
 
 BoardSchema.pre 'save', (next) ->
+  console.log "Saving"
   @created = new Date() unless @created?
   @updated = new Date()
   next()

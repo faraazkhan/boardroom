@@ -14,7 +14,7 @@ $ ->
 
   addFormInteractivity = ->
     $input = $('#user_id')
-    $submit = $input.closest 'form'
+    $submit = $input.closest('form').find('button,input[type="submit"]')
     decorator = ($input, shiftKey) ->
       val = $input.val()
       $input.val("@#{val}") unless val.match(/@/) or shiftKey
