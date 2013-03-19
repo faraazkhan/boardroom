@@ -12,9 +12,10 @@ twitterAuth = new oauth.OAuth(
 googleAuth = new oauth.OAuth2 process.env.GOOGLE_CLIENT_KEY, process.env.GOOGLE_SECRET, "", 
   "https://accounts.google.com/o/oauth2/auth", "https://accounts.google.com/o/oauth2/token"
 
+facebookAuth = new oauth.OAuth2 process.env.FACEBOOK_CLIENT_KEY, process.env.FACEBOOK_SECRET, 'https://graph.facebook.com'
+
 authenticateWithTwitter = (request,response) ->
   twitterAuth.getOAuthRequestToken( {
-      force_login: true,
       screen_name: request.body.user_id
     }, 
     (err, oauthToken, oauthTokenSecret) =>
@@ -36,6 +37,10 @@ authenticateWithGoogle = (request,response) ->
     scope: "https://www.googleapis.com/auth/userinfo.email"
     response_type: 'code'
 
+authenticateWithFacebook = (request,response) ->
+  response.redirect facebookAuth.getAuthorizeUrl
+    redirect_uri: "#{request.protocol}://#{request.header('host')}/auth/facebook_callback"
+    scope: 'email'
 
 completeLogin = (request, response) ->
   redirect_url = request.session?.post_auth_url ? '/'
@@ -55,7 +60,6 @@ completeLogin = (request, response) ->
     board = boardsController.build "#{user_id}'s board", user_id
     response.redirect "/boards/#{board.id}"
 
-
 class SessionsController extends ApplicationController
   new: (request, response) ->
     response.render 'login'
@@ -67,7 +71,7 @@ class SessionsController extends ApplicationController
     if /^@/.exec request.body.user_id
       authenticateWithTwitter request, response
     else
-      authenticateWithGoogle request, response
+      authenticateWithFacebook request, response
 
   twitterCallback: (request, response) =>
     if request.query.oauth_token == request.session.auth.twitter_oauth_token
@@ -92,6 +96,22 @@ class SessionsController extends ApplicationController
       console.log "google authentication failed", e
       response.render 'login'
 
+  facebookCallback: (request, response) ->
+    if  ! request.query || request.query.error_reason == 'user_denied' || ! request.query.code
+      return response.render 'login'
+
+    try
+      access_token = facebookAuth.sync.getOAuthAccessToken request.query.code,
+         redirect_uri: "#{request.protocol}://#{request.header('host')}/auth/facebook_callback"
+
+      profile = facebookAuth.sync.getProtectedResource "https://graph.facebook.com/me", access_token
+
+      user = JSON.parse(profile)
+      request.session.user_id = user.email
+      completeLogin(request, response)
+    catch e
+      console.log "google authentication failed", e
+      response.render 'login'
 
   destroy: (request, response) ->
     request.session = {}
