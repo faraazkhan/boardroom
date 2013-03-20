@@ -77,6 +77,8 @@ class SessionsController extends ApplicationController
     if request.query.oauth_token == request.session.auth.twitter_oauth_token
       request.session.user_id = request.session.auth.twitter_user_id
       completeLogin(request, response)
+    else 
+      response.render 'login'
 
   googleCallback: (request, response) ->
     if  ! request.query || request.query.error_reason == 'user_denied' || ! request.query.code
