@@ -8,7 +8,7 @@ async = require 'async'
 
 class BoardsController extends ApplicationController
   create: (request, response) =>
-    @build request.body.name, request.session.user_id, (board) ->
+    @build request.body.name, request.user, request.session.user_id, (board) ->
       response.redirect "/boards/#{board.id}"
 
   show: (request, response) =>
@@ -23,7 +23,7 @@ class BoardsController extends ApplicationController
         board.user_id = request.session.user_id
         response.render 'board',
           board: board
-          user: request.session
+          user: request.user
           loglevel: request.param 'loglevel'
     catch error
       return @throw500 response, error
@@ -41,9 +41,9 @@ class BoardsController extends ApplicationController
       else
         redirect()
 
-  build: (name, creator, done) =>
+  build: (name, user, creator, done) =>
     createBoard = (next) ->
-      board = new Board name: name, creator: creator
+      board = new Board name: name, userId: user.id, creator: creator
       board.save (err) ->
         throw err if err
         next(null, board)

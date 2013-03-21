@@ -5,6 +5,7 @@ Group = require "./group"
 
 BoardSchema = new mongoose.Schema
   name    : { type: String, required: true }
+  userId  : { type: String, required: true }
   creator : { type: String, required: true }
   created : { type: Date }
   updated : { type: Date }
@@ -32,14 +33,14 @@ BoardSchema.statics =
   findById: (id, callback) ->
     @findOne { _id: id }, @populateOne(callback)
 
-  createdBy: (user, callback) ->
-    @find { creator: user }, null, { sort: 'name' }, @populateMany(callback)
+  findByUserId: (userId, callback) ->
+    @find { userId: userId }, null, { sort: 'name' }, @populateMany(callback)
 
-  collaboratedBy: (user, callback) ->
-    Group.collaboratedBy user, (error, groups) =>
+  collaboratedBy: (username, callback) ->
+    Group.collaboratedBy username, (error, groups) =>
       return callback error, null if error?
       boardIds = ( group.boardId for group in groups )
-      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, @populateMany(callback)
+      @find { _id: { $in: boardIds }, creator: { $ne: username } }, null, { sort: 'name' }, @populateMany(callback)
 
   populateOne: (callback) ->
     new Populator().populate callback, 1
@@ -55,8 +56,8 @@ BoardSchema.methods =
 
   collaborators: ->
     collabs = []
-    ( ( collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 ) ) \
-      for user in card.authors ) for card in @cards()
+    ( ( collabs.push username unless ( username == @creator or collabs.indexOf(username) >= 0 ) ) \
+      for username in card.authors ) for card in @cards()
     collabs
 
   lastUpdated: ->

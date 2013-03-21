@@ -1,8 +1,13 @@
+AuthUser = require "#{__dirname}/../../../lib/models/auth_user"
 Board = require "#{__dirname}/../../../lib/models/board"
 Group = require "#{__dirname}/../../../lib/models/group"
 Card = require "#{__dirname}/../../../lib/models/card"
 Factory = require 'factory-lady'
 async = require "async"
+
+
+Factory.define 'auth-user', AuthUser,
+  twitterId: 'tweeter-1'
 
 Factory.define 'board', Board,
   name: 'name-1'
@@ -36,10 +41,17 @@ Factory.createBundle = (callback) ->
   for i in [1..4]
     do (i) ->
       calls.push (done) ->
-        Factory 'board', name: "board#{i}", creator: "board-creator-#{i}", (err, board) ->
-          Factory 'group', boardId: board.id, (err, group) ->
-            Factory 'card', groupId: group.id, authors: authors[i-1], (err, card) ->
-              done()
+        socialProfiles = [
+          { provider: 'twitter', providerId: "tweeter-#{i}", username: "@tweeter-#{i}" }
+          { provider: 'facebook', providerId: "facebooker-#{i}", username: "facebooker-#{i}" }
+          { provider: 'google', providerId: "googler-#{i}", username: "googler-#{i}" }
+          { provider: 'email', providerId: "emailer-#{i}@c5.com", username: "emailer-#{i}" }
+        ]
+        Factory 'auth-user', { socialProfiles }, (err, user) ->
+          Factory 'board', name: "board#{i}", creator: "board-creator-#{i}", (err, board) ->
+            Factory 'group', boardId: board.id, (err, group) ->
+              Factory 'card', groupId: group.id, authors: authors[i-1], (err, card) ->
+                done()
 
   async.parallel calls, callback
 

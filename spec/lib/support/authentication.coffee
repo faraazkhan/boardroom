@@ -16,6 +16,7 @@ class LoggedInRouter extends LoggedOutRouter
     super()
 
   authenticate: (request, response, next) =>
+    request.user = { id: @user }
     request.session = { user_id: @user }
     next()
 

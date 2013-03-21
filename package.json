@@ -26,7 +26,11 @@
     "mongodb": "1.2",
     "cli-color": "latest",
     "nodemon": "~0.7.2",
-    "underscore": "latest"
+    "underscore": "latest",
+    "passport": "0.1.16",
+    "passport-twitter": "0.1.4",
+    "passport-facebook": "0.1.5",
+    "passport-google": "0.3.0"
   },
   "devDependencies": {
     "async": "0.2.6",

@@ -5,11 +5,11 @@ BoardsController = require '../../../lib/controllers/boards'
 
 describe 'BoardsController', ->
   describe '#create', ->
-    beforeEach ->
+    beforeEach =>
       @router = new LoggedInRouter
       @name = 'name-1'
 
-    it 'creates a default board and redirects to it', (done)->
+    it 'creates a default board and redirects to it', (done)=>
       response = null
 
       makeRequest = (next)=>
