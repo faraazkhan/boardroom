@@ -9,8 +9,33 @@ ContentsController = require '../controllers/contents'
 SessionsController = require '../controllers/sessions'
 BoardsController = require '../controllers/boards'
 UsersController = require '../controllers/users'
+passport = require 'passport'
+TwitterStrategy = require("passport-twitter").Strategy
+
+# REPLACE ME WITH A REAL DATASTORE
+users = {}
+
+passport.serializeUser (user, done)->
+  done null, user.id
+
+passport.deserializeUser (id, done)->
+  done null, (users[id] || {})
+
+twitterStrategy = new TwitterStrategy( {
+  consumerKey: process.env.TWITTER_KEY, 
+  consumerSecret: process.env.TWITTER_SECRET
+  },
+  (token, tokenSecret, profile, done)->
+    user = 
+      user_id: profile.username
+      id: profile.id
+    users[profile.id] = user
+    done(null, user)
+)
+passport.use twitterStrategy
 
 class Router
+
   constructor: ->
     @app = express()
     @app.configure =>
@@ -26,6 +51,9 @@ class Router
       @app.use fibrous.middleware
       @app.use @catchPathErrors
 
+      @app.use passport.initialize()
+      @app.use passport.session()
+
     homeController = new HomeController
     @app.get '/', @authenticate, homeController.index
 
@@ -36,6 +64,10 @@ class Router
     @app.get '/login', sessionsController.new
     @app.post '/login', sessionsController.create
     @app.get '/logout', sessionsController.destroy
+    @app.get '/login/twitter', passport.authenticate('twitter')
+    @app.get '/auth/twitter_callback', (req, res, next)-> 
+      fx = passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' })
+      fx(req,res,next)
 
     boardsController = new BoardsController
     @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
@@ -57,9 +89,11 @@ class Router
       response.redirect(url)
     else
       next()
+
   authenticate: (request, response, next) ->
     request.session ?= {}
-    if request.session.user_id
+    if request.user?.user_id
+      request.session = user_id: '@'+request.user.user_id
       next()
     else
       request.session.post_auth_url = request.url

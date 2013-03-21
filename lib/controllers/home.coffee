@@ -5,7 +5,7 @@ Board = require './../models/board'
 class HomeController extends ApplicationController
   index: (request, response) =>
     try
-      user = request.session.user_id
+      user = request.user.user_id
       created = (Board.sync.createdBy user) || []
       collaborated = (Board.sync.collaboratedBy user) || []
       cmp = (a, b) ->

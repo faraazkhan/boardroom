@@ -26,6 +26,8 @@
     "cli-color": "latest",
     "nodemon": "~0.7.2",
     "underscore": "latest"
+    "passport": "0.1.16",
+    "passport-twitter": "0.1.4",
   },
   "devDependencies": {
     "jasmine-node": "1.5.x",

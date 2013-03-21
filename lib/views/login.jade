@@ -14,6 +14,8 @@ html
           | Welcome to
         | Boardroom
 
+      a(href="login/twitter") Log in with Twitter
+
       form#login(action='/login', method='post')
         input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
         .button-container.inset
