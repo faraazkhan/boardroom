@@ -11,6 +11,15 @@ if cluster.isMaster
   migrator = new Migrator
   migrator.migrate (error) ->
     throw error if error?
+
+    # back out of clustering until i figure what is breaking on acceptance -mike
+    # ------------
+    Router = require './services/router'
+    router = new Router
+    router.start()
+    return
+    # ------------
+
     for n in [1..cpus]
       worker = cluster.fork()
       worker.ident = -> "Worker #{@id} (pid #{@process.pid})"
