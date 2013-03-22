@@ -7,18 +7,17 @@ logger = require './logger'
 Snockets = require 'snockets'
 
 assetDir = pathutil.resolve "#{__dirname}/../../assets"
+development = ( process.env.NODE_ENV ? 'development' ) == 'development'
 
 class Rack extends rack.Rack
-  development: ( process.env.NODE_ENV ? 'development' ) == 'development'
-
   handle: (request, response, next) =>
     response.locals.css = (name) => @tag "/css/#{name}.css"
     response.locals.js = @js
     super request, response, next
 
   js: (name) =>
-    if @development
-      asset = _(@assets).find (asset) -> asset.filename.match ///#{name}\.(js|coffee)$///
+    if development
+      asset = _(@assets).find (asset) -> asset.filename.match ///\/#{name}\.(js|coffee)$///
       if asset
         snockets = new Snockets()
         files = snockets.getCompiledChain asset.filename, { async: false }
@@ -50,6 +49,7 @@ class AssetPipeline
       new rack.SnocketsAsset
         url: url
         filename: "#{dir}/#{file}"
+        hash: ! development
 
   cssAssets: ->
     dir = assetDir + '/css'
@@ -59,5 +59,6 @@ class AssetPipeline
       new rack.LessAsset
         url: url
         filename: "#{dir}/#{file}"
+        hash: ! development
 
 module.exports = new AssetPipeline()
