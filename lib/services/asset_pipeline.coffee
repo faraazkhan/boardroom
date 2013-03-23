@@ -1,63 +1,122 @@
-rack = require 'asset-rack'
-fs = require 'fs'
-wrench = require 'wrench'
-_ = require 'underscore'
-pathutil = require 'path'
-logger = require './logger'
+_        = require 'underscore'
+fs       = require 'fs'
+rack     = require 'asset-rack'
+path     = require 'path'
+Fiber    = require 'fibers'
 Snockets = require 'snockets'
+logger   = require './logger'
 
-assetDir = pathutil.resolve "#{__dirname}/../../assets"
+assetDir = path.resolve "#{__dirname}/../../assets"
+development = ( process.env.NODE_ENV ? 'development' ) == 'development'
 
-class Rack extends rack.Rack
-  development: ( process.env.NODE_ENV ? 'development' ) == 'development'
-
+class AssetRack extends rack.Rack
   handle: (request, response, next) =>
-    response.locals.css = (name) => @tag "/css/#{name}.css"
-    response.locals.js = @js
-    super request, response, next
+    Fiber =>
+      response.locals.css = @css
+      response.locals.js = @js
+      super request, response, next
+    .run()
 
   js: (name) =>
-    if @development
-      asset = _(@assets).find (asset) -> asset.filename.match ///#{name}\.(js|coffee)$///
-      if asset
-        snockets = new Snockets()
-        files = snockets.getCompiledChain asset.filename, { async: false }
-        tags = ( @tag file.filename.replace(assetDir, '').replace('.coffee', '.js') for file in files )
-        tags.join ''
-      else
-        @tag "/js/#{name}.js"
+    if development
+      filename = @jsFilename name
+      files = new Snockets().getCompiledChain filename, { async: false }
+      tags = []
+      for file in files
+        subname = file.filename.replace("#{assetDir}/js/", '').replace(/\.(js|coffee)$/, '')
+        @findOrCreateAsset subname, 'js', file.js
+        tag = @tag "/js/#{subname}.js"
+        tags.push tag
+      tags.join ''
     else
+      @findOrCreateAsset name, 'js'
       @tag "/js/#{name}.js"
+
+  css: (name) =>
+    @findOrCreateAsset name, 'css'
+    @tag "/css/#{name}.css"
+
+  findOrCreateAsset: (name, ext, content) =>
+    asset = _(@assets).find (asset) -> asset.lookup == "#{name}.#{ext}"
+    if asset?
+      logger.debug -> "Found asset: #{name}.#{ext}"
+      return asset
+    else
+      logger.debug -> "Creating asset: #{name}.#{ext}"
+      done = false
+      if content?
+        asset = @createStaticAsset name, ext, content
+      else
+        asset = @createJSAsset name if ext == 'js'
+        asset = @createCSSAsset name if ext == 'css'
+      throw "Cannot find asset for: #{name}.#{ext}" unless asset?
+      asset.rack = @
+      asset.lookup = "#{name}.#{ext}"
+      asset.removeAllListeners 'error' # we'll do our own
+      asset.on 'error', (err) ->
+        logger.error => "Error with asset: #{@url}"
+        console.log err
+        done = true
+      asset.on 'complete', =>
+        @assets.push asset if asset.contents?
+        @assets = @assets.concat asset.assets if asset.assets?
+        logger.debug -> "Asset compiled: #{name}.#{ext}"
+        done = true
+      asset.emit 'start'
+
+      fiber = Fiber.current
+      finish = => ( fiber.run() if done )
+      interval = setInterval finish, 10
+      Fiber.yield()
+      clearInterval interval
+
+      asset
+
+  createStaticAsset: (name, ext, content) =>
+    mimetypes =
+      js: 'text/javascript'
+      css: 'text/css'
+    new rack.Asset
+      url: "/#{ext}/#{name}.#{ext}"
+      contents: content
+      hash: ! development
+      mimetype: mimetypes[ext]
+
+  createJSAsset: (name) =>
+    new rack.SnocketsAsset
+      url: "/js/#{name}.js"
+      filename: @jsFilename name
+      hash: ! development
+
+  createCSSAsset: (name) =>
+    new rack.LessAsset
+      url: "/css/#{name}.css"
+      filename: @cssFilename name
+      hash: ! development
+
+  jsFilename: (name) =>
+    filename = "#{assetDir}/js/#{name}"
+    ext = 'coffee' if fs.existsSync "#{filename}.coffee"
+    ext = 'js'     if fs.existsSync "#{filename}.js"
+    throw "Cannot find file: #{filename}.js|coffee" unless ext?
+    "#{filename}.#{ext}"
+
+  cssFilename: (name) =>
+    filename = "#{assetDir}/css/#{name}.less"
+    throw "Cannot find file: #{filename}" unless fs.existsSync filename
+    filename
 
 class AssetPipeline
   constructor: ->
-    @middleware = new Rack @assets()
+    @middleware = new AssetRack []
     @middleware.on 'complete', -> ( logger.debug -> 'Asset pipelines complete' )
+    @middleware.removeAllListeners 'error' # we'll do our own
+    @middleware.on 'error', -> # do nothing, it all happens in the asset error handlers
 
-  assets: ->
-    assets = @jsAssets().concat @cssAssets()
-    for asset in assets
-      asset.on 'error', (err) ->
-        logger.error -> "Error with asset: #{asset.url}"
-        console.log err
-    assets
-
-  jsAssets: ->
-    dir = assetDir + '/js'
-    files = _(wrench.readdirSyncRecursive(dir)).select (file) -> file.match /\.(js|coffee)$/
-    _(files).map (file) ->
-      url = '/js/' + file.replace('.coffee', '.js')
-      new rack.SnocketsAsset
-        url: url
-        filename: "#{dir}/#{file}"
-
-  cssAssets: ->
-    dir = assetDir + '/css'
-    files = _(fs.readdirSync(dir)).select (file) -> file.match /^application.less$/
-    _(files).map (file) ->
-      url = '/css/' + file.replace('.less', '.css')
-      new rack.LessAsset
-        url: url
-        filename: "#{dir}/#{file}"
+  precompile: (args) =>
+    Fiber =>
+      @middleware.js js   for js in args.js
+      @middleware.css css for css in args.css
+    .run()
 
 module.exports = new AssetPipeline()
