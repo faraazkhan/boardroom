@@ -12,9 +12,13 @@ development = ( process.env.NODE_ENV ? 'development' ) == 'development'
 class AssetRack extends rack.Rack
   handle: (request, response, next) =>
     Fiber =>
-      response.locals.css = @css
-      response.locals.js = @js
-      super request, response, next
+      try
+        response.locals.css = @css
+        response.locals.js = @js
+        super request, response, next
+      catch err
+        logger.error -> "Unexpected error"
+        console.log err
     .run()
 
   js: (name) =>
