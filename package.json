@@ -15,7 +15,7 @@
     "express": "3.1.x",
     "asset-rack": "2",
     "snockets": "1",
-    "wrench": "1",
+    "fibers": "1",
     "jade": "0",
     "socket.io": "0.9",
     "cookie-sessions": "0",
