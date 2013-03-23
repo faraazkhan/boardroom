@@ -37,6 +37,8 @@ class AssetRack extends rack.Rack
     @tag "/css/#{name}.css"
 
   findOrCreateAsset: (name, ext, content) =>
+    fiber = Fiber.current
+    complete = yielded = false
     asset = _(@assets).find (asset) -> asset.lookup == "#{name}.#{ext}"
     if asset?
       logger.debug -> "Found asset: #{name}.#{ext}"
@@ -53,23 +55,21 @@ class AssetRack extends rack.Rack
       asset.rack = @
       asset.lookup = "#{name}.#{ext}"
       asset.removeAllListeners 'error' # we'll do our own
+      asset.emit 'start'
       asset.on 'error', (err) ->
         logger.error => "Error with asset: #{@url}"
         console.log err
-        done = true
+        complete = true
+        fiber.run() if yielded
       asset.on 'complete', =>
         @assets.push asset if asset.contents?
         @assets = @assets.concat asset.assets if asset.assets?
         logger.debug -> "Asset compiled: #{name}.#{ext}"
-        done = true
-      asset.emit 'start'
-
-      fiber = Fiber.current
-      finish = => ( fiber.run() if done )
-      interval = setInterval finish, 10
-      Fiber.yield()
-      clearInterval interval
-
+        complete = true
+        fiber.run() if yielded
+      unless complete
+        yielded = true
+        Fiber.yield()
       asset
 
   createStaticAsset: (name, ext, content) =>
