@@ -11,15 +11,17 @@ development = ( process.env.NODE_ENV ? 'development' ) == 'development'
 
 class AssetRack extends rack.Rack
   handle: (request, response, next) =>
-    Fiber =>
-      try
-        response.locals.css = @css
-        response.locals.js = @js
-        super request, response, next
-      catch err
-        logger.error -> "Unexpected error"
-        console.log err
-    .run()
+    response.locals.css = @css
+    response.locals.js = @js
+    _render = response.render
+    response.render = (view, options, callback) ->
+      Fiber =>
+        logger.debug -> 'render: entering fiber'
+        _render.call response, view, options, callback
+        logger.debug -> 'render: complete'
+      .run()
+      logger.debug -> 'render: exited fiber'
+    super request, response, next
 
   js: (name) =>
     if development
@@ -72,6 +74,7 @@ class AssetRack extends rack.Rack
         complete = true
         fiber.run() if yielded
       unless complete
+        logger.debug -> "Yielding fiber to wait for #{name}.#{ext} to compile"
         yielded = true
         Fiber.yield()
       asset

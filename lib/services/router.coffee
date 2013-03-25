@@ -46,7 +46,7 @@ class Router
     @app.get '/user/avatar/:user_id', usersController.avatar
 
   catchPathErrors: (error, request, response, next) ->
-    log.error -> error.message
+    logger.error -> error.message
     if error.stack
       console.error error.stack.join("\n")
     response.render '500', status: 500, error: error
