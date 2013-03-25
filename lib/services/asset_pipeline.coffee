@@ -15,12 +15,9 @@ class AssetRack extends rack.Rack
     response.locals.js = @js
     _render = response.render
     response.render = (view, options, callback) ->
-      Fiber =>
-        logger.debug -> 'render: entering fiber'
+      Fiber => 
         _render.call response, view, options, callback
-        logger.debug -> 'render: complete'
       .run()
-      logger.debug -> 'render: exited fiber'
     super request, response, next
 
   js: (name) =>
@@ -74,7 +71,6 @@ class AssetRack extends rack.Rack
         complete = true
         fiber.run() if yielded
       unless complete
-        logger.debug -> "Yielding fiber to wait for #{name}.#{ext} to compile"
         yielded = true
         Fiber.yield()
       asset
