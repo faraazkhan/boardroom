@@ -6,10 +6,15 @@ Fiber    = require 'fibers'
 Snockets = require 'snockets'
 logger   = require './logger'
 
-assetDir = path.resolve "#{__dirname}/../../assets"
-development = ( process.env.NODE_ENV ? 'development' ) == 'development'
+AssetFactory = require './asset_factory'
 
 class AssetRack extends rack.Rack
+  constructor: ->
+    @assetDir = path.resolve "#{__dirname}/../../assets"
+    @env = process.env.NODE_ENV ? 'development'
+    @factory = new AssetFactory @assetDir, @env
+    super []
+
   handle: (request, response, next) =>
     response.locals.css = @css
     response.locals.js = @js
@@ -21,42 +26,40 @@ class AssetRack extends rack.Rack
     super request, response, next
 
   js: (name) =>
-    if development
-      filename = @jsFilename name
+    type = 'js'
+    if @env == 'development'
+      filename = @factory.filename type, name
       files = new Snockets().getCompiledChain filename, { async: false }
       tags = []
       for file in files
-        subname = file.filename.replace("#{assetDir}/js/", '').replace(/\.(js|coffee)$/, '')
-        @findOrCreateAsset subname, 'js', file.js
+        subname = @factory.basename type, file.filename
+        @findOrCreateAsset type, subname, file.js
         tag = @tag "/js/#{subname}.js"
         tags.push tag
       tags.join ''
     else
-      @findOrCreateAsset name, 'js'
+      @findOrCreateAsset type, name
       @tag "/js/#{name}.js"
 
   css: (name) =>
-    @findOrCreateAsset name, 'css'
+    type = 'css'
+    @findOrCreateAsset type, name
     @tag "/css/#{name}.css"
 
-  findOrCreateAsset: (name, ext, content) =>
+  findOrCreateAsset: (type, name, contents) =>
+    ident = "#{name}.#{type}"
     fiber = Fiber.current
     complete = yielded = false
-    asset = _(@assets).find (asset) -> asset.lookup == "#{name}.#{ext}"
+    asset = _(@assets).find (asset) -> asset.lookup == ident
     if asset?
-      logger.debug -> "Found asset: #{name}.#{ext}"
+      logger.debug -> "Found asset: #{ident}"
       return asset
     else
-      logger.debug -> "Creating asset: #{name}.#{ext}"
+      logger.debug -> "Creating asset: #{ident}"
       done = false
-      if content?
-        asset = @createStaticAsset name, ext, content
-      else
-        asset = @createJSAsset name if ext == 'js'
-        asset = @createCSSAsset name if ext == 'css'
-      throw "Cannot find asset for: #{name}.#{ext}" unless asset?
+      asset = @factory.create type, name, contents
       asset.rack = @
-      asset.lookup = "#{name}.#{ext}"
+      asset.lookup = ident
       asset.removeAllListeners 'error' # we'll do our own
       asset.emit 'start'
       asset.on 'error', (err) ->
@@ -67,7 +70,7 @@ class AssetRack extends rack.Rack
       asset.on 'complete', =>
         @assets.push asset if asset.contents?
         @assets = @assets.concat asset.assets if asset.assets?
-        logger.debug -> "Asset compiled: #{name}.#{ext}"
+        logger.debug -> "Asset compiled: #{ident}"
         complete = true
         fiber.run() if yielded
       unless complete
@@ -75,43 +78,9 @@ class AssetRack extends rack.Rack
         Fiber.yield()
       asset
 
-  createStaticAsset: (name, ext, content) =>
-    mimetypes =
-      js: 'text/javascript'
-      css: 'text/css'
-    new rack.Asset
-      url: "/#{ext}/#{name}.#{ext}"
-      contents: content
-      hash: ! development
-      mimetype: mimetypes[ext]
-
-  createJSAsset: (name) =>
-    new rack.SnocketsAsset
-      url: "/js/#{name}.js"
-      filename: @jsFilename name
-      hash: ! development
-
-  createCSSAsset: (name) =>
-    new rack.LessAsset
-      url: "/css/#{name}.css"
-      filename: @cssFilename name
-      hash: ! development
-
-  jsFilename: (name) =>
-    filename = "#{assetDir}/js/#{name}"
-    ext = 'coffee' if fs.existsSync "#{filename}.coffee"
-    ext = 'js'     if fs.existsSync "#{filename}.js"
-    throw "Cannot find file: #{filename}.js|coffee" unless ext?
-    "#{filename}.#{ext}"
-
-  cssFilename: (name) =>
-    filename = "#{assetDir}/css/#{name}.less"
-    throw "Cannot find file: #{filename}" unless fs.existsSync filename
-    filename
-
 class AssetPipeline
   constructor: ->
-    @middleware = new AssetRack []
+    @middleware = new AssetRack()
     @middleware.on 'complete', -> ( logger.debug -> 'Asset pipelines complete' )
     @middleware.removeAllListeners 'error' # we'll do our own
     @middleware.on 'error', -> # do nothing, it all happens in the asset error handlers
