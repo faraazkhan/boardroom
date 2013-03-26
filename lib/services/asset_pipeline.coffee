@@ -1,5 +1,4 @@
 _        = require 'underscore'
-fs       = require 'fs'
 rack     = require 'asset-rack'
 path     = require 'path'
 Fiber    = require 'fibers'
