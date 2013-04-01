@@ -7,6 +7,7 @@ Board = require "#{lib}/models/board"
 Group = require "#{lib}/models/group"
 Card = require "#{lib}/models/card"
 User = require "#{lib}/models/user"
+AuthUser = require "#{lib}/models/auth_user"
 
 Factory = require "#{speclib}/support/factories"
 
@@ -24,8 +25,9 @@ beforeEach ->
   Board.sync.remove()
   Group.sync.remove()
   Card.sync.remove()
+  AuthUser.sync.remove()
 
 afterEach ->
   timeout = setTimeout afterAll, 100
 
-module.exports = { finalizers, Board, Group, Card, User, Factory }
+module.exports = { finalizers, Board, Group, Card, User, AuthUser, Factory }
