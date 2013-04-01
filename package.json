@@ -1,42 +1,42 @@
 {
-  "author": "Carbon Five",
-  "name": "boardroom",
-  "description": "A distributed stickyboard for reflection and introspection",
-  "version": "0.0.2",
-  "repository": {
-    "url": "git@github.com:carbonfive/boardroom.git"
-  },
-  "scripts": {
-    "test": "cake spec",
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "jquery": "1.8",
-    "express": "3.1.x",
-    "asset-rack": "2",
-    "snockets": "1",
-    "fibers": "1",
-    "jade": "0",
-    "socket.io": "0.9",
-    "cookie-sessions": "0",
-    "less": "1",
-    "coffee-script": "1.5",
-    "mongoose": "3",
-    "mongodb": "1.2",
-    "cli-color": "latest",
-    "nodemon": "~0.7.2",
-    "underscore": "latest"
-    "passport": "0.1.16",
-    "passport-twitter": "0.1.4",
-  },
-  "devDependencies": {
-    "jasmine-node": "1.5.x",
-    "sinon": "1.4",
-    "factory-lady": "git://github.com/carbonfive/factory-lady.git",
-    "superagent": "latest",
-    "supertest": "latest",
-    "jsdom": "latest",
-    "socket.io-client": "latest",
-    "fibrous": "0.3"
+    "author": "Carbon Five"
+  , "name": "boardroom"
+  , "description": "A distributed stickyboard for reflection and introspection"
+  , "version": "0.0.2"
+  , "repository": {
+      "url": "git@github.com:carbonfive/boardroom.git"
+    }
+  , "scripts": {
+      "test": "cake spec"
+    , "start": "node index.js"
+  }
+  , "dependencies": {
+      "jquery": "1.8"
+    , "express": "3.1.x"
+    , "asset-rack": "2"
+    , "snockets": "1"
+    , "fibers": "1"
+    , "jade": "0"
+    , "socket.io": "0.9"
+    , "cookie-sessions": "0"
+    , "less": "1"
+    , "coffee-script": "1.5"
+    , "mongoose": "3"
+    , "mongodb": "1.2"
+    , "cli-color": "latest"
+    , "nodemon": "~0.7.2"
+    , "underscore": "latest"
+    , "passport": "0.1.16"
+    , "passport-twitter": "0.1.4"
+  }
+  , "devDependencies": {
+      "jasmine-node": "1.5.x"
+    , "sinon": "1.4"
+    , "factory-lady": "git://github.com/carbonfive/factory-lady.git"
+    , "superagent": "latest"
+    , "supertest": "latest"
+    , "jsdom": "latest"
+    , "socket.io-client": "latest"
+    , "fibrous": "0.3"
   }
 }
