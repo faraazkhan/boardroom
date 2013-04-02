@@ -10,29 +10,6 @@ SessionsController = require '../controllers/sessions'
 BoardsController = require '../controllers/boards'
 UsersController = require '../controllers/users'
 passport = require 'passport'
-TwitterStrategy = require("passport-twitter").Strategy
-
-# REPLACE ME WITH A REAL DATASTORE
-users = {}
-
-passport.serializeUser (user, done)->
-  done null, user.id
-
-passport.deserializeUser (id, done)->
-  done null, (users[id] || {})
-
-twitterStrategy = new TwitterStrategy( {
-  consumerKey: process.env.TWITTER_KEY, 
-  consumerSecret: process.env.TWITTER_SECRET
-  },
-  (token, tokenSecret, profile, done)->
-    user = 
-      user_id: profile.username
-      id: profile.id
-    users[profile.id] = user
-    done(null, user)
-)
-passport.use twitterStrategy
 
 class Router
 
@@ -64,10 +41,8 @@ class Router
     @app.get '/login', sessionsController.new
     @app.post '/login', sessionsController.create
     @app.get '/logout', sessionsController.destroy
-    @app.get '/login/twitter', passport.authenticate('twitter')
-    @app.get '/auth/twitter_callback', (req, res, next)-> 
-      fx = passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' })
-      fx(req,res,next)
+    @app.get '/login/twitter', sessionsController.oauthTwitter
+    @app.get '/auth/twitter_callback', sessionsController.callbackTwitter
 
     boardsController = new BoardsController
     @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
@@ -92,8 +67,8 @@ class Router
 
   authenticate: (request, response, next) ->
     request.session ?= {}
-    if request.user?.user_id
-      request.session = user_id: '@'+request.user.user_id
+    if request.user?.twitterProfile()?
+      request.session.user_id = '@' + request.user.twitterProfile().username
       next()
     else
       request.session.post_auth_url = request.url
