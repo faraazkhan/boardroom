@@ -40,8 +40,7 @@ Factory.createBundle = (callback) ->
         { provider: 'twitter', providerId: "tweeter-#{i}", username: "@tweeter-#{i}" }
         { provider: 'facebook', providerId: "facebooker-#{i}", username: "facebooker-#{i}" }
         { provider: 'google', providerId: "googler-#{i}", username: "googler-#{i}" }
-        { provider: 'email', providerId: "emailer-#{i}", username: "emailer-#{i}" }
-        { provider: 'username', providerId: "usernamer-#{i}", username: "usernamer-#{i}" }
+        { provider: 'email', providerId: "emailer-#{i}@c5.com", username: "emailer-#{i}" }
       ]
       user = Factory.sync 'auth-user', { socialProfiles }
       board = Factory.sync 'board', name: "board#{i}", creator: "board-creator-#{i}"
