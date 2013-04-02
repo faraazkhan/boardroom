@@ -6,15 +6,17 @@ class HomeController extends ApplicationController
   index: (request, response) =>
     try
       user = request.user.user_id
-      created = (Board.sync.createdBy user) || []
-      collaborated = (Board.sync.collaboratedBy user) || []
-      cmp = (a, b) ->
-        a.name.toLowerCase().localeCompare b.name.toLowerCase()
+      Board.createdBy user, (err, created)->
+        created ?= []
+        Board.collaboratedBy user, (err, collaborated)->
+          collaborated ?= []
+          cmp = (a, b) ->
+            a.name.toLowerCase().localeCompare b.name.toLowerCase()
 
-      response.render 'index',
-        user: request.session
-        created: created.sort cmp
-        collaborated: collaborated.sort cmp
+          response.render 'index',
+            user: request.session
+            created: created.sort cmp
+            collaborated: collaborated.sort cmp
 
     catch error
       return @throw500 response, error
