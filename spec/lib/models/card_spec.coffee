@@ -2,13 +2,14 @@
 
 describe 'card.Card', ->
   describe '.findByGroupId', ->
-    beforeEach ->
-      @group = Factory.sync 'group'
-      Factory.sync 'card', groupId: @group.id
+    beforeEach (next) =>
+      Factory 'group', (err, @group) =>
+        Factory 'card', groupId: @group.id, ->
+          next()
 
-    it 'finds all cards for the given group', ->
-      cards = Card.sync.findByGroupId @group.id
-      expect(cards.length).toEqual 1
+    it 'finds all cards for the given group', =>
+      Card.findByGroupId @group.id, (err, cards) ->
+        expect(cards.length).toEqual 1
 
   describe '#updateAttributes', ->
     describe 'by default', ->
