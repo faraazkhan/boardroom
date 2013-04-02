@@ -32,7 +32,7 @@ describe 'User', ->
       profile = 
         providerId: 'tweeter-non-existent'
         provider: 'twitter'
-        info: { now }
+        _json: { now }
       user = AuthUser.sync.findByTwitterId profile.providerId
       expect(user).toEqual null
 
@@ -40,13 +40,13 @@ describe 'User', ->
       expect(user.twitterProfile().providerId).toEqual profile.providerId
 
       user = AuthUser.sync.findByTwitterId profile.providerId
-      expect(user.twitterProfile().info.now).toEqual now
+      expect(user.twitterProfile()._json.now).toEqual now
 
     it '.signin with facebook', ->
       profile = 
         providerId: 'facebook-non-existent'
         provider: 'facebook'
-        info: { now }
+        _json: { now }
       user = AuthUser.sync.findByFacebookId profile.providerId
       expect(user).toEqual null
 
@@ -54,13 +54,13 @@ describe 'User', ->
       expect(user.facebookProfile().providerId).toEqual profile.providerId
 
       user = AuthUser.sync.findByFacebookId profile.providerId
-      expect(user.facebookProfile().info.now).toEqual now
+      expect(user.facebookProfile()._json.now).toEqual now
 
     it '.signin with google', ->
       profile = 
         providerId: 'google-non-existent'
         provider: 'google'
-        info: { now }
+        _json: { now }
       user = AuthUser.sync.findByGoogleId profile.providerId
       expect(user).toEqual null
 
@@ -68,13 +68,13 @@ describe 'User', ->
       expect(user.googleProfile().providerId).toEqual profile.providerId
 
       user = AuthUser.sync.findByGoogleId profile.providerId
-      expect(user.googleProfile().info.now).toEqual now
+      expect(user.googleProfile()._json.now).toEqual now
 
     it '.signin with email', ->
       profile = 
         providerId: 'email-non-existent'
         provider: 'email'
-        info: { now }
+        _json: { now }
       user = AuthUser.sync.findByEmail profile.providerId
       expect(user).toEqual null
 
@@ -82,7 +82,7 @@ describe 'User', ->
       expect(user.emailProfile().providerId).toEqual profile.providerId
 
       user = AuthUser.sync.findByEmail profile.providerId
-      expect(user.emailProfile().info.now).toEqual now
+      expect(user.emailProfile()._json.now).toEqual now
 
   describe 'returning', ->
     it '.signIn with twitter', ->

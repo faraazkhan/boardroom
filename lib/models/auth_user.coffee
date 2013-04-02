@@ -11,8 +11,15 @@ SocialProfileSchema = new mongoose.Schema
   providerId: String
   provider : String
   username: String
-  avatar: String
-  info: {}
+  displayName: String
+  emails: Array
+  photos: Array
+  name: {}
+  _json: {}
+
+SocialProfileSchema.methods =
+  email:  -> @emails?[0]?.value
+  avatar: -> @photos?[0]?.value
 
 SocialProfile = mongoose.model 'SocialProfile', SocialProfileSchema
 
@@ -44,6 +51,13 @@ AuthUserSchema.statics =
     @findOne { 'socialProfiles.provider': provider , 'socialProfiles.providerId': providerId }, cb
 
 AuthUserSchema.methods =
+  email: -> @profile().email()
+  avatar: -> @profile().avatar()
+  username: -> @profile().username
+  displayName: -> @profile().displayName
+  displayUsername: -> if PROVIDER_TWITTER is p.provider then "@" + @username() else @username()
+  profile: -> profileFor @loginStats?.lastProvider
+
   twitterProfile: -> @profileFor PROVIDER_TWITTER
   facebookProfile: -> @profileFor PROVIDER_FACEBOOK
   googleProfile: -> @profileFor PROVIDER_GOOGLE
@@ -55,14 +69,17 @@ AuthUserSchema.methods =
   setSocialProfile: (providerProfile)-> # replace existing profile for profile.provider
     profile = @profileFor(providerProfile.provider)
     if profile?
-      providerProfile.info = {found:true}
       profile.set providerProfile
     else
       @socialProfiles.push new SocialProfile providerProfile
     @socialProfiles
   touchProviderSignIn: (providerProfile, callback)->
     @setSocialProfile providerProfile
-    #+++ ToDo update login stats 
+    numLogins = @loginStats?.loginCount || 0
+    @loginStats =
+      loginCount: numLogins + 1
+      lastLoginAt: new Date()
+      lastProvider: providerProfile.provider
     @save callback
 
   avatar: ->
