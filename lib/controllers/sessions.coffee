@@ -31,7 +31,6 @@ loginFunctorForProvider = (provider)->
 
 class SessionsController extends ApplicationController
   new: (request, response) ->
-    request.session = {}
     response.render 'login', {layout: false}
 
   destroy: (request, response) ->
