@@ -55,8 +55,10 @@ AuthUserSchema.methods =
   avatar: -> @profile().avatar()
   username: -> @profile().username
   displayName: -> @profile().displayName
-  displayUsername: -> if PROVIDER_TWITTER is p.provider then "@" + @username() else @username()
-  profile: -> profileFor @loginStats?.lastProvider
+  displayUsername: -> 
+    p = @profile()
+    if PROVIDER_TWITTER is p.provider then "@" + p.username else p.username
+  profile: -> @profileFor @loginStats?.lastProvider
 
   twitterProfile: -> @profileFor PROVIDER_TWITTER
   facebookProfile: -> @profileFor PROVIDER_FACEBOOK
