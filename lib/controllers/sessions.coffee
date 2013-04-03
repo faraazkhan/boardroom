@@ -22,32 +22,21 @@ twitterStrategy = new TwitterStrategy( {
 passport.use twitterStrategy
 
 loginFunctorForProvider = (provider)->
-  (req, res, next)->
-    authenticateFunctor = passport.authenticate(provider, { successRedirect: '/', failureRedirect: '/login' })
-    authenticateFunctor(req,res,next)
+  (request, response, next)->
+    successRedirect = request.session?.post_auth_url ? '/'
+    failureRedirect = '/login'
+    authenticateFunctor = passport.authenticate(provider, { successRedirect, failureRedirect })
+    authenticateFunctor(request,response,next)
+
 
 class SessionsController extends ApplicationController
   new: (request, response) ->
+    request.session = {}
     response.render 'login', {layout: false}
-
-  create: (request, response) ->
-    redirect_url = request.session?.post_auth_url ? '/'
-    user_id = request.body.user_id
-    request.session = user_id: user_id
-
-    createdBoards      = (Board.sync.createdBy user_id) || []
-    collaboratedBoards = (Board.sync.collaboratedBy user_id) || []
-
-    if (createdBoards.length + collaboratedBoards.length > 0) or redirect_url != '/'
-      response.redirect redirect_url
-    else
-      boardsController = new BoardsController
-      board = boardsController.build "#{user_id}'s board", user_id
-      response.redirect "/boards/#{board.id}"
 
   destroy: (request, response) ->
     request.session = {}
-    response.redirect '/'
+    response.redirect '/login'
 
   # OAuth Login redirects and Callbacks
   oauthTwitter: passport.authenticate('twitter')
