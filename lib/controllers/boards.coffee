@@ -1,4 +1,3 @@
-require 'fibrous'
 Sockets = require '../services/sockets'
 ApplicationController = require './application'
 Board = require '../models/board'
@@ -15,23 +14,32 @@ class BoardsController extends ApplicationController
   show: (request, response) =>
     try
       id = request.params.id
-      board = Board.sync.findById id
-      return @throw404 response unless board?
-      board = board.toObject getters: true
-      board._id = board.id
-      board.users = Sockets.boards[board.name] || {}
-      board.user_id = request.session.user_id
-      response.render 'board',
-        board: board
-        user: request.session
-        loglevel: request.param 'loglevel'
+      Board.findById id, (err, board) ->
+        throw err if err
+        @throw404 response unless board?
+        board = board.toObject getters: true
+        board._id = board.id
+        board.users = Sockets.boards[board.name] || {}
+        board.user_id = request.session.user_id
+        response.render 'board',
+          board: board
+          user: request.session
+          loglevel: request.param 'loglevel'
     catch error
       return @throw500 response, error
 
   destroy: (request, response) =>
-    board = Board.sync.findById request.params.id
-    board.sync.remove() if board?
-    response.redirect '/'
+    redirect = () ->
+      response.redirect "/"
+
+    Board.findById request.params.id, (err, board) ->
+      throw err if err
+      if board
+        board.remove (err) ->
+          throw err if err
+          redirect()
+      else
+        redirect()
 
   build: (name, creator, done) =>
     createBoard = (next) ->
