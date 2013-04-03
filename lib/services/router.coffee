@@ -40,6 +40,10 @@ class Router
 
     @app.get '/oauth/twitter', sessionsController.oauthTwitter
     @app.get '/oauth/twitter/callback', sessionsController.callbackTwitter
+    @app.get '/oauth/facebook', sessionsController.oauthFacebook
+    @app.get '/oauth/facebook/callback', sessionsController.callbackFacebook
+    @app.get '/oauth/google', sessionsController.oauthGoogle
+    @app.get '/oauth/google/callback', sessionsController.callbackGoogle
 
     boardsController = new BoardsController
     @app.get '/boards/:id', @protected, @createSocketNamespace, boardsController.show
@@ -68,7 +72,7 @@ class Router
       request.session.user_id = request.user.displayUsername()
       next()
     else
-      request.session.post_auth_url = request.url  if request.url.length > 2
+      request.session.post_auth_url = request.url
       response.redirect '/login'
 
   createSocketNamespace: (request, _, next) ->

@@ -4,7 +4,7 @@ BoardsController = require './boards'
 
 class HomeController extends ApplicationController
   index: (request, response) =>
-    return response.redirect request.session.post_auth_url if request.session?.post_auth_url?
+    return response.redirect request.session.post_auth_url if request.session?.post_auth_url?.length > 1
     try
       user_id = request.session.user_id
       Board.createdBy user_id, (err, createdBoards)->
