@@ -37,8 +37,8 @@ class Router
     sessionsController = new SessionsController
     @app.get '/login', sessionsController.new
     @app.get '/logout', sessionsController.destroy
-    @app.get '/login/twitter', sessionsController.oauthTwitter
-    @app.get '/auth/twitter_callback', sessionsController.callbackTwitter
+    @app.get '/oauth/twitter', sessionsController.oauthTwitter
+    @app.get '/oauth/twitter/callback', sessionsController.callbackTwitter
 
     boardsController = new BoardsController
     @app.get '/boards/:id', @protected, @createSocketNamespace, boardsController.show
