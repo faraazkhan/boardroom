@@ -1,4 +1,3 @@
-require 'fibrous'
 Sockets = require '../services/sockets'
 ApplicationController = require './application'
 Board = require '../models/board'

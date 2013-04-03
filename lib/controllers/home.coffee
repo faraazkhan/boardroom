@@ -1,10 +1,10 @@
-require 'fibrous'
 ApplicationController = require './application'
 Board = require './../models/board'
 BoardsController = require './boards'
 
 class HomeController extends ApplicationController
   index: (request, response) =>
+    return response.redirect request.session.post_auth_url if request.session?.post_auth_url?
     try
       user_id = request.session.user_id
       Board.createdBy user_id, (err, createdBoards)->
