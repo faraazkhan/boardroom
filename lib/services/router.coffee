@@ -23,31 +23,27 @@ class Router
       @app.use pipeline.middleware
       @app.use express.bodyParser()
       @app.use express.static "#{__dirname}/../../public"
-      @app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889',
-                       session_key: 'boardroom')
-      @app.use fibrous.middleware
+      @app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889', session_key: 'boardroom')
       @app.use @catchPathErrors
-
       @app.use passport.initialize()
       @app.use passport.session()
 
     homeController = new HomeController
-    @app.get '/', @authenticate, homeController.index
+    @app.get '/', @protected, homeController.index
 
     contentsController = new ContentsController
-    @app.get '/styles', @authenticate, contentsController.styles
+    @app.get '/styles', @protected, contentsController.styles
 
     sessionsController = new SessionsController
     @app.get '/login', sessionsController.new
-    @app.post '/login', sessionsController.create
     @app.get '/logout', sessionsController.destroy
     @app.get '/login/twitter', sessionsController.oauthTwitter
     @app.get '/auth/twitter_callback', sessionsController.callbackTwitter
 
     boardsController = new BoardsController
-    @app.get '/boards/:id', @authenticate, @createSocketNamespace, boardsController.show
-    @app.post '/boards/:id', @authenticate, boardsController.destroy
-    @app.post '/boards', @authenticate, boardsController.create
+    @app.get '/boards/:id', @protected, @createSocketNamespace, boardsController.show
+    @app.post '/boards/:id', @protected, boardsController.destroy
+    @app.post '/boards', @protected, boardsController.create
 
     usersController = new UsersController
     @app.get '/user/avatar/:user_id', usersController.avatar
@@ -65,10 +61,10 @@ class Router
     else
       next()
 
-  authenticate: (request, response, next) ->
+  protected: (request, response, next) ->
     request.session ?= {}
-    if request.user?.twitterProfile()?
-      request.session.user_id = '@' + request.user.twitterProfile().username
+    if request.user?
+      request.session.user_id = request.user.displayUsername()
       next()
     else
       request.session.post_auth_url = request.url
