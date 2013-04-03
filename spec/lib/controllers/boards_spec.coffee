@@ -36,49 +36,41 @@ describe 'BoardsController', ->
       async.series [ makeRequest, countBoards, findDefaultBoard ], (err, result)->
         done()
 
-  #describe '#show', ->
-    #beforeEach ->
-      #@router = new LoggedInRouter
+  describe '#show', ->
+    beforeEach =>
+      @router = new LoggedInRouter
 
-    #describe 'given an existing board id', ->
-      #beforeEach ->
-        #@board = Factory.sync 'board'
-        #@id = @board.id
+    describe 'given an existing board id', =>
+      beforeEach (done) =>
+        Factory "board", (err, board) =>
+          @id = board.id
+          done()
 
-      #it 'returns the board page', ->
-        #response = request(@router.app)
-          #.get("/boards/#{@id}")
-          #.sync
-          #.end()
-        #expect(response.statusCode).toBe(200)
+      it 'returns the board page', (done) =>
+        response = request(@router.app)
+          .get("/boards/#{@id}")
+          .end (req, res) ->
+            expect(res.statusCode).toBe(200)
+            done()
 
-    #describe 'given an unknown board id', ->
-      #beforeEach ->
-        #mongoose = require 'mongoose'
-        #@id = new mongoose.Types.ObjectId
+  describe '#destroy', ->
 
-      #it 'returns a 404 code', ->
-        #response = request(@router.app)
-          #.get("/boards/#{@id}")
-          #.sync
-          #.end()
-        #expect(response.statusCode).toBe(404)
+    beforeEach (done) =>
+      @router = new LoggedInRouter
+      Factory "board", (err, board) =>
+        @board = board
+        done()
 
-  #describe '#destroy', ->
-    #beforeEach  ->
-      #@router = new LoggedInRouter
-      #@board = Factory.sync 'board'
-
-    #it 'deletes the board', ->
-      #response = request(@router.app)
-        #.post("/boards/#{@board.id}")
-        #.sync
-        #.end()
-      #expect(response.redirect).toBeTruthy()
-      #redirect = url.parse response.headers.location
-      #expect(redirect.pathname).toEqual '/'
-      #board = Board.sync.findById @board.id
-      #expect(board).toBeNull()
+    it 'deletes the board', (done) =>
+      request(@router.app)
+        .post("/boards/#{@board.id}")
+        .end (err, response) =>
+          expect(response.redirect).toBeTruthy()
+          redirect = url.parse response.headers.location
+          expect(redirect.pathname).toEqual '/'
+          Board.findById @board.id, (err, board) ->
+            expect(board).toBeNull()
+            done()
 
   #describe '#build', ->
     #beforeEach ->
