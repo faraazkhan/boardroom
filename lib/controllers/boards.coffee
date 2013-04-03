@@ -5,11 +5,12 @@ Board = require '../models/board'
 Group = require '../models/group'
 Card = require '../models/card'
 util = require 'util'
+async = require 'async'
 
 class BoardsController extends ApplicationController
   create: (request, response) =>
-    board = @build(request.body.name, request.session.user_id)
-    response.redirect "/boards/#{board.id}"
+    @build request.body.name, request.session.user_id, (board) ->
+      response.redirect "/boards/#{board.id}"
 
   show: (request, response) =>
     try
@@ -32,18 +33,28 @@ class BoardsController extends ApplicationController
     board.sync.remove() if board?
     response.redirect '/'
 
-  build: (name, creator) =>
-    board = new Board name: name, creator: creator
-    board.sync.save()
+  build: (name, creator, done) =>
+    createBoard = (next) ->
+      board = new Board name: name, creator: creator
+      board.save (err) ->
+        throw err if err
+        next(null, board)
 
-    group = new Group { boardId: board.id, x: 500, y: 250, z: 1 }
-    group.sync.save()
+    createGroup = (board, next) ->
+      group = new Group { boardId: board.id, x: 500, y: 250, z: 1 }
+      group.save (err) ->
+        throw err if err
+        next(null, board, group)
 
-    authors = ['@carbonfive']
-    text = 'Welcome to your virtual whiteboard!\n\n1. Invite others to participate by copying the url or clicking on the link icon in the top right corner.\n\n2. Double click anywhere on the board to create a new note.\n\n3. Drag notes onto one another to create a group.\n\n'
-    card = new Card { groupId: group.id, creator: creator, authors: authors, text: text }
-    card.sync.save()
+    createCard = (board, group, next) ->
+      authors = ['@carbonfive']
+      text = 'Welcome to your virtual whiteboard!\n\n1. Invite others to participate by copying the url or clicking on the link icon in the top right corner.\n\n2. Double click anywhere on the board to create a new note.\n\n3. Drag notes onto one another to create a group.\n\n'
+      card = new Card { groupId: group.id, creator: creator, authors: authors, text: text }
+      card.save (err) ->
+        throw err if err
+        next(null, board)
 
-    board
+    async.waterfall [createBoard, createGroup, createCard], (err, board) ->
+      done(board)
 
 module.exports = BoardsController

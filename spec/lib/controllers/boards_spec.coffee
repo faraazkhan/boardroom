@@ -72,26 +72,38 @@ describe 'BoardsController', ->
             expect(board).toBeNull()
             done()
 
-  #describe '#build', ->
-    #beforeEach ->
-      #@name = 'name-1'
-      #@creator = 'board-creator-1'
-      #boardsController = new BoardsController
-      #boardsController.build @name, @creator
+  describe '#build', ->
+    beforeEach (done) =>
+      @name = 'name-1'
+      @creator = 'board-creator-1'
+      boardsController = new BoardsController
+      boardsController.build @name, @creator, (board) ->
+        done()
 
-    #it 'creates a new board', ->
-      #count = Board.sync.count()
-      #expect(count).toEqual 1
+    it 'creates a new board', (done) =>
+      countBoards = (next) ->
+        Board.count (err, count) =>
+          expect(count).toEqual 1
+          next(null)
 
-      #board = Board.sync.findOne {}
-      #board = Board.sync.findById board.id
-      #board = board.toObject getters: true
-      #expect(board.name).toEqual @name
-      #expect(board.creator).toEqual @creator
-      #expect(board.groups[0].cards.length).toEqual 1
+      findFirstBoard = (next) ->
+        Board.findOne {}, (err, board) =>
+          next(null, board.id)
 
-      #card = board.groups[0].cards[0]
-      #expect(card.creator).toEqual @creator
-      #expect(card.authors[0]).toEqual '@carbonfive'
-      #expect(card.text).toContain 'Welcome to your virtual whiteboard!'
+      findBoardById = (id, next) =>
+        Board.findById id, (err, board) =>
+          board = board.toObject getters: true
+          next(null, board)
 
+      assertOwnership = (board, next) =>
+        expect(board.name).toEqual @name
+        expect(board.creator).toEqual @creator
+        expect(board.groups[0].cards.length).toEqual 1
+
+        card = board.groups[0].cards[0]
+        expect(card.creator).toEqual @creator
+        expect(card.authors[0]).toEqual '@carbonfive'
+        expect(card.text).toContain 'Welcome to your virtual whiteboard!'
+        next(null)
+
+      async.waterfall [ countBoards, findFirstBoard, findBoardById, assertOwnership ], done
