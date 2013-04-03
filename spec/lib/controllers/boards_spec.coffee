@@ -75,7 +75,7 @@ describe 'BoardsController', ->
       @name = 'name-1'
       @creator = 'board-creator-1'
       boardsController = new BoardsController
-      boardsController.build @name, @creator
+      boardsController.build @name, @creator, (err, board)->
 
     it 'creates a new board', ->
       count = Board.sync.count()
