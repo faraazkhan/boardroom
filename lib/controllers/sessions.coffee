@@ -19,10 +19,11 @@ oauthFacebookCallbackFunctor = (accessToken, refreshToken, profile, done) ->
   AuthUser.signIn profile, done
 
 oauthGoogleCallbackFunctor = (identifier, profile, done) ->
-  profile.providerId = profile.id
+  profile.provider = 'google'
+  profile.providerId = identifier
+  profile.username = profile.emails?[0]?.value
   delete profile.id
   AuthUser.signIn profile, done
-
 
 twitterSecret =
   consumerKey: process.env.TWITTER_KEY
