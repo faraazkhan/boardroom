@@ -37,6 +37,7 @@ class Router
     sessionsController = new SessionsController
     @app.get '/login', sessionsController.new
     @app.get '/logout', sessionsController.destroy
+
     @app.get '/oauth/twitter', sessionsController.oauthTwitter
     @app.get '/oauth/twitter/callback', sessionsController.callbackTwitter
 
@@ -67,7 +68,7 @@ class Router
       request.session.user_id = request.user.displayUsername()
       next()
     else
-      request.session.post_auth_url = request.url
+      request.session.post_auth_url = request.url  if request.url.length > 2
       response.redirect '/login'
 
   createSocketNamespace: (request, _, next) ->
