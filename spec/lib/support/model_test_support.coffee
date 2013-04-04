@@ -8,6 +8,7 @@ Card = require "#{lib}/models/card"
 User = require "#{lib}/models/user"
 
 Factory = require "#{speclib}/support/factories"
+async = require 'async'
 
 timeout = null
 finalizers = []
@@ -28,4 +29,4 @@ beforeEach (next)->
 afterEach ->
   timeout = setTimeout afterAll, 100
 
-module.exports = { finalizers, Board, Group, Card, User, Factory }
+module.exports = { finalizers, Board, Group, Card, User, Factory, async }

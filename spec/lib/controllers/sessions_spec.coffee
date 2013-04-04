@@ -37,7 +37,6 @@ describe 'SessionsController', ->
           .post('/login')
           .send({user_id: 'board-creator-1'})
           .end (request, response) ->
-            console.log response.redirect
             expect(response.redirect).toBeTruthy()
 
             Board.count (err, count) ->

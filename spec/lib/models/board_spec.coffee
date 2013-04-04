@@ -1,62 +1,95 @@
-{ Factory, Board, Group, Card } = require "../support/model_test_support"
+{ Factory, Board, Group, Card, async } = require "../support/model_test_support"
 
 describe 'board.Board', ->
   describe '.createdBy', ->
-    beforeEach ->
-      Factory.sync.createBundle()
+    beforeEach (done) ->
+      Factory.createBundle done
 
-    it 'finds boards I created', ->
-      boards = Board.sync.createdBy 'board-creator-1'
-      expect(boards.length).toEqual 1
-      expect(boards[0].name).toEqual 'board1'
-      expect(boards[0].groups.length).toEqual 1
-      expect(boards[0].groups[0].cards.length).toEqual 1
+    it 'finds boards I created', (done) ->
+      Board.createdBy 'board-creator-1', (err, boards) ->
+        expect(boards.length).toEqual 1
+        expect(boards[0].name).toEqual 'board1'
+        expect(boards[0].groups.length).toEqual 1
+        expect(boards[0].groups[0].cards.length).toEqual 1
+        done()
 
   describe '.collaboratedBy', ->
-    beforeEach ->
-      Factory.sync.createBundle()
+    beforeEach (done) ->
+      Factory.createBundle done
 
-    it 'finds boards i collaborated on', ->
-      boards = Board.sync.collaboratedBy 'board-creator-1'
-      expect(boards.length).toEqual 2
-      names = (board.name for board in boards)
-      expect(names[0]).toEqual 'board2'
-      expect(names[1]).toEqual 'board3'
+    it 'finds boards i collaborated on', (done) ->
+      Board.collaboratedBy 'board-creator-1', (err, boards) ->
+        expect(boards.length).toEqual 2
+        names = (board.name for board in boards)
+        expect(names[0]).toEqual 'board2'
+        expect(names[1]).toEqual 'board3'
+        done()
 
   describe '#lastUpdated', ->
-    beforeEach ->
-      @board = Factory.sync 'board'
-      @group = Factory.sync 'group', boardId: @board.id
-      @card = Factory.sync 'card', groupId: @group.id
+    beforeEach (done) =>
 
-    it 'returns last updated of cards', ->
-      @card.sync.save()
-      board = Board.sync.findById @board.id
-      expect(board.lastUpdated().getTime()).toEqual @card.updated.getTime()
+      createBoard = (done) =>
+        Factory "board", (err, board) =>
+          @board = board
+          done()
 
-    it 'returns last updated of board', ->
-      @board.sync.save()
-      board = Board.sync.findById @board.id
-      expect(board.lastUpdated().getTime()).toEqual @board.updated.getTime()
+      createGroup = (done) =>
+        Factory "group", boardId: @board.id, (err, group) =>
+          @group = group
+          done()
+
+      createCard = (done) =>
+        Factory "card", groupId: @group.id, (err, card) =>
+          @card = card
+          done()
+
+      async.series [createBoard, createGroup, createCard], done
+
+    it 'returns last updated of cards', (done) =>
+      @card.save (err) =>
+        Board.findById @board.id, (err, board) =>
+          expect(board.lastUpdated().getTime()).toEqual @card.updated.getTime()
+          done()
+
+    it 'returns last updated of board', (done) =>
+      @board.save (err) =>
+        Board.findById @board.id, (err, board) =>
+          expect(board.lastUpdated().getTime()).toEqual @board.updated.getTime()
+          done()
 
   describe '#remove', ->
-    beforeEach ->
-      @board = Factory.sync 'board'
-      @group = Factory.sync 'group', boardId: @board.id
-      Factory.sync 'card', groupId: @group.id
-      Factory.sync 'card', groupId: @group.id
+    beforeEach (done) =>
+      createBoard = (done) =>
+        Factory "board", (err, board) =>
+          @board = board
+          done()
 
-    it 'removes the board', ->
-      @board.sync.remove()
-      count = Board.sync.count {}
-      expect(count).toEqual 0
+      createGroup = (done) =>
+        Factory "group", boardId: @board.id, (err, group) =>
+          @group = group
+          done()
 
-    it "removes the board's groups", ->
-      @board.sync.remove()
-      count = Group.sync.count {}
-      expect(count).toEqual 0
+      createCard = (done) =>
+        Factory "card", groupId: @group.id, (err, card) =>
+          @card = card
+          done()
 
-    it "removes the board's cards", ->
-      @board.sync.remove()
-      count = Card.sync.count {}
-      expect(count).toEqual 0
+      async.series [ createBoard, createGroup, createCard, createCard ], done
+
+    it 'removes the board', (done) =>
+      @board.remove (err) ->
+        count = Board.count {}, (err, count) ->
+          expect(count).toEqual 0
+          done()
+
+    it "removes the board's groups", (done) =>
+      @board.remove (err) ->
+        count = Group.count {}, (err, count) ->
+          expect(count).toEqual 0
+          done()
+
+    it "removes the board's cards", (done) =>
+      @board.remove (err) ->
+        count = Card.count {}, (err, count) ->
+          expect(count).toEqual 0
+          done()
