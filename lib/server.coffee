@@ -1,5 +1,4 @@
 cluster = require 'cluster'
-cpus = require('os').cpus().length
 
 logger = require './services/logger'
 logger.setLevel 'info'
@@ -12,14 +11,7 @@ if cluster.isMaster
   migrator.migrate (error) ->
     throw error if error?
 
-    # back out of clustering until i figure what is breaking on acceptance -mike
-    # ------------
-    Router = require './services/router'
-    router = new Router
-    router.start()
-    return
-    # ------------
-
+    cpus = require('os').cpus().length
     for n in [1..cpus]
       worker = cluster.fork()
       worker.ident = -> "Worker #{@id} (pid #{@process.pid})"
@@ -38,6 +30,11 @@ if cluster.isMaster
       cluster.fork()
 
 else
+  pipeline = require './services/asset_pipeline'
+  pipeline.precompile
+    js: [ 'login', 'index', 'application' ]
+    css: [ 'application' ]
+
   Router = require './services/router'
   router = new Router
   router.start()
