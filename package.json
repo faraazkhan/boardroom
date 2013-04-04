@@ -36,7 +36,6 @@
     "superagent": "latest",
     "supertest": "latest",
     "jsdom": "latest",
-    "socket.io-client": "latest",
-    "fibrous": "0.3"
+    "socket.io-client": "latest"
   }
 }
