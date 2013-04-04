@@ -2,20 +2,24 @@
 
 describe 'card.Card', ->
   describe '.findByGroupId', ->
-    beforeEach ->
-      @group = Factory.sync 'group'
-      Factory.sync 'card', groupId: @group.id
+    beforeEach (next) =>
+      Factory 'group', (err, @group) =>
+        Factory 'card', groupId: @group.id, ->
+          next()
 
-    it 'finds all cards for the given group', ->
-      cards = Card.sync.findByGroupId @group.id
-      expect(cards.length).toEqual 1
+    it 'finds all cards for the given group', (done) =>
+      Card.findByGroupId @group.id, (err, cards) ->
+        expect(cards.length).toEqual 1
+        done()
 
   describe '#updateAttributes', ->
     describe 'by default', ->
-      beforeEach ->
-        @card = Factory.sync 'card'
+      beforeEach (done) =>
+        Factory 'card', (err, card) =>
+          @card = card
+          done()
 
-      it 'updates its attributes', ->
+      it 'updates its attributes', (done) =>
         numAuthors = @card.authors.length
         numPlusAuthors = @card.plusAuthors.length
         attributes =
@@ -24,9 +28,11 @@ describe 'card.Card', ->
           deleted: ! @card.deleted
           authors: [ @card.authors... ,  'author1' ]
           plusAuthors: [ @card.plusAuthors... , 'plusAuthor1']
-        @card.sync.updateAttributes attributes
-        card = Card.sync.findById @card.id
-        expect(card.text).toEqual attributes.text
-        expect(card.colorIndex).toEqual attributes.colorIndex
-        expect(card.authors.length).toEqual numAuthors+1
-        expect(card.plusAuthors.length).toEqual numPlusAuthors+1
+
+        @card.updateAttributes attributes, (err) =>
+          Card.findById @card.id, (err, card) ->
+            expect(card.text).toEqual attributes.text
+            expect(card.colorIndex).toEqual attributes.colorIndex
+            expect(card.authors.length).toEqual numAuthors+1
+            expect(card.plusAuthors.length).toEqual numPlusAuthors+1
+            done()

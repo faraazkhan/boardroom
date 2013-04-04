@@ -1,4 +1,4 @@
-{ Factory, Board, LoggedInRouter, request, jsdom, url, $ } =
+{ Factory, Board, LoggedInRouter, request, jsdom, url, $, async } =
   require '../support/controller_test_support'
 
 BoardsController = require '../../../lib/controllers/boards'
@@ -9,87 +9,100 @@ describe 'BoardsController', ->
       @router = new LoggedInRouter
       @name = 'name-1'
 
-    it 'creates a default board and redirects to it', ->
-      response = request(@router.app)
-        .post('/boards')
-        .send(name: @name)
-        .sync
-        .end()
+    it 'creates a default board and redirects to it', (done)->
+      response = null
 
-      expect(response.redirect).toBeTruthy()
+      makeRequest = (next)=>
+        request(@router.app)
+          .post('/boards')
+          .send(name: @name)
+          .end (req, res)->
+            response = res
+            expect(res.redirect).toBeTruthy()
+            next()
 
-      boardCount = Board.sync.count()
-      expect(boardCount).toEqual 1
+      countBoards = (next)=>
+        Board.count {}, (err, count)->
+          expect(count).toEqual 1
+          next()
 
-      board = Board.sync.findOne { creator: @router.user }
-      redirect = url.parse response.headers.location
-      expect(redirect.path).toEqual "/boards/#{board.id}"
-      expect(board.name).toEqual @name
+      findDefaultBoard = (next)=>
+        Board.findOne { creator: @router.user }, (err, board)=>
+          redirect = url.parse response.headers.location
+          expect(redirect.path).toEqual "/boards/#{board.id}"
+          expect(board.name).toEqual @name
+          next()
+
+      async.series [ makeRequest, countBoards, findDefaultBoard ], done
 
   describe '#show', ->
-    beforeEach ->
+    beforeEach =>
       @router = new LoggedInRouter
 
-    describe 'given an existing board id', ->
-      beforeEach ->
-        @board = Factory.sync 'board'
-        @id = @board.id
+    describe 'given an existing board id', =>
+      beforeEach (done) =>
+        Factory "board", (err, board) =>
+          @id = board.id
+          done()
 
-      it 'returns the board page', ->
+      it 'returns the board page', (done) =>
         response = request(@router.app)
           .get("/boards/#{@id}")
-          .sync
-          .end()
-        expect(response.statusCode).toBe(200)
-
-    describe 'given an unknown board id', ->
-      beforeEach ->
-        mongoose = require 'mongoose'
-        @id = new mongoose.Types.ObjectId
-
-      it 'returns a 404 code', ->
-        response = request(@router.app)
-          .get("/boards/#{@id}")
-          .sync
-          .end()
-        expect(response.statusCode).toBe(404)
+          .end (req, res) ->
+            expect(res.statusCode).toBe(200)
+            done()
 
   describe '#destroy', ->
-    beforeEach  ->
-      @router = new LoggedInRouter
-      @board = Factory.sync 'board'
 
-    it 'deletes the board', ->
-      response = request(@router.app)
+    beforeEach (done) =>
+      @router = new LoggedInRouter
+      Factory "board", (err, board) =>
+        @board = board
+        done()
+
+    it 'deletes the board', (done) =>
+      request(@router.app)
         .post("/boards/#{@board.id}")
-        .sync
-        .end()
-      expect(response.redirect).toBeTruthy()
-      redirect = url.parse response.headers.location
-      expect(redirect.pathname).toEqual '/'
-      board = Board.sync.findById @board.id
-      expect(board).toBeNull()
+        .end (err, response) =>
+          expect(response.redirect).toBeTruthy()
+          redirect = url.parse response.headers.location
+          expect(redirect.pathname).toEqual '/'
+          Board.findById @board.id, (err, board) ->
+            expect(board).toBeNull()
+            done()
 
   describe '#build', ->
-    beforeEach ->
+    beforeEach (done) =>
       @name = 'name-1'
       @creator = 'board-creator-1'
       boardsController = new BoardsController
-      boardsController.build @name, @creator
+      boardsController.build @name, @creator, (board) ->
+        done()
 
-    it 'creates a new board', ->
-      count = Board.sync.count()
-      expect(count).toEqual 1
+    it 'creates a new board', (done) =>
+      countBoards = (next) ->
+        Board.count (err, count) =>
+          expect(count).toEqual 1
+          next(null)
 
-      board = Board.sync.findOne {}
-      board = Board.sync.findById board.id
-      board = board.toObject getters: true
-      expect(board.name).toEqual @name
-      expect(board.creator).toEqual @creator
-      expect(board.groups[0].cards.length).toEqual 1
+      findFirstBoard = (next) ->
+        Board.findOne {}, (err, board) =>
+          next(null, board.id)
 
-      card = board.groups[0].cards[0]
-      expect(card.creator).toEqual @creator
-      expect(card.authors[0]).toEqual '@carbonfive'
-      expect(card.text).toContain 'Welcome to your virtual whiteboard!'
+      findBoardById = (id, next) =>
+        Board.findById id, (err, board) =>
+          board = board.toObject getters: true
+          next(null, board)
 
+      assertOwnership = (board, next) =>
+        expect(board.name).toEqual @name
+        expect(board.creator).toEqual @creator
+        expect(board.groups[0].cards.length).toEqual 1
+
+        card = board.groups[0].cards[0]
+        expect(card.creator).toEqual @creator
+        expect(card.authors[0]).toEqual '@carbonfive'
+        expect(card.text).toContain 'Welcome to your virtual whiteboard!'
+        next(null)
+
+      async.waterfall [ countBoards, findFirstBoard, findBoardById, assertOwnership ], done

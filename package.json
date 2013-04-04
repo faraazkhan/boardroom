@@ -11,6 +11,7 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "async": "0.2.6",
     "jquery": "1.8",
     "express": "3.1.x",
     "asset-rack": "2",
@@ -28,13 +29,13 @@
     "underscore": "latest"
   },
   "devDependencies": {
+    "async": "0.2.6",
     "jasmine-node": "1.5.x",
     "sinon": "1.4",
     "factory-lady": "git://github.com/carbonfive/factory-lady.git",
     "superagent": "latest",
     "supertest": "latest",
     "jsdom": "latest",
-    "socket.io-client": "latest",
-    "fibrous": "0.3"
+    "socket.io-client": "latest"
   }
 }

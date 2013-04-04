@@ -1,6 +1,5 @@
 lib = "#{__dirname}/../../../lib"
 speclib = "#{__dirname}/.."
-require "#{speclib}/support/spec_helper"
 
 { mongoose } = require "#{lib}/models/db"
 Board = require "#{lib}/models/board"
@@ -9,6 +8,7 @@ Card = require "#{lib}/models/card"
 User = require "#{lib}/models/user"
 
 Factory = require "#{speclib}/support/factories"
+async = require 'async'
 
 timeout = null
 finalizers = []
@@ -19,13 +19,14 @@ finalizers.push ->
 afterAll = ->
   f() for f in finalizers
 
-beforeEach ->
+beforeEach (next)->
   clearTimeout timeout if timeout?
-  Board.sync.remove()
-  Group.sync.remove()
-  Card.sync.remove()
+  Board.remove (err)->
+    Group.remove (err)->
+      Card.remove (err)->
+        next()
 
 afterEach ->
   timeout = setTimeout afterAll, 100
 
-module.exports = { finalizers, Board, Group, Card, User, Factory }
+module.exports = { finalizers, Board, Group, Card, User, Factory, async }
