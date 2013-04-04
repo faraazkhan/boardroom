@@ -4,29 +4,29 @@
 describe 'HomeController', ->
   describe '#index', ->
     describe 'when logged in', ->
-      beforeEach ->
+      beforeEach (done) =>
         @router = new LoggedInRouter 'board-creator-1'
-        Factory.sync.createBundle()
+        Factory.createBundle done
 
-      it 'shows my boards', ->
-        response = request(@router.app)
+      it 'shows my boards', (done) =>
+        request(@router.app)
           .get('/')
-          .sync
-          .end()
-        expect(response.ok).toBeTruthy()
-        expect($('.board-list', response.text).length).toEqual 1
-        expect($('.board-list ul.created li', response.text).length).toEqual 1
-        expect($('.board-list ul.collaborated li', response.text).length).toEqual 2
+          .end (req, res) ->
+            expect(res.ok).toBeTruthy()
+            expect($('.board-list', res.text).length).toEqual 1
+            expect($('.board-list ul.created li', res.text).length).toEqual 1
+            expect($('.board-list ul.collaborated li', res.text).length).toEqual 2
+            done()
 
     describe 'when logged out', ->
-      beforeEach ->
+      beforeEach =>
         @router = new LoggedOutRouter
 
-      it 'redirects to the login page', ->
-        response = request(@router.app)
+      it 'redirects to the login page', (done) =>
+        request(@router.app)
           .get('/')
-          .sync
-          .end()
-        expect(response.redirects).toBeTruthy()
-        redirect = url.parse response.headers.location
-        expect(redirect.pathname).toEqual '/login'
+          .end (req, res) ->
+            expect(res.redirects).toBeTruthy()
+            redirect = url.parse res.headers.location
+            expect(redirect.pathname).toEqual '/login'
+            done()
