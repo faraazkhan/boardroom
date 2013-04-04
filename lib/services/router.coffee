@@ -1,6 +1,5 @@
 express = require 'express'
 cookies = require 'cookie-sessions'
-fibrous = require 'fibrous'
 logger = require './logger'
 pipeline = require './asset_pipeline'
 Sockets = require './sockets'
@@ -23,7 +22,6 @@ class Router
       @app.use express.static "#{__dirname}/../../public"
       @app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889',
                        session_key: 'boardroom')
-      @app.use fibrous.middleware
       @app.use @catchPathErrors
 
     homeController = new HomeController
