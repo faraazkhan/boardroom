@@ -19,7 +19,7 @@ for board in boards
 
     .info
       a.title(href='/boards/' + board._id) #{board.name}
-      img.creator.avatar(src='/user/avatar/#{encodeURIComponent(board.creator)}', title='#{board.creator}')
+      img.creator.avatar(src=user.avatar(), title=board.creator)
       .date
         p
           | updated on&nbsp;

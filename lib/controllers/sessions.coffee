@@ -61,8 +61,12 @@ passport.use googleStrategy
 
 loginFunctorForProvider = (provider)->
   (request, response, next)->
-    successRedirect = request.session?.post_auth_url ? '/'
     failureRedirect = '/login'
+    successRedirect = '/'
+    if request.session?.got2URL?
+      successRedirect = request.session?.got2URL
+      delete request.session.got2URL
+
     authenticateFunctor = passport.authenticate(provider, { successRedirect, failureRedirect })
     authenticateFunctor(request,response,next)
 

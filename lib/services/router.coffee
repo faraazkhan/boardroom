@@ -72,7 +72,7 @@ class Router
       request.session.user_id = request.user.alias()
       next()
     else
-      request.session.post_auth_url = request.url
+      request.session.got2URL = request.url
       response.redirect '/login'
 
   createSocketNamespace: (request, _, next) ->
