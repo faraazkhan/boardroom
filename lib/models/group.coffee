@@ -28,8 +28,8 @@ GroupSchema.statics =
   findByBoardId: (boardId, callback) ->
     @find { boardId }, callback
 
-  collaboratedBy: (user, callback) ->
-    Card.find { authors: user }, (error, cards) =>
+  collaboratedBy: (username, callback) ->
+    Card.find { authors: username }, (error, cards) =>
       groupIds = ( card.groupId for card in cards when card.groupId? )
       @find { _id: { $in: groupIds } }, null, { sort: 'name' }, callback
 

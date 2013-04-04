@@ -11,11 +11,13 @@ GoogleStrategy   = require('passport-google').Strategy
 oauthTwitterCallbackFunctor = (token, tokenSecret, profile, done) ->
   profile.providerId = profile.id
   delete profile.id
+  profile.avatar = profile._json?.profile_image_url_https
   AuthUser.signIn profile, done
 
 oauthFacebookCallbackFunctor = (accessToken, refreshToken, profile, done) ->
   profile.providerId = profile.id
   delete profile.id
+  profile.avatar = "https://graph.facebook.com/#{profile.providerId}/picture"
   AuthUser.signIn profile, done
 
 oauthGoogleCallbackFunctor = (identifier, profile, done) ->

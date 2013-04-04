@@ -69,7 +69,7 @@ class Router
   protected: (request, response, next) ->
     request.session ?= {}
     if request.user?
-      request.session.user_id = request.user.displayUsername()
+      request.session.user_id = request.user.alias()
       next()
     else
       request.session.post_auth_url = request.url

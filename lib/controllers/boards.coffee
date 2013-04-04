@@ -7,7 +7,7 @@ util = require 'util'
 
 class BoardsController extends ApplicationController
   create: (request, response) =>
-    @build request.body.name, request.session.user_id, (err, board)->
+    @build request.body.name, request.user, request.session.user_id, (err, board)->
       response.redirect "/boards/#{board.id}"
 
   show: (request, response) =>
@@ -21,7 +21,7 @@ class BoardsController extends ApplicationController
         board.user_id = request.session.user_id
         response.render 'board',
           board: board
-          user: request.session
+          user: request.user
           loglevel: request.param 'loglevel'
     catch error
       return @throw500 response, error
@@ -34,8 +34,8 @@ class BoardsController extends ApplicationController
       else 
         response.redirect '/'
 
-  build: (name, creator, callback) =>
-    board = new Board name: name, creator: creator
+  build: (name, user, creator, callback) =>
+    board = new Board name: name, userId: user.id, creator: creator
     board.save (error, savedBoard) ->
       group = new Group { boardId: board.id, x: 500, y: 250, z: 1 }
       group.save (error, savedGroup)->

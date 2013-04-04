@@ -12,6 +12,7 @@ SocialProfileSchema = new mongoose.Schema
   provider : String
   username: String
   displayName: String
+  avatar: String
   emails: Array
   photos: Array
   name: {}
@@ -19,7 +20,6 @@ SocialProfileSchema = new mongoose.Schema
 
 SocialProfileSchema.methods =
   email:  -> @emails?[0]?.value
-  avatar: -> @photos?[0]?.value
 
 SocialProfile = mongoose.model 'SocialProfile', SocialProfileSchema
 
@@ -51,11 +51,11 @@ AuthUserSchema.statics =
     @findOne { 'socialProfiles.provider': provider , 'socialProfiles.providerId': providerId }, cb
 
 AuthUserSchema.methods =
-  email: -> @profile().email()
-  avatar: -> @profile().avatar()
-  username: -> @profile().username
-  displayName: -> @profile().displayName
-  displayUsername: -> 
+  email: -> @profile()?.email()
+  avatar: -> @profile()?.avatar
+  username: -> @profile()?.username
+  displayName: -> @profile()?.displayName
+  alias: -> 
     p = @profile()
     if PROVIDER_TWITTER is p.provider then "@" + p.username else p.username
   profile: -> @profileFor @loginStats?.lastProvider
@@ -83,11 +83,6 @@ AuthUserSchema.methods =
       lastLoginAt: new Date()
       lastProvider: providerProfile.provider
     @save callback
-
-  avatar: ->
-    currentProfile = profileFor @loginStats.lastLoginProvider
-    currentProfile ?= @twitterProfile() || @facebookProfile() || @googleProfile() || @emailProfile() || usernameProfile()
-    currentProfile?.avatar
 
 AuthUser = mongoose.model 'AuthUser', AuthUserSchema
 

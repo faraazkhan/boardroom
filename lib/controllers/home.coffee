@@ -6,20 +6,21 @@ class HomeController extends ApplicationController
   index: (request, response) =>
     return response.redirect request.session.post_auth_url if request.session?.post_auth_url?.length > 1
     try
-      user_id = request.session.user_id
-      Board.createdBy user_id, (err, createdBoards)->
+      userId = request.user.id
+      Board.findByUserId userId, (err, createdBoards)->
         createdBoards ?= []
-        Board.collaboratedBy user_id, (err, collaboratedBoards)->
+        Board.collaboratedBy request.session.user_id, (err, collaboratedBoards)->
           collaboratedBoards ?= []
           if (createdBoards.length + collaboratedBoards.length > 0)
             cmp = (a, b) -> a.name.toLowerCase().localeCompare b.name.toLowerCase()
             response.render 'index',
-              user: { user_id }
+              user: request.user
               created: createdBoards.sort cmp
               collaborated: collaboratedBoards.sort cmp
           else # automatically create the user's first board
             boardsController = new BoardsController
-            board = boardsController.build "#{user_id}'s board", user_id, (err, board)->
+            alias = request.user.alias()
+            board = boardsController.build "#{alias}'s board", request.user, alias, (err, board)->
               response.redirect "/boards/#{board.id}"
     catch error
       return @throw500 response, error
