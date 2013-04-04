@@ -2,14 +2,14 @@
   require '../support/controller_test_support'
 
 describe 'UsersController', ->
-  describe '#avatar', ->
-    beforeEach ->
+  describe '#avatar', =>
+    beforeEach =>
       @router = new LoggedOutRouter
 
-    it "redirects to the url for the handle's avatar", ->
-      response = request(@router.app)
+    it "redirects to the url for the handle's avatar", (done) =>
+      request(@router.app)
         .get("/user/avatar/#{encodeURIComponent '@handle'}")
-        .sync
-        .end()
-      expect(response.redirect).toBeTruthy()
-      expect(response.headers.location).toMatch /api.twitter.com/
+        .end (request, response) ->
+          expect(response.redirect).toBeTruthy()
+          expect(response.headers.location).toMatch /api.twitter.com/
+          done()

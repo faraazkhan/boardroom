@@ -1,6 +1,7 @@
 ApplicationController = require './application'
 BoardsController = require '../controllers/boards'
 Board = require '../models/board'
+async = require 'async'
 
 class SessionsController extends ApplicationController
   new: (request, response) ->
@@ -11,15 +12,26 @@ class SessionsController extends ApplicationController
     user_id = request.body.user_id
     request.session = user_id: user_id
 
-    createdBoards      = (Board.sync.createdBy user_id) || []
-    collaboratedBoards = (Board.sync.collaboratedBy user_id) || []
+    loadCreatedBoards = (done) ->
+      Board.createdBy user_id, (err, createdBoards) ->
+        throw err if err
+        done(null, createdBoards || [])
 
-    if (createdBoards.length + collaboratedBoards.length > 0) or redirect_url != '/'
-      response.redirect redirect_url
-    else
-      boardsController = new BoardsController
-      board = boardsController.build "#{user_id}'s board", user_id
-      response.redirect "/boards/#{board.id}"
+    loadCollaboratedBoards = (done) ->
+      Board.collaboratedBy user_id, (err, collaboratedBoards) ->
+        throw err if err
+        done(null, collaboratedBoards || [])
+
+    async.parallel
+      "created" : loadCreatedBoards
+      "collaborated" : loadCollaboratedBoards
+    , (err, boards) ->
+      if (boards.created.length + boards.collaborated.length > 0) or redirect_url != '/'
+        response.redirect redirect_url
+      else
+        boardsController = new BoardsController
+        boardsController.build "#{user_id}'s board", user_id, (board) ->
+          response.redirect "/boards/#{board.id}"
 
   destroy: (request, response) ->
     request.session = {}
