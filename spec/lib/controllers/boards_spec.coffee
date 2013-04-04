@@ -33,8 +33,7 @@ describe 'BoardsController', ->
           expect(board.name).toEqual @name
           next()
 
-      async.series [ makeRequest, countBoards, findDefaultBoard ], (err, result)->
-        done()
+      async.series [ makeRequest, countBoards, findDefaultBoard ], done
 
   describe '#show', ->
     beforeEach =>

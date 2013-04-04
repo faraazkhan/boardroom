@@ -43,7 +43,7 @@ describe 'board.Board', ->
           @card = card
           done()
 
-      async.series [createBoard, createGroup, createCard], done
+      async.series [ createBoard, createGroup, createCard ], done
 
     it 'returns last updated of cards', (done) =>
       @card.save (err) =>
