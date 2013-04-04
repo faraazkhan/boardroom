@@ -2,6 +2,7 @@ ApplicationController = require './application'
 BoardsController = require '../controllers/boards'
 Board = require '../models/board'
 AuthUser = require '../models/auth_user'
+crypto = require 'crypto'
 
 passport = require 'passport'
 TwitterStrategy  = require('passport-twitter').Strategy
@@ -9,12 +10,14 @@ FacebookStrategy = require('passport-facebook').Strategy
 GoogleStrategy   = require('passport-google').Strategy
 
 oauthTwitterCallbackFunctor = (token, tokenSecret, profile, done) ->
+  profile.provider = 'twitter'
   profile.providerId = profile.id
   delete profile.id
   profile.avatar = profile._json?.profile_image_url_https
   AuthUser.signIn profile, done
 
 oauthFacebookCallbackFunctor = (accessToken, refreshToken, profile, done) ->
+  profile.provider = 'facebook'
   profile.providerId = profile.id
   delete profile.id
   profile.avatar = "https://graph.facebook.com/#{profile.providerId}/picture"
@@ -23,8 +26,12 @@ oauthFacebookCallbackFunctor = (accessToken, refreshToken, profile, done) ->
 oauthGoogleCallbackFunctor = (identifier, profile, done) ->
   profile.provider = 'google'
   profile.providerId = identifier
-  profile.username = profile.emails?[0]?.value
   delete profile.id
+  emailAddress = profile.emails?[0]?.value
+  profile.username = emailAddress
+  md5 = crypto.createHash 'md5'
+  md5.update emailAddress
+  profile.avatar = "http://www.gravatar.com/avatar/#{md5.digest 'hex'}?d=retro"
   AuthUser.signIn profile, done
 
 twitterSecret =

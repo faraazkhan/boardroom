@@ -1,7 +1,5 @@
 { mongoose } = require './db'
 
-crypto = require 'crypto'
-
 PROVIDER_TWITTER = 'twitter'
 PROVIDER_FACEBOOK = 'facebook'
 PROVIDER_GOOGLE = 'google'
