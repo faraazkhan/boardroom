@@ -52,10 +52,12 @@ Deployment uses Capistrano. Acceptance is the default stage.
 
     brew update
     brew install mongodb
+    brew install redis
     brew install node
     npm install
     # start mongo. for instructions: brew info mongodb
-    npm start
+    # start redis. for instructions: brew info redis
+    node ./index.js
 
 Visit [localhost:7777](http://localhost:7777).
 
@@ -66,16 +68,19 @@ Visit [localhost:7777](http://localhost:7777).
 2. Install [MongoDB](http://www.mongodb.org/) with Homebrew:  
    `brew install mongodb`
 3. Follow homebrew's instructions to run Mongo. They're printed after installation; view them again with `brew info mongodb`.
-4. Install [Node.js](http://nodejs.org/) with Homebrew:  
+4. Install [Redis](http://redis.io/) with Homebrew:  
+   `brew install redis`
+5. Follow homebrew's instructions to run Redis. They're printed after installation; view them again with `brew info redis`.
+6. Install [Node.js](http://nodejs.org/) with Homebrew:  
    `brew install node`
-5. Install project dependencies using npm:  
+7. Install project dependencies using npm:  
    `npm install`
-6. Run Boardroom:  
-   `node index.js`
-7. Visit [localhost:7777](http://localhost:7777).
+8. Run Boardroom:  
+   `node ./index.js`
+9. Visit [localhost:7777](http://localhost:7777).
 
 ### Ubuntu / Debian
-Coming soon
+coming soon
 
 ## New to Mongo?
 
