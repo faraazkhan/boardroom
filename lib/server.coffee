@@ -3,6 +3,14 @@ cluster = require 'cluster'
 logger = require './services/logger'
 logger.setLevel 'info'
 
+# node.js clustering feature-flag
+doCluster = false
+
+start = ->
+  Router = require './services/router'
+  router = new Router
+  router.start()
+
 if cluster.isMaster
   logger.warn -> 'Starting Boardroom'
 
@@ -10,6 +18,10 @@ if cluster.isMaster
   migrator = new Migrator
   migrator.migrate (error) ->
     throw error if error?
+
+    unless doCluster
+      start { cluster: false }
+      return
 
     cpus = require('os').cpus().length
     for n in [1..cpus]
@@ -35,6 +47,4 @@ else
     js: [ 'login', 'index', 'application' ]
     css: [ 'application' ]
 
-  Router = require './services/router'
-  router = new Router
-  router.start()
+  start { cluster: true }

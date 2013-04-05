@@ -5,9 +5,6 @@ Board = require '../models/board'
 Group = require '../models/group'
 Card = require '../models/card'
 
-RedisStore = require 'socket.io/lib/stores/redis'
-redis      = require 'socket.io/node_modules/redis'
-
 class Sockets
   @boards: {}
 
@@ -42,12 +39,17 @@ class Sockets
 
     @boards[boardId] = @users
 
-  @start: (server) ->
+  @start: (server, opts) ->
     @io = sockets.listen server
     @io.set 'log level', 1
-    @io.set 'store', new RedisStore
-      redisPub: redis.createClient()
-      redisSub: redis.createClient()
-      redisClient: redis.createClient()
+
+    if opts.cluster?
+      RedisStore = require 'socket.io/lib/stores/redis'
+      redis      = require 'socket.io/node_modules/redis'
+
+      @io.set 'store', new RedisStore
+        redisPub: redis.createClient()
+        redisSub: redis.createClient()
+        redisClient: redis.createClient()
 
 module.exports = Sockets

@@ -10,7 +10,9 @@ BoardsController = require '../controllers/boards'
 UsersController = require '../controllers/users'
 
 class Router
-  constructor: ->
+  constructor: (@opts = {}) ->
+    @opts.cluster ?= false
+
     @app = express()
     @app.configure =>
       @app.use @redirectHandler
@@ -69,6 +71,6 @@ class Router
 
   start: ->
     server = @app.listen parseInt(process.env.PORT) || 7777
-    Sockets.start server
+    Sockets.start server, @opts
 
 module.exports = Router
