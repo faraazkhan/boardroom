@@ -18,6 +18,7 @@ finalizers.push ->
 
 afterAll = ->
   f() for f in finalizers
+  process.exit()
 
 beforeEach (next)->
   clearTimeout timeout if timeout?

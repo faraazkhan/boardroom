@@ -1,15 +1,16 @@
-{ Factory, Board, Card, LoggedOutRouter, LoggedInRouter, request, jsdom, url, $ } =
+{ Factory, Board, Card, describeController, jsdom, url, $ } =
   require '../support/controller_test_support'
 
-describe 'HomeController', ->
+describeController 'HomeController', (session) ->
   describe '#index', ->
     describe 'when logged in', ->
-      beforeEach (done) =>
-        @router = new LoggedInRouter 'board-creator-1'
+      beforeEach (done) ->
+        session.login 'board-creator-1'
+
         Factory.createBundle done
 
-      it 'shows my boards', (done) =>
-        request(@router.app)
+      it 'shows my boards', (done) ->
+        session.request()
           .get('/')
           .end (req, res) ->
             expect(res.ok).toBeTruthy()
@@ -19,11 +20,8 @@ describe 'HomeController', ->
             done()
 
     describe 'when logged out', ->
-      beforeEach =>
-        @router = new LoggedOutRouter
-
-      it 'redirects to the login page', (done) =>
-        request(@router.app)
+      it 'redirects to the login page', (done) ->
+        session.request()
           .get('/')
           .end (req, res) ->
             expect(res.redirects).toBeTruthy()

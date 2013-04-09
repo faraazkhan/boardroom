@@ -7,8 +7,8 @@ logger.setLevel 'info'
 doCluster = false
 
 start = ->
-  BoardroomApp = require './app'
-  app = new BoardroomApp
+  Boardroom = require './boardroom'
+  app = new Boardroom
   app.start()
 
 if cluster.isMaster

@@ -10,7 +10,7 @@ configure = (app) ->
 
   app.use pipeline.middleware
   app.use express.bodyParser()
-  app.use express.static "#{__dirname}/../../public"
+  app.use express.static "#{__dirname}/../public"
   app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889', session_key: 'boardroom')
   app.use catchPathErrors
 

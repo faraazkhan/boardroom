@@ -8,6 +8,10 @@ Card = require '../models/card'
 class Sockets
   @boards: {}
 
+  @middleware: (request, _, next) =>
+    @findOrCreateByBoardId request.params.id
+    next()
+
   @findOrCreateByBoardId: (boardId) ->
     unless @boards[boardId]
       @createBoard boardId

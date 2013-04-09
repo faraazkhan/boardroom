@@ -4,9 +4,8 @@ ContentsController = require './controllers/contents'
 SessionsController = require './controllers/sessions'
 BoardsController = require './controllers/boards'
 UsersController = require './controllers/users'
-authenticate = require './auth'
 
-addRouting = (app) ->
+addRouting = (app, authenticate, createSocketNamespace) ->
   homeController = new HomeController
   app.get '/', authenticate, homeController.index
 
@@ -26,8 +25,7 @@ addRouting = (app) ->
   usersController = new UsersController
   app.get '/user/avatar/:user_id', usersController.avatar
 
-createSocketNamespace = (request, _, next) ->
-  Sockets.findOrCreateByBoardId request.params.id
-  next()
+  app.get '/foo', (request, response) -> respone.send('foo')
+
 
 module.exports = addRouting
