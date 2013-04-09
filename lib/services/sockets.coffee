@@ -43,7 +43,7 @@ class Sockets
     @io = sockets.listen server
     @io.set 'log level', 1
 
-    if opts.cluster?
+    if opts?.cluster is true
       RedisStore = require 'socket.io/lib/stores/redis'
       redis      = require 'socket.io/node_modules/redis'
 

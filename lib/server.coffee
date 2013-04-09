@@ -7,9 +7,9 @@ logger.setLevel 'info'
 doCluster = false
 
 start = ->
-  Router = require './services/router'
-  router = new Router
-  router.start()
+  BoardroomApp = require './app'
+  app = new BoardroomApp
+  app.start()
 
 if cluster.isMaster
   logger.warn -> 'Starting Boardroom'
