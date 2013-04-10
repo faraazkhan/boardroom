@@ -25,7 +25,4 @@ addRouting = (app, authenticate, createSocketNamespace) ->
   usersController = new UsersController
   app.get '/user/avatar/:user_id', usersController.avatar
 
-  app.get '/foo', (request, response) -> respone.send('foo')
-
-
 module.exports = addRouting
