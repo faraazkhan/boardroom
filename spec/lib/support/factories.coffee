@@ -1,8 +1,10 @@
+Factory = require 'factory-lady'
+async = require "async"
+
 Board = require "#{__dirname}/../../../lib/models/board"
 Group = require "#{__dirname}/../../../lib/models/group"
 Card = require "#{__dirname}/../../../lib/models/card"
-Factory = require 'factory-lady'
-async = require "async"
+User = require "#{__dirname}/../../../lib/models/user"
 
 Factory.define 'board', Board,
   name: 'name-1'
@@ -23,6 +25,8 @@ Factory.define 'card', Card,
   deleted: false
   authors: ['factoryAuthor1']
   plusAuthors: ['factoryPlusAuthor1']
+
+Factory.define 'user', User
 
 Factory.createBundle = (callback) ->
   authors = [ ['board-creator-1'],

@@ -6,6 +6,7 @@ Board = require "#{lib}/models/board"
 Group = require "#{lib}/models/group"
 Card = require "#{lib}/models/card"
 User = require "#{lib}/models/user"
+Identity = require "#{lib}/models/identity"
 
 Factory = require "#{speclib}/support/factories"
 async = require 'async'
@@ -29,4 +30,4 @@ beforeEach (next)->
 afterEach ->
   timeout = setTimeout afterAll, 100
 
-module.exports = { finalizers, Board, Group, Card, User, Factory, async }
+module.exports = { finalizers, Board, Group, Card, User, Factory, async, Identity }
