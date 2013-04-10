@@ -35,7 +35,7 @@ class Session
   createSocketNamespace: (request, response, next) => next()
 
   request: =>
-    request(@boardroom.app)
+    request(@server)
 
   end: =>
     @logout()
