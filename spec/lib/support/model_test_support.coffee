@@ -25,7 +25,9 @@ beforeEach (next)->
   Board.remove (err)->
     Group.remove (err)->
       Card.remove (err)->
-        next()
+        User.remove (err)->
+          Identity.remove (err)->
+            next()
 
 afterEach ->
   timeout = setTimeout afterAll, 100

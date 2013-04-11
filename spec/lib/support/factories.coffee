@@ -5,6 +5,7 @@ Board = require "#{__dirname}/../../../lib/models/board"
 Group = require "#{__dirname}/../../../lib/models/group"
 Card = require "#{__dirname}/../../../lib/models/card"
 User = require "#{__dirname}/../../../lib/models/user"
+Identity = require "#{__dirname}/../../../lib/models/identity"
 
 Factory.define 'board', Board,
   name: 'name-1'
@@ -27,6 +28,8 @@ Factory.define 'card', Card,
   plusAuthors: ['factoryPlusAuthor1']
 
 Factory.define 'user', User
+
+Factory.define 'identity', Identity
 
 Factory.createBundle = (callback) ->
   authors = [ ['board-creator-1'],

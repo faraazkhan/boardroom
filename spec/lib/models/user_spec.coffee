@@ -1,4 +1,4 @@
-{ User, Factory } = require "../support/model_test_support"
+{ User, Factory, Identity } = require "../support/model_test_support"
 
 describe 'User', ->
   it "exists", ->
@@ -8,40 +8,37 @@ describe 'User', ->
     describe 'given an authenticated profile', ->
       identity = undefined
 
-      beforeEach ->
-        Factory 'identity', (err, o) ->
-          identity = o
+      beforeEach (done) ->
+        Factory.build 'identity',
+          { source: 'Twitter', sourceId: 'karimofthecrop' },
+          (error, o) ->
+            identity = o
+            done()
 
       describe 'for an existing user', ->
         existingUser = undefined
         loggedInUser = undefined
 
         beforeEach (done) ->
-          Factory "user", (err, o) ->
-            existingUser = o
-
-            User.logIn identity, (err, o) ->
-              loggedInUser = o
-              done()
-
+          Factory "user",
+            { identities: [identity] }
+            (err, o) ->
+              existingUser = o
+  
+              User.logIn identity, (err, o) ->
+                loggedInUser = o
+                done()
+  
         it 'passes the user to the callback', ->
-          expect(existingUser._id).toEqual(loggedInUser._id)
+          expect(existingUser.id).toEqual(loggedInUser.id)
 
-        it "updates the last login stats of the user", ->
-          existingStats = existingUser.loginStats
-          loggedInStats = loggedInUser.loginStats
+      describe 'for a non-existing user', ->
 
-          expect(loggedInStats.loginCount).toEqual(existingStats.loginCount + 1)
-          expect(loggedInStats.lastLoginTime).toBeGreaterThan(existingStats.lastLoginTime)
-          expect(loggedInStats.lastLoginSource).toEqual(identity.source)
-
-      #describe 'for a non-existing user', ->
-
-  describe '.avatar_for', ->
+  describe '.avatarFor', ->
     describe 'given a Twitter handle', ->
       beforeEach ->
         @handle = '@handle'
-        @avatar = User.avatar_for @handle
+        @avatar = User.avatarFor @handle
 
       it "returns a Twitter API url to the handle's avatar", ->
         expect(@avatar).toMatch /api.twitter.com/
@@ -49,7 +46,7 @@ describe 'User', ->
     describe 'given a non-Twitter handle', ->
       beforeEach ->
         @handle = 'handle'
-        @avatar = User.avatar_for @handle
+        @avatar = User.avatarFor @handle
 
       it 'returns a Gravatar url for the handle', ->
         expect(@avatar).toMatch /www.gravatar.com/

@@ -4,6 +4,6 @@ User = require './../models/user'
 
 class UsersController extends ApplicationController
   avatar: (request, response) ->
-    response.redirect User.avatar_for(request.params.user_id)
+    response.redirect User.avatarFor(request.params.user_id)
 
 module.exports = UsersController
