@@ -20,14 +20,15 @@ finalizers.push ->
 afterAll = ->
   f() for f in finalizers
 
-beforeEach (next)->
+beforeEach (next) ->
   clearTimeout timeout if timeout?
-  Board.remove (err)->
-    Group.remove (err)->
-      Card.remove (err)->
-        User.remove (err)->
-          Identity.remove (err)->
-            next()
+  async.parallel [
+    (callback) -> Board.remove callback
+    (callback) -> Group.remove callback
+    (callback) -> Card.remove callback
+    (callback) -> User.remove callback
+    (callback) -> Identity.remove callback
+  ], next
 
 afterEach ->
   timeout = setTimeout afterAll, 100

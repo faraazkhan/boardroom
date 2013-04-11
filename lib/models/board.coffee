@@ -4,10 +4,11 @@ Card = require "./card"
 Group = require "./group"
 
 BoardSchema = new mongoose.Schema
-  name    : { type: String, required: true }
-  creator : { type: String, required: true }
-  created : { type: Date }
-  updated : { type: Date }
+  name     : { type: String, required: true }
+  _creator : { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  creator  : { type: String, required: true }
+  created  : { type: Date }
+  updated  : { type: Date }
 
 BoardSchema.virtual('groups').get () -> @vGroups
 BoardSchema.virtual('groups').set (groups) -> @vGroups = groups
@@ -33,7 +34,7 @@ BoardSchema.statics =
     @findOne { _id: id }, @populateOne(callback)
 
   createdBy: (user, callback) ->
-    @find { creator: user }, null, { sort: 'name' }, @populateMany(callback)
+    @find { _creator: user }, null, { sort: 'name' }, @populateMany(callback)
 
   collaboratedBy: (user, callback) ->
     Group.collaboratedBy user, (error, groups) =>
