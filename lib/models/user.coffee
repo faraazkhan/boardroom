@@ -1,4 +1,5 @@
 crypto = require 'crypto'
+_ = require 'underscore'
 
 { mongoose } = require './db'
 Identity = require './identity'
@@ -9,10 +10,9 @@ userSchema = new mongoose.Schema
 
 userSchema.statics =
   logIn: (identity, callback) ->
-    @findOne { 'identities.source': identity.source, 'identities.sourceId': identity.sourceId }, 
-      (error, user) ->
-         return callback(error) if error?
-         callback error, user
+    @findOne { 'identities.source': identity.source, 'identities.sourceId': identity.sourceId }, (err, user) ->
+      user ?= new User
+      user.updateIdentity(identity, callback)
 
   avatarFor: (handle) ->
     if match = /^@(.*)/.exec(handle)
@@ -21,6 +21,16 @@ userSchema.statics =
       md5 = crypto.createHash 'md5'
       md5.update handle
       "http://www.gravatar.com/avatar/{md5.digest 'hex'}?d=retro"
+
+userSchema.methods =
+  updateIdentity: (identity, callback) ->
+    existingIdentity = _.find @identities, (_identity) -> _identity.source is identity.source
+    if existingIdentity?
+      existingIdentity.set identity
+    else
+      @identities.push identity
+
+    @save callback
 
 User = mongoose.model 'User', userSchema
 
