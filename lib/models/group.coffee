@@ -44,7 +44,6 @@ GroupSchema.methods =
     Card.findByGroupId @id, (error, cards) ->
       callback(cards.length == 0)
 
-
 Group = mongoose.model 'Group', GroupSchema
 
 module.exports = Group

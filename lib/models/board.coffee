@@ -6,7 +6,7 @@ Group = require "./group"
 BoardSchema = new mongoose.Schema
   name     : { type: String, required: true }
   _creator : { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
-  creator  : { type: String, required: true }
+  creator  : { type: String }
   created  : { type: Date }
   updated  : { type: Date }
 

@@ -17,7 +17,9 @@ describe 'card.Card', ->
       beforeEach (done) =>
         Factory 'card', (err, card) =>
           @card = card
-          done()
+          Factory 'user', (err, user) =>
+            @user = user
+            done()
 
       it 'updates its attributes', (done) =>
         numAuthors = @card.authors.length
@@ -27,7 +29,9 @@ describe 'card.Card', ->
           colorIndex: @card.colorIndex + 1
           deleted: ! @card.deleted
           authors: [ @card.authors... ,  'author1' ]
+          _authors: [ @user ]
           plusAuthors: [ @card.plusAuthors... , 'plusAuthor1']
+          _plusAuthors: [ @user ]
 
         @card.updateAttributes attributes, (err) =>
           Card.findById @card.id, (err, card) ->
@@ -35,4 +39,6 @@ describe 'card.Card', ->
             expect(card.colorIndex).toEqual attributes.colorIndex
             expect(card.authors.length).toEqual numAuthors+1
             expect(card.plusAuthors.length).toEqual numPlusAuthors+1
+            expect(card._authors.length).toEqual 1
+            expect(card._plusAuthors.length).toEqual 1
             done()
