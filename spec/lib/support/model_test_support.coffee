@@ -10,6 +10,7 @@ Identity = require "#{lib}/models/identity"
 
 Factory = require "#{speclib}/support/factories"
 async = require 'async'
+_ = require 'underscore'
 
 timeout = null
 finalizers = []
@@ -33,4 +34,4 @@ beforeEach (next) ->
 afterEach ->
   timeout = setTimeout afterAll, 100
 
-module.exports = { finalizers, Board, Group, Card, User, Factory, async, Identity }
+module.exports = { finalizers, Board, Group, Card, User, Factory, async, Identity, _ }

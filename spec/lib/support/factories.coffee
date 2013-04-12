@@ -7,13 +7,15 @@ Card = require "#{__dirname}/../../../lib/models/card"
 User = require "#{__dirname}/../../../lib/models/user"
 Identity = require "#{__dirname}/../../../lib/models/identity"
 
+boardCounter = 0
 Factory.define 'board', Board,
-  name: 'name-1'
+  name: (cb) -> cb "board-#{boardCounter++}"
   creator: 'board-creator-1'
 
+groupCounter = 0
 Factory.define 'group', Group,
   boardId: 0
-  name: 'group-1'
+  name: (cb) -> cb "group-#{groupCounter++}"
   x: 100
   y: 100
   z: 1

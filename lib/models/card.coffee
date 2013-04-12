@@ -3,6 +3,7 @@
 CardSchema = new mongoose.Schema
   groupId     : { type: String, required: true }
   creator     : { type: String, required: true }
+  _authors : [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
   authors     : { type: Array, default: [] }
   plusAuthors : { type: Array, default: [] }
   text        : { type: String, default: '' }
