@@ -54,66 +54,52 @@ describeController 'BoardsController', (session) ->
             expect(res.statusCode).toBe(200)
             done()
 
-  #describe '#destroy', ->
-    #board = undefined
-    #response = undefined
+  describe '#destroy', ->
+    board = undefined
+    response = undefined
 
-    #beforeEach (done) ->
-      #session.login()
+    beforeEach (done) ->
+      Factory.create 'user', (error, user) ->
+        session.login user
 
-      #Factory "board", (err, _board) ->
-        #board = _board
-        #session.request()
-          #.post("/boards/#{board.id}")
-          #.end (err, _response) ->
-            #response = _response
-            #done()
+        Factory "board", (err, _board) ->
+          board = _board
+          session.request()
+            .post("/boards/#{board.id}")
+            .end (err, _response) ->
+              response = _response
+              done()
 
-    #it 'redirects to the root', ->
-      #expect(response.redirect).toBeTruthy()
-      #redirect = url.parse response.headers.location
-      #expect(redirect.pathname).toEqual '/'
+    it 'redirects to the root', ->
+      expect(response.redirect).toBeTruthy()
+      redirect = url.parse response.headers.location
+      expect(redirect.pathname).toEqual '/'
 
-    #it 'deletes the board', (done) ->
-      #Board.findById board.id, (err, board) ->
-        #expect(board).toBeNull()
-        #done()
+    it 'deletes the board', (done) ->
+      Board.findById board.id, (err, board) ->
+        expect(board).toBeNull()
+        done()
 
-  #describe '#build', ->
-    #name = 'name-1'
-    #creator = undefined
+  describe '#build', ->
+    name = 'name-1'
+    creator = undefined
 
-    #beforeEach (done) ->
-      #Factory.create 'user', (error, user) ->
-        #creator = user
-        #boardsController = new BoardsController
-        #boardsController.build name, creator, (board) ->
-          #done()
+    beforeEach (done) ->
+      Factory.create 'user', (error, user) ->
+        creator = user
+        boardsController = new BoardsController
+        boardsController.build name, creator, (board) ->
+          done()
 
-    #it 'creates a new board', (done) ->
-      #countBoards = (next) ->
-        #Board.count (err, count) ->
-          #expect(count).toEqual 1
-          #next(null)
-
-      #findFirstBoard = (next) ->
-        #Board.findOne {}, (err, board) ->
-          #next(null, board.id)
-
-      #findBoardById = (id, next) ->
-        #Board.findById id, (err, board) ->
-          #board = board.toObject getters: true
-          #next(null, board)
-
-      #assertOwnership = (board, next) ->
-        #expect(board.name).toEqual name
-        #expect(board.creator).toEqual creator
-        #expect(board.groups[0].cards.length).toEqual 1
-
-        #card = board.groups[0].cards[0]
-        #expect(card.creator).toEqual creator
-        #expect(card.authors[0]).toEqual '@carbonfive'
-        #expect(card.text).toContain 'Welcome to your virtual whiteboard!'
-        #next(null)
-
-      #async.waterfall [ countBoards, findFirstBoard, findBoardById, assertOwnership ], done
+    it 'creates a new board', (done) ->
+      Board.find Board.populateMany (err, boards) ->
+        expect(boards.length).toEqual 1
+        board = boards[0].toObject getters: true
+        expect(board.name).toEqual name
+        expect(board._creator).toEqual creator._id
+        expect(board.groups[0].cards.length).toEqual 1
+        card = board.groups[0].cards[0]
+        expect(card._creator).toEqual creator._id
+        expect(card._authors[0]).toEqual creator._id
+        expect(card.text).toContain 'Welcome to your virtual whiteboard!'
+        done()

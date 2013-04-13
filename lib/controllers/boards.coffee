@@ -44,13 +44,13 @@ class BoardsController extends ApplicationController
   build: (name, creator, done) =>
     createBoard = (next) ->
       board = new Board name: name, _creator: creator
-      board.save (err) ->
+      board.save (err, board) ->
         throw err if err
         next(null, board)
 
     createGroup = (board, next) ->
       group = new Group { boardId: board.id, x: 500, y: 250, z: 1 }
-      group.save (err) ->
+      group.save (err, group) ->
         throw err if err
         next(null, board, group)
 
@@ -59,7 +59,7 @@ class BoardsController extends ApplicationController
       authors = [ creator ]
       text = 'Welcome to your virtual whiteboard!\n\n1. Invite others to participate by copying the url or clicking on the link icon in the top right corner.\n\n2. Double click anywhere on the board to create a new note.\n\n3. Drag notes onto one another to create a group.\n\n'
       card = new Card { groupId: group.id, _creator: creator, _authors: authors, text: text }
-      card.save (err) ->
+      card.save (err, card) ->
         throw err if err
         next(null, board)
 
