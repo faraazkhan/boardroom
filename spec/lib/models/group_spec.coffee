@@ -15,9 +15,9 @@ describe 'Group', ->
         async.parallel {
           user: async.apply Factory.create, 'user'
           otherUser: async.apply Factory.create, 'user'
-          groupA: async.apply Factory.create, 'group', name: 'A'
-          groupB: async.apply Factory.create, 'group', name: 'B'
-          groupC: async.apply Factory.create, 'group', name: 'C'
+          groupA: async.apply Factory.create, 'group', { name: 'A' }
+          groupB: async.apply Factory.create, 'group', { name: 'B' }
+          groupC: async.apply Factory.create, 'group', { name: 'C' }
         }, (err, results) ->
           { user, otherUser, groupA, groupB, groupC } = results
 
