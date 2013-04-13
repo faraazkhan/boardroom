@@ -8,7 +8,9 @@ jsdom = require 'jsdom'
 url = require 'url'
 $ = require 'jquery'
 async = require 'async'
+
 authenticate = require '../../../lib/services/authenticate'
+Factory = require './factories'
 
 Boardroom = require "../../../lib/boardroom"
 
@@ -23,7 +25,8 @@ class Session
     @end()
     @server = http.createServer(@boardroom.app).listen(port++)
 
-  login: (@user = 'user') =>
+  login: (user) =>
+    @user = user
 
   logout: => @user = undefined
 
@@ -52,7 +55,7 @@ describeController = (controller, cb) ->
 
   afterEach -> session?.end()
 
-exports = { request, superagent, jsdom, url, $, async, describeController }
+exports = { request, superagent, jsdom, url, $, async, describeController, Factory }
 exports[key] = value for key, value of models
 
 module.exports = exports

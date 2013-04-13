@@ -1,14 +1,17 @@
 { Factory, Card } = require "../support/model_test_support"
 
-describe 'card.Card', ->
+describe 'Card', ->
   describe '.findByGroupId', ->
-    beforeEach (next) =>
-      Factory 'group', (err, @group) =>
-        Factory 'card', groupId: @group.id, ->
+    groupId = undefined
+
+    beforeEach (next) ->
+      Factory 'group', (err, group) ->
+        groupId = group.id
+        Factory 'card', { groupId }, (error, card) ->
           next()
 
     it 'finds all cards for the given group', (done) =>
-      Card.findByGroupId @group.id, (err, cards) ->
+      Card.findByGroupId groupId, (err, cards) ->
         expect(cards.length).toEqual 1
         done()
 

@@ -1,4 +1,5 @@
 Router = require "../../../lib/services/router"
+Factory = requre './factories'
 
 routers = []
 
@@ -12,11 +13,11 @@ class LoggedOutRouter extends Router
 
 class LoggedInRouter extends LoggedOutRouter
   constructor: (user = 'user') ->
-    @user = user
+    @user = user ? Factory.create 'user'
     super()
 
   authenticate: (request, response, next) =>
-    request.session = { user_id: @user }
+    request.session = { user_id: @user.id }
     next()
 
   createSocketNamespace: (request, response, next) ->

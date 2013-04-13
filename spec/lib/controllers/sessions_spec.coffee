@@ -13,13 +13,18 @@ describeController 'SessionsController', (session) ->
 
   describe '#create', ->
     describe 'given the user has existing boards', ->
+      boards = undefined
+      users = undefined
+
       beforeEach (done) ->
-        Factory.createBundle done
+        Factory.createBundle (error, bundle) ->
+          { boards, users } = bundle
+          done()
 
       it 'redirects to the home page', (done) ->
         session.request()
           .post('/login')
-          .send({user_id: 'board-creator-1'})
+          .send({user_id: users.boardCreator1.id})
           .end (request, response) ->
             expect(response.redirect).toBeTruthy()
             redirect = url.parse response.headers.location
@@ -27,27 +32,38 @@ describeController 'SessionsController', (session) ->
             done()
 
     describe 'given the user has no boards', ->
+      userId = undefined
+
+      beforeEach (done)->
+        Factory.create 'user', (error, user) ->
+          userId = user.id
+          done()
+
       it 'creates a default board and redirects to its page', (done) ->
         session.request()
           .post('/login')
-          .send({user_id: 'board-creator-1'})
+          .send({user_id: userId})
           .end (request, response) ->
             expect(response.redirect).toBeTruthy()
 
             Board.count (err, count) ->
               expect(count).toEqual 1
 
-              Board.findOne { creator: 'board-creator-1' }, (err, board) ->
+              Board.findOne { _creator: userId}, (err, board) ->
                 redirect = url.parse response.headers.location
                 expect(redirect.path).toEqual "/boards/#{board.id}"
-                expect(board.name).toEqual "board-creator-1's board"
+                expect(board.name).toEqual "#{userId}'s board"
                 done()
 
     describe 'given the user is trying to go to an existing board', ->
       agent = undefined
+      userId = undefined
 
-      beforeEach ->
-        agent = superagent.agent()
+      beforeEach (done)->
+        Factory.create 'user', (error, user) ->
+          userId = user.id
+          agent = superagent.agent()
+          done()
 
       it 'brings the user to that board', (done) ->
         async.series [
@@ -62,7 +78,7 @@ describeController 'SessionsController', (session) ->
               .post('/login')
             agent.attachCookies req
             req
-              .send({user_id: 'board-creator-1'})
+              .send({user_id: userId})
               .end (request, response) ->
                 expect(response.redirect).toBeTruthy()
                 redirect = url.parse response.headers.location
