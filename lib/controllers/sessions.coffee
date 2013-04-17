@@ -3,27 +3,36 @@ BoardsController = require '../controllers/boards'
 User = require '../models/user'
 Board = require '../models/board'
 async = require 'async'
+path = require 'path'
+fs = require 'fs'
 passport = require 'passport'
 
 passport.serializeUser (user, done)-> done null, user._id
 passport.deserializeUser (_id, done)-> User.findOne { _id }, done
 
 class SessionsController extends ApplicationController
-  constructor: ()->
-    @registerOAuthProviders()
+  authenticator: {}
 
-  registerOAuthProviders: ()->
-    try 
-      twitter = require('../services/authentication/providers/twitter')
-      twitter.registerWithPassport passport
+  constructor: ()->
+    @registerAuthenticators()
+
+  registerAuthenticators: ()->
+    try
+      providers = fs.readdirSync path.resolve __dirname, '../services/authentication/providers/'
+      for filename in providers
+        authenticator = require "../services/authentication/providers/#{filename}"
+        passport.use authenticator.passportStrategy()
+        authenticator[authenticator.name] = authenticator
     catch e
       console.warn @name, e.message
 
-    twitter.registerWithPassport (passport)
-
   newOAuth: (request,response, next)->
     provider = request.params?.provider
-    passport.authenticate(provider)(request,response)
+    try
+      passport.authenticate(provider)(request,response)
+    catch e
+      console.error "no registered provider for #{provider}"
+      response.redirect '/login'
 
   createOAuth: (request,response, next)->
     provider = request.params?.provider

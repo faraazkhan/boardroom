@@ -1,12 +1,6 @@
 User = require '../../models/user'
 
 class Provider
-  registerWithPassport: (passport)->
-    try 
-      passport.use @passportStrategy()
-    catch e
-      console.warn @name, e.message
-
   passportStrategy: =>
     new @passportStrategyClass @secret, @passportCallback
 

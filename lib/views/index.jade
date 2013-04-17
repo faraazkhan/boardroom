@@ -6,7 +6,7 @@ include includes/header
     .span8
       h2 Create a New Board
       form#create-board(id='create-board', method='post', action='/boards')
-        input#board-name.span4(type='text', name='name', value="#{user.displayName}'s board")
+        input#board-name.span4(type='text', name='name', value="#{user.user_id}'s board")
         .button-container.inset
           button Go
 
