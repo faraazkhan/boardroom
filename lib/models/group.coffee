@@ -30,6 +30,7 @@ GroupSchema.statics =
 
   collaboratedBy: (user, callback) ->
     Card.find { _authors: user }, (error, cards) =>
+      return callback(error, []) unless cards?
       groupIds = ( card.groupId for card in cards when card.groupId? )
       @find { _id: { $in: groupIds } }, null, { sort: 'name' }, callback
 
