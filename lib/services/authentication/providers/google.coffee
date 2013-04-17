@@ -12,7 +12,7 @@ class Google extends Provider
     realm: process.env.GOOGLE_REALM
     returnURL: process.env.GOOGLE_CALLBACK_URL
 
-  buildProfile: (identifier, profile) ->
+  identityFromOAuth: (identifier, profile) ->
     emailAddress = profile.emails?[0]?.value
     profile.username = emailAddress
     md5 = crypto.createHash 'md5'

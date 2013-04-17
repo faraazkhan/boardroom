@@ -2,6 +2,7 @@ express = require 'express'
 cookies = require 'cookie-sessions'
 logger = require './services/logger'
 pipeline = require './services/asset_pipeline'
+passport = require 'passport'
 
 configure = (app) ->
   app.use redirectHandler
@@ -13,6 +14,8 @@ configure = (app) ->
   app.use express.static "#{__dirname}/../public"
   app.use cookies(secret: 'a7c6dddb4fa9cf927fc3d9a2c052d889', session_key: 'boardroom')
   app.use catchPathErrors
+  app.use passport.initialize()
+  app.use passport.session()
 
 catchPathErrors = (error, request, response, next) ->
   logger.error -> error.message

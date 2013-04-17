@@ -29,8 +29,9 @@ userSchema.methods =
       existingIdentity.set identity
     else
       @identities.push identity
-
     @save callback
+
+userSchema.virtual('displayName').get () -> @identities[0]?.displayName
 
 User = mongoose.model 'User', userSchema
 

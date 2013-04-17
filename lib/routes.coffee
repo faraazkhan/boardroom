@@ -14,8 +14,11 @@ addRouting = (app, authenticate, createSocketNamespace) ->
 
   sessionsController = new SessionsController
   app.get '/login', sessionsController.new
-  app.post '/login', sessionsController.create
+  # app.post '/login', sessionsController.create
   app.get '/logout', sessionsController.destroy
+
+  app.get '/oauth/:provider', sessionsController.newOAuth
+  app.get '/oauth/:provider/callback', sessionsController.createOAuth
 
   boardsController = new BoardsController
   app.get '/boards/:id', authenticate, createSocketNamespace, boardsController.show

@@ -12,7 +12,7 @@ class Facebook extends Provider
     clientSecret: process.env.FACEBOOK_APP_SECRET
     callbackURL: process.env.FACEBOOK_CALLBACK_URL
 
-  buildProfile: (accessToken, refreshToken, profile) ->
+  identityFromOAuth: (accessToken, refreshToken, profile) ->
     profile.avatar = "https://graph.facebook.com/#{profile.providerId}/picture"
     profile
 

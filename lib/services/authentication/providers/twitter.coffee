@@ -1,8 +1,8 @@
 TwitterStrategy = require('passport-twitter').Strategy
 
-Provider = require 'passport'
+Provider = require '../provider'
 
-Twitter extends Provider
+class Twitter extends Provider
   name: 'twitter'
 
   passportStrategyClass: TwitterStrategy
@@ -12,7 +12,7 @@ Twitter extends Provider
     consumerSecret: process.env.TWITTER_SECRET
     callbackURL: process.env.TWITTER_CALLBACK_URL
 
-  buildProfile: (token, tokenSecret, profile) ->
+  identityFromOAuth: (token, tokenSecret, profile) ->
     profile.avatar = profile._json?.profile_image_url_https
     profile
 

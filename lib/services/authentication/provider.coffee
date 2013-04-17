@@ -1,18 +1,24 @@
 User = require '../../models/user'
 
 class Provider
+  registerWithPassport: (passport)->
+    try 
+      passport.use @passportStrategy()
+    catch e
+      console.warn @name, e.message
+
   passportStrategy: =>
-    new @passportStrategyClass @secret, @oauthCallback
+    new @passportStrategyClass @secret, @passportCallback
 
-  oauthCallback: =>
-    oauthDone = arguments[a.length-1]
-    oauthDetails = arguments[..-2]
+  passportCallback: (args...)=>
+    oauthDoneCallback = args[ args.length - 1 ]
+    oauthArgs = args[..-2]
 
-    profile = @buildProfile.apply @, oauthDetails
-    profile.provider = @name
-    profile.providerId ?= profile.id
-    delete profile.id
+    identity = @identityFromOAuth oauthArgs...
+    identity.source = @name
+    identity.sourceId ?= identity.id
+    delete identity.id
 
-    User.signIn profile, oauthDone
+    User.logIn identity, oauthDoneCallback
 
 module.exports = Provider
