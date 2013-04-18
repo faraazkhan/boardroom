@@ -40,7 +40,7 @@ BoardSchema.statics =
     Group.collaboratedBy user, (error, groups) =>
       return callback error, null if error?
       boardIds = ( group.boardId for group in groups )
-      @find { _id: { $in: boardIds }, creator: { $ne: user } }, null, { sort: 'name' }, @populateMany(callback)
+      @find { _id: { $in: boardIds }, _creator: { $ne: user } }, null, { sort: 'name' }, @populateMany(callback)
 
   populateOne: (callback) ->
     new Populator().populate callback, 1
