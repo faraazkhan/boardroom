@@ -20,9 +20,6 @@ describe 'protected', ->
 
         _protected request, response, next
 
-      it "sets the user's id on the session", ->
-        expect(request.session.user_id).toEqual id
-
       it "calls the next request handler", ->
         expect(next).toHaveBeenCalled()
 
@@ -31,7 +28,7 @@ describe 'protected', ->
         _protected request, response, next
 
       it 'captures the current request URL to the session', ->
-        expect(request.session.urlToRedirectToOnLogIn).toEqual url
+        expect(request.session.go2URL).toEqual url
 
       it 'does not call the next handler', ->
         expect(next).not.toHaveBeenCalled()
