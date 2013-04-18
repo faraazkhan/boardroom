@@ -1,6 +1,6 @@
 module.exports = (request, response, next) ->
   if request.user?
-    next() 
+    next()
   else
     request.session ?= {}
     request.session.go2URL ?= request.url

@@ -5,25 +5,24 @@ SessionsController = require './controllers/sessions'
 BoardsController = require './controllers/boards'
 UsersController = require './controllers/users'
 
-addRouting = (app, authenticate, createSocketNamespace) ->
+addRouting = (app, loginProtection, createSocketNamespace) ->
   homeController = new HomeController
-  app.get '/', authenticate, homeController.index
+  app.get '/', loginProtection, homeController.index
 
   contentsController = new ContentsController
-  app.get '/styles', authenticate, contentsController.styles
+  app.get '/styles', loginProtection, contentsController.styles
 
   sessionsController = new SessionsController
   app.get '/login', sessionsController.new
-  # app.post '/login', sessionsController.create
   app.get '/logout', sessionsController.destroy
 
   app.get '/oauth/:provider', sessionsController.newOAuth
   app.get '/oauth/:provider/callback', sessionsController.createOAuth
 
   boardsController = new BoardsController
-  app.get '/boards/:id', authenticate, createSocketNamespace, boardsController.show
-  app.post '/boards/:id', authenticate, boardsController.destroy
-  app.post '/boards', authenticate, boardsController.create
+  app.get '/boards/:id', loginProtection, createSocketNamespace, boardsController.show
+  app.post '/boards/:id', loginProtection, boardsController.destroy
+  app.post '/boards', loginProtection, boardsController.create
 
   usersController = new UsersController
   app.get '/user/avatar/:user_id', usersController.avatar
