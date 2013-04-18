@@ -32,6 +32,8 @@ userSchema.methods =
     @save callback
 
 userSchema.virtual('displayName').get () -> @identities[0]?.displayName
+userSchema.virtual('avatar').get () -> @identities[0]?.avatar
+
 
 User = mongoose.model 'User', userSchema
 

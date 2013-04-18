@@ -33,7 +33,7 @@ include ../layout.jade
           - if (typeof(user) !== 'undefined')
             li
               div.user-id
-                img.avatar(src="/user/avatar/#{encodeURIComponent(user.user_id)}", title="#{user.user_id}")
+                img.avatar(src=user.avatar, title=user.displayName)
                 span #{user.user_id}
             li
               .logout

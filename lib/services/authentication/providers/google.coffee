@@ -14,7 +14,8 @@ class Google extends Provider
 
   identityFromOAuth: (identifier, profile) ->
     emailAddress = profile.emails?[0]?.value
-    profile.username = emailAddress
+    profile.email = emailAddress
+    profile.username = emailAddress?.replace(/@.*$/,"");
     md5 = crypto.createHash 'md5'
     md5.update emailAddress
     profile.avatar = "http://www.gravatar.com/avatar/#{md5.digest 'hex'}?d=retro"

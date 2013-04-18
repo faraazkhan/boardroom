@@ -13,7 +13,7 @@ class Facebook extends Provider
     callbackURL: process.env.FACEBOOK_CALLBACK_URL
 
   identityFromOAuth: (accessToken, refreshToken, profile) ->
-    profile.avatar = "https://graph.facebook.com/#{profile.providerId}/picture"
+    profile.avatar = "https://graph.facebook.com/#{profile.id}/picture"
     profile
 
 module.exports = new Facebook
