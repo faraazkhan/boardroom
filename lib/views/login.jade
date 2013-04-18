@@ -14,11 +14,10 @@ html
           | Welcome to
         | Boardroom
 
-      form#login(action='/login', method='post')
-        input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
-        .button-container.inset
-          button Get on Board
-
+      #social-login(action='/login', method='post')
+        a.sign-in-with-twitter(href="oauth/twitter")
+        a.sign-in-with-facebook(href="oauth/facebook")
+        a.sign-in-with-google(href="oauth/google")
         hr
         blockquote
           em
