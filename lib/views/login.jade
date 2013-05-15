@@ -15,18 +15,19 @@ html
         | Boardroom
 
       #social-login(action='/login', method='post')
+        h2 sign in with
         button
           a(href="oauth/twitter")
             i.icon-twitter
-            |  Log in with Twitter
+            span Twitter
         button
           a(href="oauth/facebook")
-            i.icon-facebook 
-            |  Log in with Facebook
+            i.icon-facebook
+            span Facebook
         button
           a(href="oauth/google") 
             i.icon-google-plus
-            |  Log in with Google+
+            span Google+
         hr
         blockquote
           em
