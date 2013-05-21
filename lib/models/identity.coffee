@@ -3,6 +3,7 @@
 identitySchema = new mongoose.Schema
   source: String
   sourceId: String
+  username: String
   displayName: String
   avatar: String
   email: String
