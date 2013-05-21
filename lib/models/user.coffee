@@ -31,8 +31,16 @@ userSchema.methods =
       @identities.push identity
     @save callback
 
-userSchema.virtual('displayName').get () -> @identities[0]?.displayName
-userSchema.virtual('avatar').get () -> @identities[0]?.avatar
+userSchema.virtual('activeIdentity').get () -> 
+  identity = @identities[0] ? {}
+  {
+    userId: @_id
+    username: identity.username
+    displayName: identity.displayName
+    email: identity.email
+    avatar: identity.avatar
+    source: identity.source
+  }
 
 
 User = mongoose.model 'User', userSchema
