@@ -31,7 +31,7 @@ class boardroom.views.Base extends Backbone.View
     @visibleNotice = if notices.length == 2 then notices.last() else notices.first() # stupid single-card group hack
     unless @visibleNotice.is ':visible'
       @visibleNotice
-        .html("<img class='avatar' src='#{boardroom.models.User.avatar user}'/><span>#{_.escape message}</span>")
+        .html("<img class='avatar' src='#{boardroom.models.UserIdentity.avatar user}'/><span>#{_.escape message}</span>")
         .show()
 
   hideNotice: ->

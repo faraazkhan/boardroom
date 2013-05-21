@@ -143,7 +143,7 @@ class boardroom.views.Card extends boardroom.views.Base
     $authors = @$('.authors')
     $authors.empty()
     for author in authors
-      avatar = boardroom.models.User.avatar author
+      avatar = boardroom.models.UserIdentity.avatar author
       $authors.append("<img class='avatar' src='#{avatar}' title='#{_.escape author}'/>")
 
   updateILikeIWish: =>
