@@ -8,7 +8,7 @@ addRouting = require './routes'
 class Boardroom
   constructor: (@opts = {}) ->
     @opts.cluster ?= false
-    loginProtection = @opts.authenticate ? require './services/authentication/login-protection'
+    loginProtection = @opts.authenticate ? require './services/authentication/login_protection'
     createSocketNamespace = @opts.createSocketNamespace ? Sockets.middleware
 
     @app = express()
