@@ -8,9 +8,19 @@ Card = require "#{__dirname}/../../../lib/models/card"
 User = require "#{__dirname}/../../../lib/models/user"
 Identity = require "#{__dirname}/../../../lib/models/identity"
 
-Factory.define 'user', User
+Factory.define 'user', User,
+  identities: (cb)->
+    Factory.create 'identity', (error, identity) ->
+      cb [identity]
 
-Factory.define 'identity', Identity
+identityCounter = 0
+
+Factory.define 'identity', Identity,
+  displayName: (cb)-> cb "my-username-#{++identityCounter}" 
+  source: (cb)-> cb "source-#{identityCounter}" 
+  sourceId: (cb)-> cb "sourceId-#{identityCounter}" 
+  avatar: (cb)-> cb "http://my-avatar-#{identityCounter}.png" 
+  email: (cb)-> cb "my-email-#{identityCounter}@here.com" 
 
 boardCounter = 0
 Factory.define 'board', Board,
