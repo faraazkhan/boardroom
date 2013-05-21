@@ -24,15 +24,16 @@ class HomeController extends ApplicationController
           done(null, boards || [])
 
       onLoadComplete = (err, boards) ->
+        userIdentity = user.activeIdentity
         if (boards.created.length + boards.collaborated.length > 0)
           response.render 'index',
-            user: user
+            userIdentity: userIdentity
             created: boards.created.sort cmp
             collaborated: boards.collaborated.sort cmp
         else
           boardsController = new BoardsController
-          displayName = user.displayName
-          boardsController.build "#{displayName}'s board", user, (board) ->
+          displayName = userIdentity.displayName
+          boardsController.build "#{displayName}'s board", user._id, (board) ->
             response.redirect "/boards/#{board.id}"
 
       async.parallel

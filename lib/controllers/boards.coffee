@@ -8,10 +8,12 @@ async = require 'async'
 
 class BoardsController extends ApplicationController
   create: (request, response) =>
-    @build request.body.name, request.session.user_id, (board) ->
+    @build request.body.name, request.user._id, (board) ->
       response.redirect "/boards/#{board.id}"
 
   show: (request, response) =>
+    userIdentity = request.user.activeIdentity
+    loglevel = request.param 'loglevel'
     try
       id = request.params.id
       Board.findById id, (err, board) ->
@@ -20,11 +22,8 @@ class BoardsController extends ApplicationController
         board = board.toObject getters: true
         board._id = board.id
         board.users = Sockets.boards[board.name] || {}
-        board.user_id = request.session.user_id
-        response.render 'board',
-          board: board
-          user: request.session
-          loglevel: request.param 'loglevel'
+        board.displayName = userIdentity.displayName
+        response.render 'board', { board, userIdentity, loglevel }
     catch error
       return @throw500 response, error
 
@@ -43,7 +42,7 @@ class BoardsController extends ApplicationController
 
   build: (name, creator, done) =>
     createBoard = (next) ->
-      board = new Board name: name, _creator: creator
+      board = new Board {name, creator }
       board.save (err, board) ->
         throw err if err
         next(null, board)
@@ -56,9 +55,10 @@ class BoardsController extends ApplicationController
 
     createCard = (board, group, next) ->
       # TODO Set the first author to Carbon Five
+      groupId = group.id
       authors = [ creator ]
       text = 'Welcome to your virtual whiteboard!\n\n1. Invite others to participate by copying the url or clicking on the link icon in the top right corner.\n\n2. Double click anywhere on the board to create a new note.\n\n3. Drag notes onto one another to create a group.\n\n'
-      card = new Card { groupId: group.id, _creator: creator, _authors: authors, text: text }
+      card = new Card { groupId, creator, authors, text }
       card.save (err, card) ->
         throw err if err
         next(null, board)

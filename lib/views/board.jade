@@ -13,10 +13,10 @@ script(type="text/javascript")
 
     boardroom.utils.Logger.instance.setBoard(board);
 
-    var userAttrs = !{JSON.stringify(user)};
-    var user = new boardroom.models.User(userAttrs);
+    var userAttrs = !{JSON.stringify(userIdentity)};
+    var userIdentity = new boardroom.models.UserIdentity(userAttrs);
 
-    new boardroom.Handler(board, user).initialize();
+    new boardroom.Handler(board, userIdentity).initialize();
 
     var roomView = new boardroom.views.Room({ model: board });
     roomView.render();
