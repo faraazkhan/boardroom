@@ -1,7 +1,8 @@
+User = require './user'
 Board = require './board'
 Group = require './group'
 Card  = require './card'
-
+async = require 'async'
 class Populator
   constructor: () ->
 
@@ -37,12 +38,28 @@ class Populator
       count = 0
       for group in groups
         do (group) =>
-          @fillGroup group, (error, group) ->
+          @fillGroup group, (error, group) =>
             return callback error if error?
             board.groups.push group
             count += 1
             if count == groups.length
-              callback null, board 
+              @fillUsers(board, callback)
+
+  fillUsers: (board, callback) ->
+    lookupUser = 
+    userIdSet = {}
+    for group in board.groups # collect unique userId's for all card authors
+      for card in group.cards
+        userIdSet[authorId] = 1 for authorId in [card.creator, card.authors..., card.plusAuthors...]
+
+    for authorId, value of userIdSet # functor to lookup active Identity for each user
+      userIdSet[authorId] = (cb)-> 
+        User.findById authorId, (err, user)->
+          cb(null, user?.activeIdentity)
+
+    async.parallel userIdSet, (err, userIdentitySet) ->
+      board.userIdentitySet = userIdentitySet
+      callback null, board
 
   fillGroup: (group, callback) ->
     Card.find { groupId: group.id }, (error, cards) ->

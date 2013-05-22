@@ -12,11 +12,7 @@ script(type="text/javascript")
     var board = new boardroom.models.Board(boardAttrs);
 
     boardroom.utils.Logger.instance.setBoard(board);
-
-    var userAttrs = !{JSON.stringify(userIdentity)};
-    var userIdentity = new boardroom.models.UserIdentity(userAttrs);
-
-    new boardroom.Handler(board, userIdentity).initialize();
+    new boardroom.Handler(board).initialize();
 
     var roomView = new boardroom.views.Room({ model: board });
     roomView.render();
