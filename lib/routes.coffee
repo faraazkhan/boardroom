@@ -3,7 +3,6 @@ HomeController = require './controllers/home'
 ContentsController = require './controllers/contents'
 SessionsController = require './controllers/sessions'
 BoardsController = require './controllers/boards'
-UsersController = require './controllers/users'
 
 addRouting = (app, loginProtection, createSocketNamespace) ->
   homeController = new HomeController
