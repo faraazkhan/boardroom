@@ -58,7 +58,7 @@ class Populator
           cb(null, user?.activeIdentity)
 
     async.parallel userIdSet, (err, userIdentitySet) ->
-      board.userIdentitySet = userIdentitySet
+      board.userIdentitySet = userIdentitySet || {}
       callback null, board
 
   fillGroup: (group, callback) ->

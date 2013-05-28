@@ -14,12 +14,12 @@ class HomeController extends ApplicationController
         a.name.toLowerCase().localeCompare b.name.toLowerCase()
 
       loadCreated = (done) ->
-        Board.createdBy user, (err, boards) ->
+        Board.createdBy user.id, (err, boards) ->
           throw err if err
           done(null, boards || [])
 
       loadCollaborated = (done) ->
-        Board.collaboratedBy user, (err, boards) ->
+        Board.collaboratedBy user.id, (err, boards) ->
           throw err if err
           done(null, boards || [])
 

@@ -15,6 +15,7 @@ class boardroom.models.Group extends Backbone.Model
   cards: -> @get 'cards'
   board: -> @get 'board'
   currentUser: -> @board().currentUser()
+  currentUserId: -> @board().currentUserId()
 
   findCard: (id) ->
     @cards().find (card) -> card.id == id
@@ -33,8 +34,8 @@ class boardroom.models.Group extends Backbone.Model
     card = new boardroom.models.Card
       group: @
       groupId: @id
-      creator: @currentUser()
-      authors: [ @currentUser() ]
+      creator: @currentUserId()
+      authors: [ @currentUserId() ]
     @cards().add card
 
   dropCard: (id) =>

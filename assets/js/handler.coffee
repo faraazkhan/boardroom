@@ -1,6 +1,7 @@
 class boardroom.Handler
 
-  constructor: (@board, @user) ->
+  constructor: (@board) ->
+    @user = @board.currentUser()
     @logger = boardroom.utils.Logger.instance
     @logger.user = @user
 
@@ -153,7 +154,7 @@ class boardroom.Handler
 
   boardMessage: () =>
     message = _(@board.toJSON()).pick('_id', 'name')
-    message.author = @board.currentUser()
+    message.author = @board.currentUserId()
     message
 
   groupMessage: (group) =>
@@ -167,7 +168,7 @@ class boardroom.Handler
     message._id = group.id if group.id?
     message.cid = group.cid
     message.boardId = @board.id
-    message.author = @board.currentUser()
+    message.author = @board.currentUserId()
     message
 
   cardMessage: (card) =>
@@ -181,12 +182,12 @@ class boardroom.Handler
     message._id = card.id if card.id?
     message.cid = card.cid
     message.boardId = @board.id
-    message.author = @board.currentUser()
+    message.author = @board.currentUserId()
     message
 
   deleteMessage: (model) =>
     message =
       _id: model.id
       boardId: @board.id
-      author: @board.currentUser()
+      author: @board.currentUserId()
     message

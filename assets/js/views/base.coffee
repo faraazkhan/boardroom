@@ -5,15 +5,15 @@ class boardroom.views.Base extends Backbone.View
     @logger = boardroom.utils.Logger.instance
 
   createDragLock: ->
-    onLock = (user, message) =>
-      @showNotice user, message if user? and message?
+    onLock = (avatar, message) =>
+      @showNotice avatar, message if avatar? and message?
     onUnlock = =>
       @hideNotice()
     new boardroom.models.Lock onLock, onUnlock
 
   createEditLock: (selector) ->
-    onLock = (user, message) =>
-      @showNotice user, message if user? and message?
+    onLock = (avatar, message) =>
+      @showNotice avatar, message if avatar? and message?
       @disableEditing selector
     onUnlock = =>
       @hideNotice()
@@ -26,12 +26,15 @@ class boardroom.views.Base extends Backbone.View
   disableEditing: (selector) ->
     @$(selector).attr('disabled', 'disabled')
 
-  showNotice: (user, message) =>
+  showNotice: (avatar, message) =>
     notices = @$('.notice')
     @visibleNotice = if notices.length == 2 then notices.last() else notices.first() # stupid single-card group hack
     unless @visibleNotice.is ':visible'
+      noticeHTML = """
+        <img class='avatar' src='#{avatar}'/><span>#{_.escape message}</span>
+      """
       @visibleNotice
-        .html("<img class='avatar' src='#{boardroom.models.UserIdentity.avatar user}'/><span>#{_.escape message}</span>")
+        .html(noticeHTML)
         .show()
 
   hideNotice: ->

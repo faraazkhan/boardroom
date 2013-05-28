@@ -108,7 +108,8 @@ class boardroom.views.Card extends boardroom.views.Base
     @updateILikeIWish()
     if options?.rebroadcast
       @triggerAutosize()
-      @editLock.lock 1000, @model.get('author'), "#{@model.get('author')} is typing..."
+      userIdentity = @model.board().userIdentityForId card.get 'author'
+      @editLock.lock(1000, userIdentity.get('avatar'), "#{userIdentity.get('displayName')} is typing...") if userIdentity?
 
   updateX: (card, x, options) =>
     @updatePosition x, card.get('y'), options
@@ -119,7 +120,8 @@ class boardroom.views.Card extends boardroom.views.Base
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
     if options?.rebroadcast
-      @dragLock.lock 1000, @model.get('author'), @model.get('author')
+      userIdentity = @model.board().userIdentityForId @model.get 'author'
+      @dragLock.lock(1000, userIdentity.get('avatar'), userIdentity.get('displayName')) if userIdentity?
 
   updatePlusAuthors: (card, plusAuthors, options) =>
     return if plusAuthors.length == 0
@@ -131,10 +133,13 @@ class boardroom.views.Card extends boardroom.views.Base
     $plusAuthors = @$('.plus-authors')
     $plusAuthors.empty()
     for plusAuthor in plusAuthors
-      avatar = boardroom.models.User.avatar plusAuthor
-      $plusAuthors.append("<img class='avatar' src='#{avatar}' title='#{_.escape plusAuthor}'/>")
+      userIdentity = @model.board().userIdentityForId(author)
+      imgHTML = """
+        <img class="avatar" src="#{userIdentity.get 'avatar'}" title="#{_.escape userIdentity.get 'displayName'}"/>
+      """
+      $plusAuthors.append(imgHTML)
 
-    if plusAuthors.indexOf(@model.currentUser()) > -1
+    if plusAuthors.indexOf(@model.currentUserId()) > -1
         @$('.plus1 .btn').remove()
 
   updateAuthors: (card, authors, options) =>
@@ -143,8 +148,11 @@ class boardroom.views.Card extends boardroom.views.Base
     $authors = @$('.authors')
     $authors.empty()
     for author in authors
-      avatar = boardroom.models.UserIdentity.avatar author
-      $authors.append("<img class='avatar' src='#{avatar}' title='#{_.escape author}'/>")
+      userIdentity = @model.board().userIdentityForId(author)
+      imgHTML = """
+        <img class="avatar" src="#{userIdentity.get 'avatar'}" title="#{_.escape userIdentity.get 'displayName'}"/>
+      """
+      $authors.append(imgHTML)
 
   updateILikeIWish: =>
     $textarea = @$el.find 'textarea'

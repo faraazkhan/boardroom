@@ -100,7 +100,8 @@ class boardroom.views.Group extends boardroom.views.Base
     if @$('.name').val() != name
       @$('.name').val(name).trimInput(80)
     if options?.rebroadcast
-      @editLock.lock 1000, @model.get('author'), "#{@model.get('author')} is typing..."
+      userIdentity = @model.board().userIdentityForId group.get 'author'
+      @editLock.lock(1000, userIdentity.get('avatar'), "#{userIdentity.get('displayName')} is typing...") if userIdentity?
 
   updateX: (group, x, options) =>
     @updatePosition x, group.get('y'), options
@@ -111,7 +112,8 @@ class boardroom.views.Group extends boardroom.views.Base
   updatePosition: (x, y, options) =>
     @moveTo x: x, y: y
     if options?.rebroadcast
-      @dragLock.lock 1000, @model.get('author'), @model.get('author')
+      userIdentity = @model.board().userIdentityForId @model.get 'author'
+      @dragLock.lock(1000, userIdentity.get('avatar'), userIdentity.get('displayName')) if userIdentity?
 
   updateZ: (group, z, options) =>
     @$el.css 'z-index', z
@@ -149,7 +151,7 @@ class boardroom.views.Group extends boardroom.views.Base
     cardView = new boardroom.views.Card { model: card }
     @displayCard cardView
     cardView.trigger 'attach'
-    cardView.focus() if card.get('creator') == @model.currentUser()
+    cardView.focus() if card.get('creator') == @model.currentUserId()
 
   displayCard: (cardView) =>
     @cardViews.push cardView

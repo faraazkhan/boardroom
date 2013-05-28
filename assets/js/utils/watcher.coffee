@@ -27,5 +27,5 @@ class boardroom.utils.Watcher
       @logger.error msg
       @cache[key] = -1
     else
-      @socket.emit 'marker', { user: @user.get('user_id'), boardId: @board.id } if @cache[key] == 0
+      @socket.emit 'marker', { user: @user.get('userId'), boardId: @board.id } if @cache[key] == 0
       @cache[key] += @interval

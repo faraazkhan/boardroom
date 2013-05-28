@@ -5,10 +5,18 @@ class boardroom.models.Board extends Backbone.Model
     groups.each (group) => group.set 'board', @, { silent: true }
     @set 'users', {}
     @set 'groups', groups
+    userIdentitySet = {}
+    userIdentitySet[userId] = new boardroom.models.UserIdentity atts for userId, atts of attributes?.userIdentitySet
+    @set 'userIdentitySet', userIdentitySet
+    @set 'currentUserId', attributes.currentUserId
 
-  currentUser: -> @get 'user_id'
+  currentUser: -> @userIdentityForId @get 'currentUserId'
+  currentUserId: -> @currentUser().userId()
+
   groups: -> @get 'groups'
 
+  userIdentityForId: (userIdentityId)-> @userIdentitySet()[userIdentityId]
+  userIdentitySet: (userIdentityId)-> @get('userIdentitySet') ? {}
   findCard: (id) ->
     card = null
     @groups().each (group) ->
@@ -28,7 +36,7 @@ class boardroom.models.Board extends Backbone.Model
 
   createGroup: (coords) =>
     group = @newGroupAt coords
-    creator = @currentUser()
+    creator = @currentUserId()
     group.onSaved = (group) =>
       card = new boardroom.models.Card
         group: group
