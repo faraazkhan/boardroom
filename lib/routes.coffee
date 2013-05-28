@@ -24,7 +24,4 @@ addRouting = (app, loginProtection, createSocketNamespace) ->
   app.post '/boards/:id', loginProtection, boardsController.destroy
   app.post '/boards', loginProtection, boardsController.create
 
-  usersController = new UsersController
-  app.get '/user/avatar/:user_id', usersController.avatar
-
 module.exports = addRouting
