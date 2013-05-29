@@ -61,7 +61,6 @@ class Populator
 
     async.parallel userIdSet, (err, userIdentitySet) ->
       board.userIdentitySet = userIdentitySet || {}
-      console.log board.userIdentitySet
       callback null, board
 
   fillGroup: (group, callback) ->

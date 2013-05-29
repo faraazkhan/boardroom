@@ -87,10 +87,12 @@ class boardroom.Handler
   onReconnect: =>
     @logger.debug 'onReconnect'
     @board.set 'status', null
+    @send 'join', @userMessage()
 
   onJoin: (message) =>
     @logger.debug 'onJoin'
-    @board.addUser message
+    @board.setOnlineUsers message.users
+    @board.userJoined message.userId
 
   onBoardUpdate: (message) =>
     @logger.debug 'onBoardUpdate'

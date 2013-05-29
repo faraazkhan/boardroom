@@ -32,8 +32,8 @@ class Sockets
 
         socket.on 'join', (user) =>
           @users[user.userId] = user
-          boardNamespace.emit 'join', user
-          logger.info -> "#{user.userId} has joined board #{boardId}"
+          boardNamespace.emit 'join', { userId: user.userId, @users }
+          logger.info -> "#{user.displayName} has joined board #{boardId}"
 
         socket.on 'log', ({user, boardId, level, msg}) =>
           logger.logClient user, boardId, level, msg

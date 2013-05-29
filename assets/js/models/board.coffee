@@ -3,13 +3,14 @@ class boardroom.models.Board extends Backbone.Model
   initialize: (attributes, options) ->
     groups = new Backbone.Collection _.map(attributes?.groups, (group) -> new boardroom.models.Group(group))
     groups.each (group) => group.set 'board', @, { silent: true }
-    @set 'users', {}
+    @set 'online-users', []
     @set 'groups', groups
     userIdentitySet = {}
     userIdentitySet[userId] = new boardroom.models.UserIdentity atts for userId, atts of attributes?.userIdentitySet
     @set 'userIdentitySet', userIdentitySet
     @set 'currentUserId', attributes.currentUserId
 
+  onlineUsers: ()-> @get('online-users')
   currentUser: -> @userIdentityForId @get 'currentUserId'
   currentUserId: -> @currentUser().userId()
 
@@ -29,10 +30,16 @@ class boardroom.models.Board extends Backbone.Model
   findGroupByCid: (cid) ->
     @groups().find (group) -> group.cid == cid
 
-  addUser: (user) =>
-    users = @get 'users'
-    users[user.user_id] = user
-    @set 'users', users
+  setOnlineUsers: (onlineUsers)=>
+    for userId, user of onlineUsers
+      userModel = @userIdentityForId user.userId
+      userModel ?= new boardroom.models.UserIdentity
+      userModel.set user
+      @onlineUsers().push user.userId unless user.userId in @onlineUsers()
+      @userIdentitySet()[user.userId] = userModel
+
+  userJoined: (userId) =>
+    console.log "#{userId}: #{@userIdentityForId(userId)?.get('displayName') } joined the board"
 
   createGroup: (coords) =>
     group = @newGroupAt coords
