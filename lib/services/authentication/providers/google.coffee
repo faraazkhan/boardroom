@@ -1,5 +1,5 @@
 crypto = require 'crypto'
-GoogleStrategy = require('passport-google').Strategy
+GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
 Provider = require '../provider'
 
@@ -9,15 +9,24 @@ class Google extends Provider
   passportStrategyClass: GoogleStrategy
 
   secret:
-    realm: process.env.GOOGLE_REALM
-    returnURL: process.env.GOOGLE_CALLBACK_URL
+    clientID: process.env.GOOGLE_CLIENT_ID
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
 
-  identityFromOAuth: (identifier, profile) ->
-    emailAddress = profile.emails?[0]?.value
-    profile.email = emailAddress
-    profile.username = emailAddress?.replace(/@.*$/,"");
+  authenticationOptions: => 
+    {
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',                                  
+        'https://www.googleapis.com/auth/userinfo.email'
+      ]
+    }
+
+  identityFromOAuth: (accessToken, refreshToken, profile) ->
+    profile.email = profile._json?.email
+    profile.username = profile.email?.replace(/@.*$/,"");
+    # +++ todo find a way to get user's avatar from gmail or google plus or google api or whatever
     md5 = crypto.createHash 'md5'
-    md5.update emailAddress
+    md5.update profile.email
     profile.avatar = "http://www.gravatar.com/avatar/#{md5.digest 'hex'}?d=retro"
     profile
 

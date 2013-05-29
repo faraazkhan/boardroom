@@ -11,30 +11,31 @@ passport.serializeUser (user, done)-> done null, user._id
 passport.deserializeUser (_id, done)-> User.findOne { _id }, done
 
 class SessionsController extends ApplicationController
-  authenticator: {}
 
   constructor: ()->
+    @authenticators = {}
     @registerAuthenticators()
 
-  registerAuthenticators: ()->
+  registerAuthenticators: ()=>
     try
       providers = fs.readdirSync path.resolve __dirname, '../services/authentication/providers/'
       for filename in providers
-        authenticator = require "../services/authentication/providers/#{filename}"
-        passport.use authenticator.passportStrategy()
-        authenticator[authenticator.name] = authenticator
+        providerAuthenticator = require "../services/authentication/providers/#{filename}"
+        passport.use providerAuthenticator.passportStrategy()
+        @authenticators[providerAuthenticator.name] = providerAuthenticator
     catch e
       console.warn @name, e.message
 
-  newOAuth: (request,response, next)->
+  newOAuth: (request,response, next)=>
     provider = request.params?.provider
     try
-      passport.authenticate(provider)(request,response)
+      opts = @authenticators[provider].authenticationOptions()
+      passport.authenticate(provider, opts)(request,response)
     catch e
-      console.error "no registered provider for #{provider}"
+      console.error "no registered provider for #{provider}", e.message
       response.redirect '/login'
 
-  createOAuth: (request,response, next)->
+  createOAuth: (request,response, next)=>
     provider = request.params?.provider
     failureRedirect = '/login'
     successRedirect = '/'
@@ -43,7 +44,7 @@ class SessionsController extends ApplicationController
       delete request.session.got2URL
     passport.authenticate(provider, { successRedirect, failureRedirect })(request,response, next)
 
-  new: (request, response) ->
+  new: (request, response) =>
     response.render 'login', {layout: false}
 
   # create: (request, response) ->

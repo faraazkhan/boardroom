@@ -4,6 +4,8 @@ class Provider
   passportStrategy: =>
     new @passportStrategyClass @secret, @passportCallback
 
+  authenticationOptions: => {}
+
   passportCallback: (args...)=>
     oauthDoneCallback = args[ args.length - 1 ]
     oauthArgs = args[..-2]
