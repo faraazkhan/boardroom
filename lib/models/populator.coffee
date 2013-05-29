@@ -53,12 +53,15 @@ class Populator
         userIdSet[authorId] = 1 for authorId in [card.creator, card.authors..., card.plusAuthors...]
 
     for authorId, value of userIdSet # functor to lookup active Identity for each user
-      userIdSet[authorId] = (cb)-> 
-        User.findById authorId, (err, user)->
-          cb(null, user?.activeIdentity)
+      do (authorId)->
+        userIdSet[authorId] = (cb)->
+          userId = authorId
+          User.findById userId, (err, user)->
+            cb(null, user?.activeIdentity)
 
     async.parallel userIdSet, (err, userIdentitySet) ->
       board.userIdentitySet = userIdentitySet || {}
+      console.log board.userIdentitySet
       callback null, board
 
   fillGroup: (group, callback) ->
