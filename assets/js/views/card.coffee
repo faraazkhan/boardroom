@@ -128,12 +128,12 @@ class boardroom.views.Card extends boardroom.views.Base
 
     $plusCount = @$('.plus-count')
     $plusCount.text "+#{plusAuthors.length}"
-    $plusCount.attr 'title', _.map(plusAuthors, (author) -> _.escape(author)).join(', ')
+    $plusCount.attr 'title', _.map(plusAuthors, (author) => _.escape(@model.board().userIdentityForId(author).displayName())).join(', ')
 
     $plusAuthors = @$('.plus-authors')
     $plusAuthors.empty()
     for plusAuthor in plusAuthors
-      userIdentity = @model.board().userIdentityForId(author)
+      userIdentity = @model.board().userIdentityForId(plusAuthor)
       imgHTML = """
         <img class="avatar" src="#{userIdentity.get 'avatar'}" title="#{_.escape userIdentity.get 'displayName'}"/>
       """
