@@ -34,7 +34,7 @@ userSchema.methods =
 userSchema.virtual('activeIdentity').get () -> 
   identity = @identities[0] ? {}
   {
-    userId: @_id
+    userId: @id
     username: identity.username
     displayName: identity.displayName
     email: identity.email
