@@ -1,18 +1,19 @@
 class boardroom.views.Base extends Backbone.View
 
-  initialize: (attributes) ->
+  initialize: (attributes) =>
     super attributes
     @logger = boardroom.utils.Logger.instance
 
-  createDragLock: ->
+  createDragLock: =>
     onLock = (avatar, message) =>
       @showNotice avatar, message if avatar? and message?
     onUnlock = =>
       @hideNotice()
     new boardroom.models.Lock onLock, onUnlock
 
-  createEditLock: (selector) ->
+  createEditLock: (selector) =>
     onLock = (avatar, message) =>
+      console.log 'locking edit ', selector
       @showNotice avatar, message if avatar? and message?
       @disableEditing selector
     onUnlock = =>
@@ -20,10 +21,10 @@ class boardroom.views.Base extends Backbone.View
       @enableEditing selector
     new boardroom.models.Lock onLock, onUnlock
 
-  enableEditing: (selector) ->
+  enableEditing: (selector) =>
     @$(selector).removeAttr 'disabled'
 
-  disableEditing: (selector) ->
+  disableEditing: (selector) =>
     @$(selector).attr('disabled', 'disabled')
 
   showNotice: (avatar, message) =>
@@ -37,10 +38,10 @@ class boardroom.views.Base extends Backbone.View
         .html(noticeHTML)
         .show()
 
-  hideNotice: ->
-    @visibleNotice?.fadeOut 100
+  hideNotice: =>
+    @visibleNotice.fadeOut 100
 
-  moveTo: ({x, y}) ->
+  moveTo: ({x, y}) =>
     if !x? or !y?
       @$el.css { left: '', top: '' }
     else if isNaN(Number(x)) or isNaN(Number(y))
@@ -52,19 +53,19 @@ class boardroom.views.Base extends Backbone.View
       @$el.offset { left: left, top: top }
     @resizeHTML()
 
-  left: ->
+  left: =>
     @$el.position()?.left || 0
 
-  top: ->
+  top: =>
     @$el.position()?.top || 0
 
-  right: ->
+  right: =>
     @left() + @$el.width()
 
-  bottom: ->
+  bottom: =>
     @top() + @$el.height()
 
-  resizeHTML: ()->
+  resizeHTML: ()=>
     #+++ TODO - this is not working right!
     width =  Math.max ( $(document).width()  ),  ( parseInt $('body').css('min-width') )
     height = Math.max ( -100 + $(document).height() ),  ( parseInt $('body').css('min-height') )

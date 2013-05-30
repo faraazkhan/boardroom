@@ -3,7 +3,7 @@ class boardroom.views.Card extends boardroom.views.Base
   template: _.template """
     <div class='header-bar'>
       <span class='delete-btn'>&times;</span>
-      <span class='notice'></span>
+      <span class='notice' style='display: none'></span>
       <div class='plus-authors'></div>
     </div>
     <textarea></textarea>

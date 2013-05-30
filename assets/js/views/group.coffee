@@ -4,7 +4,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   template: _.template """
     <div class='background'></div>
-    <div class='notice'></div>
+    <div class='notice' style='display: none'></div>
     <input type='text' class='name' placeholder='group name'></input>
     <button class='add-card'>+</button>
   """
