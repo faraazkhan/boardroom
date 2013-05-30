@@ -64,8 +64,10 @@ BoardSchema.methods =
   collaborators: ->
     collabs = []
     for card in @cards()
-      for user in card.authors
-        collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 ) 
+      for userId in card.authors
+        continue unless userId?
+        collabId = collabId?.toString()
+        collabs.push collabId unless ( collabId == @creator or collabId in collabs )
     collabs
 
   lastUpdated: ->
