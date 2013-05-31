@@ -11,12 +11,12 @@ describe 'Facebook', ->
     facebookId = 1111111
     username = 'a_facebook_user'
     displayName = 'Facebook User'
-    avatar = "https://graph.facebook.com/#{facebookId}/picture"
+    profileImage = "https://graph.facebook.com/#{facebookId}/picture"
     profile = 
+      id: facebookId
       provider: 'facebook'
-      providerId: facebookId
       username: username
       displayName: displayName
 
     identity = facebook.identityFromOAuth 'token', 'secret', profile
-    expect(identity.avatar).toEqual avatar
+    expect(identity.avatar).toEqual profileImage

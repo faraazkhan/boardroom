@@ -9,7 +9,7 @@ url = require 'url'
 $ = require 'jquery'
 async = require 'async'
 
-authenticate = require '../../../lib/services/authenticate'
+loginProtection = require '../../../lib/services/authentication/login_protection'
 Factory = require './factories'
 
 Boardroom = require "../../../lib/boardroom"
@@ -19,7 +19,7 @@ port = 6969
 class Session
 
   constructor: ->
-    @boardroom = new Boardroom { authenticate: @wrappedAuthenticate, @createSocketNamespace }
+    @boardroom = new Boardroom { loginProtection: @wrappedLoginProtection, @createSocketNamespace }
 
   reset: =>
     @end()
@@ -30,10 +30,10 @@ class Session
 
   logout: => @user = undefined
 
-  wrappedAuthenticate: (request, response, next) =>
+  wrappedLoginProtection: (request, response, next) =>
     request.session ?= {}
-    request.session.user_id = if @user? then @user
-    authenticate(request,response, next)
+    request.user = @user if @user?
+    loginProtection(request,response, next)
 
   createSocketNamespace: (request, response, next) => next()
 
@@ -44,7 +44,6 @@ class Session
     @logout()
     @server?.close()
     @server = undefined
-
 
 describeController = (controller, cb) ->
   session = new Session

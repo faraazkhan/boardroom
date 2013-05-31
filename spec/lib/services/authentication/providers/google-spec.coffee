@@ -8,14 +8,15 @@ describe 'Google', ->
     expect(google.name).toEqual 'google'
 
   it '.identityFromOAuth', ->
-    googleId = 1111111    
+    googleId = 1111111
     username = 'a_google_user'
     displayName = 'Google User'
-    profile = 
-      providerId: googleId
+    emailAddress = "#{username}@carbonfive.com"
+    profile =
+      id: googleId
       displayName: displayName
-      emails: [ { value: "#{username}@carbonfive.com" } ]
-      name: { familyName: 'User', givenName: 'Google' }
+      _json:
+        email: emailAddress
 
-    identity = google.identityFromOAuth 'google.com/identifier', profile
-    expect(identity.avatar).toExist
+    identity = google.identityFromOAuth 'accessToken', 'refreshToken', profile
+    expect(identity.email).toEqual emailAddress

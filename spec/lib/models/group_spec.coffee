@@ -8,7 +8,9 @@ describe 'Group', ->
 
     describe "given a user", ->
       user = undefined
+      otherUser = undefined
       groupA = undefined
+      groupB = undefined
       groupC = undefined
 
       beforeEach (done) ->
@@ -22,11 +24,11 @@ describe 'Group', ->
           { user, otherUser, groupA, groupB, groupC } = results
 
           async.parallel [
-            async.apply Factory.create, "card", { groupId: groupA.id, _authors: [user] }
-            async.apply Factory.create, "card", { groupId: groupA.id, _authors: [otherUser] }
-            async.apply Factory.create, "card", { groupId: groupA.id, _authors: [user] }
-            async.apply Factory.create, "card", { groupId: groupB.id, _authors: [otherUser] }
-            async.apply Factory.create, "card", { groupId: groupC.id, _authors: [user, otherUser] }
+            async.apply Factory.create, "card", { groupId: groupA.id, authors: [user] }
+            async.apply Factory.create, "card", { groupId: groupA.id, authors: [otherUser] }
+            async.apply Factory.create, "card", { groupId: groupA.id, authors: [user] }
+            async.apply Factory.create, "card", { groupId: groupB.id, authors: [otherUser] }
+            async.apply Factory.create, "card", { groupId: groupC.id, authors: [user, otherUser] }
           ], done
 
       it "only returns groups that the user has collaborated on", (done) ->

@@ -41,14 +41,14 @@ Factory.define 'group', Group,
 
 Factory.define 'card', Card,
   groupId: Factory.assoc 'group', 'id'
-  _creator: Factory.assoc 'user'
+  creator: Factory.assoc 'user', 'id'
   text: 'text'
   colorIndex: 2
   deleted: false
-  _authors: (cb) ->
+  authors: (cb) ->
     Factory.create 'user', (error, user) ->
       cb [user]
-  _plusAuthors: (cb) ->
+  plusAuthors: (cb) ->
     Factory.create 'user', (error, user) ->
       cb [user]
 

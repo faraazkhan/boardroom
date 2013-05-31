@@ -5,10 +5,12 @@ describe 'Card', ->
     groupId = undefined
 
     beforeEach (next) ->
-      Factory 'group', (err, group) ->
-        groupId = group.id
-        Factory 'card', { groupId }, (error, card) ->
-          next()
+      Factory.create 'user', (err, user)->
+        Factory 'group', (err, group) ->
+          creator = user.id
+          groupId = group.id
+          Factory 'card', { groupId, creator }, (error, card) ->
+            next()
 
     it 'finds all cards for the given group', (done) =>
       Card.findByGroupId groupId, (err, cards) ->
@@ -20,28 +22,24 @@ describe 'Card', ->
       beforeEach (done) =>
         Factory 'card', (err, card) =>
           @card = card
-          Factory 'user', (err, user) =>
-            @user = user
-            done()
+          done()
 
       it 'updates its attributes', (done) =>
-        numAuthors = @card.authors.length
-        numPlusAuthors = @card.plusAuthors.length
-        attributes =
-          text: "#{@card.text}-updated"
-          colorIndex: @card.colorIndex + 1
-          deleted: ! @card.deleted
-          authors: [ @card.authors... ,  'author1' ]
-          _authors: [ @user ]
-          plusAuthors: [ @card.plusAuthors... , 'plusAuthor1']
-          _plusAuthors: [ @user ]
+        Factory.create 'user', (err, author)=>
+          Factory.create 'user', (err, plusAuthor)=>
+            numAuthors = @card.authors.length
+            numPlusAuthors = @card.plusAuthors.length
+            attributes =
+              text: "#{@card.text}-updated"
+              colorIndex: @card.colorIndex + 1
+              deleted: ! @card.deleted
+              authors: [ @card.authors... ,  author.id ]
+              plusAuthors: [ @card.plusAuthors... , plusAuthor.id ]
 
-        @card.updateAttributes attributes, (err) =>
-          Card.findById @card.id, (err, card) ->
-            expect(card.text).toEqual attributes.text
-            expect(card.colorIndex).toEqual attributes.colorIndex
-            expect(card.authors.length).toEqual numAuthors+1
-            expect(card.plusAuthors.length).toEqual numPlusAuthors+1
-            expect(card._authors.length).toEqual 1
-            expect(card._plusAuthors.length).toEqual 1
-            done()
+            @card.updateAttributes attributes, (err) =>
+              Card.findById @card.id, (err, card) ->
+                expect(card.text).toEqual attributes.text
+                expect(card.colorIndex).toEqual attributes.colorIndex
+                expect(card.authors.length).toEqual numAuthors+1
+                expect(card.plusAuthors.length).toEqual numPlusAuthors+1
+                done()

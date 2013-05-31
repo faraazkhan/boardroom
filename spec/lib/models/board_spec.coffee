@@ -1,7 +1,7 @@
 { Factory, Board, Group, Card, async, _ } = require "../support/model_test_support"
 
 createBundle = (boardName, user, done) ->
-  Factory.create "board", { name: boardName }, (err, board) ->
+  Factory.create "board", { name: boardName, creator:user.id }, (err, board) ->
     Factory.create "group", { boardId: board.id }, (err, group) ->
       Factory.create "card", {
         groupId: group.id,
@@ -27,15 +27,15 @@ describe 'board.Board', ->
           { user, otherUser } = results
 
           async.parallel [
-            async.apply Factory.create, 'board', { _creator: user, name: 'board1' }
-            async.apply Factory.create, 'board', { _creator: otherUser, name: 'board2' }
-            async.apply Factory.create, 'board', { _creator: otherUser, name: 'board3' }
-            async.apply Factory.create, 'board', { _creator: user, name: 'board4' }
-            async.apply Factory.create, 'board', { _creator: user, name: 'board5' }
+            async.apply Factory.create, 'board', { creator: user.id, name: 'board1' }
+            async.apply Factory.create, 'board', { creator: otherUser.id, name: 'board2' }
+            async.apply Factory.create, 'board', { creator: otherUser.id, name: 'board3' }
+            async.apply Factory.create, 'board', { creator: user.id, name: 'board4' }
+            async.apply Factory.create, 'board', { creator: user.id, name: 'board5' }
           ], done
 
       it 'only returns boards created by that user', (done) ->
-        Board.createdBy user, (err, boards) ->
+        Board.createdBy user.id, (err, boards) ->
           expect(boards.length).toEqual 3
           expect(boards[0].name).toEqual 'board1'
           done()
@@ -59,7 +59,7 @@ describe 'board.Board', ->
             boardA = bundles[0].board
             boardB = bundles[1].board
 
-            bundles[1].card._authors.push users[1]
+            bundles[1].card.authors.push users[1].id
             bundles[1].card.save done
 
       it 'only returns boards that the user has collaborated on', (done) ->

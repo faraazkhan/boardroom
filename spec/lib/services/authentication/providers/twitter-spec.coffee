@@ -11,20 +11,20 @@ describe 'Twitter', ->
     twitterId = 1111111
     username = 'a_twitter_user'
     displayName = 'Twitter User'
-    avatar = 'https://si0.twimg.com/profile_images/2989131844/bbb85fc25c5f3b2712bba2ffd38cbe4a_normal.jpeg'
+    profileImage = 'https://si0.twimg.com/profile_images/2989131844/bbb85fc25c5f3b2712bba2ffd38cbe4a_normal.jpeg'
     profile = 
       provider: 'twitter'
       providerId: twitterId
       username: username
       displayName: displayName
-      photos: [ { value: avatar } ]
+      photos: [ { value: profileImage } ]
       _json:
          id: twitterId
          id_str: '#{twitterId}'
          name: displayName
          screen_name: username
          location: 'Santa Monica'
-         profile_image_url_https: avatar
+         profile_image_url_https: profileImage
 
     identity = twitter.identityFromOAuth 'token', 'secret', profile
-    expect(identity.avatar).toEqual avatar
+    expect(identity.avatar).toEqual profileImage
