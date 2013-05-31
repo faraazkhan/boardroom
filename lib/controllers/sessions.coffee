@@ -20,9 +20,12 @@ class SessionsController extends ApplicationController
     try
       providers = fs.readdirSync path.resolve __dirname, '../services/authentication/providers/'
       for filename in providers
-        providerAuthenticator = require "../services/authentication/providers/#{filename}"
-        passport.use providerAuthenticator.passportStrategy()
-        @authenticators[providerAuthenticator.name] = providerAuthenticator
+        do (filename)=>
+          providerAuthenticator = require "../services/authentication/providers/#{filename}"
+          if providerAuthenticator.isConfigured()
+            passport.use providerAuthenticator.passportStrategy()
+            @authenticators[providerAuthenticator.name] = providerAuthenticator
+
     catch e
       console.warn @name, e.message
 

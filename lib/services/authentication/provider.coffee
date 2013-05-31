@@ -17,4 +17,9 @@ class Provider
 
     User.logIn identity, oauthDoneCallback
 
+  isConfigured: ()=> # return false if any secret key is missing
+    keysConfigured = (val? for key, val of @secret)
+    ok = false for keyConfigured in keysConfigured when not keyConfigured
+    ok ?= true
+
 module.exports = Provider
