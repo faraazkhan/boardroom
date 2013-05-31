@@ -7,9 +7,6 @@ execCmd = (cmd) ->
   cmdProcess.on 'exit', (code) ->
     if code then process.exit code
 
-task 'spec:scratch', 'Run all specs in spec/server/**/scratch_spec', ->
-  execCmd 'NODE_ENV=test ./node_modules/.bin/jasmine-node --captureExceptions --coffee spec/lib/**/*scratch_spec.coffee'
-
 task 'spec:client', 'Run all specs in spec/client', ->
   execCmd 'NODE_ENV=test jasmine-headless-webkit --color'
 
@@ -25,6 +22,8 @@ task 'spec:services', 'Run all specs in spec/server/models', ->
 task 'spec:controllers', 'Run all specs in spec/server/models', ->
   execCmd 'NODE_ENV=test ./node_modules/.bin/jasmine-node --captureExceptions --coffee spec/lib/controllers'
 
+task 'spec:scratch', 'Run all specs in spec/server/**/scratch_spec', ->
+  execCmd 'NODE_ENV=test ./node_modules/.bin/jasmine-node --captureExceptions --coffee spec/lib/**/*scratch_spec.coffee'
 
 task 'spec', 'Run all client and server specs', ->
   invoke 'spec:client'
