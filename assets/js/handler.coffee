@@ -57,7 +57,7 @@ class boardroom.Handler
       @send 'group.create', @groupMessage(group)
 
   createSocket: ->
-    io.connect "#{@socketHost()}/boards/#{@board.id}"
+    io.connect "/boards/#{@board.id}"
 
   send: (name, message, options) =>
     return unless message?
@@ -190,11 +190,3 @@ class boardroom.Handler
       boardId: @board.id
       author: @board.currentUser()
     message
-
-  # We can dump this when nginx starts supporting websockets
-  socketHost: ->
-    loc = window.location
-    if loc.hostname == 'boardroom.carbonfive.com'
-      return 'http://boardroom.carbonfive.com:1337' if ( loc.port == '80' or loc.port == '' )
-      return 'http://boardroom.carbonfive.com:1338' if loc.port == '81'
-    ''
