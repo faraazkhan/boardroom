@@ -25,12 +25,11 @@ Factory.define 'identity', Identity,
 boardCounter = 0
 Factory.define 'board', Board,
   name: (cb) -> cb "board-#{boardCounter++}"
-  _creator: (cb) -> 
-    Factory.create 'user', (error, user) ->
-      cb user
+  creator: Factory.assoc 'user', 'id'
 
 groupCounter = 0
 Factory.define 'group', Group,
+  boardId: Factory.assoc 'user', 'id'
   boardId: (cb) ->
     Factory.create 'board', (error, board) ->
       cb board.id
@@ -77,9 +76,9 @@ Factory.createBundle = (callback) ->
       for i in [1..4]
         do (i) ->
           calls.push (done) ->
-            Factory 'board', name: "board#{i}", _creator: users["boardCreator#{i}"], (err, board) ->
+            Factory 'board', name: "board#{i}", creator: users["boardCreator#{i}"], (err, board) ->
               Factory 'group', boardId: board.id, (err, group) ->
-                Factory 'card', groupId: group.id, _authors: authors[i-1], (err, card) ->
+                Factory 'card', groupId: group.id, authors: authors[i-1], (err, card) ->
                   done err, board
 
       async.parallel calls, (error, boards) ->

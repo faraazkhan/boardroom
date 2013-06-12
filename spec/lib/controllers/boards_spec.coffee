@@ -24,35 +24,35 @@ describeController 'BoardsController', (session) ->
         expect(count).toEqual 1
         done()
 
-    # it 'redirects to the new board', (done)->
-    #   expect(response).toBeDefined()
-    #   expect(response.redirect).toBeTruthy()
-    #   Board.findOne { _creator: session.user.id }, (err, board) ->
-    #     expect(board.name).toEqual name
-    #     redirect = url.parse response.headers.location
-    #     expect(redirect.path).toEqual "/boards/#{board.id}"
-    #     done()
+    it 'redirects to the new board', (done)->
+      expect(response).toBeDefined()
+      expect(response.redirect).toBeTruthy()
+      Board.findOne { creator: session.user.id }, (err, board) ->
+        expect(board.name).toEqual name
+        redirect = url.parse response.headers.location
+        expect(redirect.path).toEqual "/boards/#{board.id}"
+        done()
 
-  # describe '#show', ->
-  #   id = undefined
+  describe '#show', ->
+    id = undefined
 
-  #   beforeEach (done) ->
-  #     Factory.create 'user', (error, user) ->
-  #       session.login user
-  #       done()
+    beforeEach (done) ->
+      Factory.create 'user', (error, user) ->
+        session.login user
+        done()
 
-  #   describe 'given an existing board id', ->
-  #     beforeEach (done) ->
-  #       Factory "board", (err, board) ->
-  #         id = board.id
-  #         done()
+    describe 'given an existing board id', ->
+      beforeEach (done) ->
+        Factory "board", (err, board) ->
+          id = board.id
+          done()
 
-  #     it 'returns the board page', (done) ->
-  #       session.request()
-  #         .get("/boards/#{id}")
-  #         .end (req, res) ->
-  #           expect(res.statusCode).toBe(200)
-  #           done()
+      it 'returns the board page', (done) ->
+        session.request()
+          .get("/boards/#{id}")
+          .end (req, res) ->
+            expect(res.statusCode).toBe(200)
+            done()
 
   # describe '#destroy', ->
   #   board = undefined
