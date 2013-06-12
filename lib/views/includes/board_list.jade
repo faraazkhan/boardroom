@@ -30,5 +30,5 @@ for board in boards
           date = board.created
           include pretty_date
 
-  script
+  script.
     $('#form-#{board._id}').on('submit', function(){ return confirm('WARNING: This will delete all cards this board!!  You cannot get this board back.\n\nAre you sure you want to do this?') })
