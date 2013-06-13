@@ -8,3 +8,4 @@ public/css/*
 public/js/*
 style.css
 .env
+script/dump/*
