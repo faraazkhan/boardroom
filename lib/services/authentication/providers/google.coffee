@@ -9,14 +9,14 @@ class Google extends Provider
   passportStrategyClass: GoogleStrategy
 
   secret:
-    clientID: process.env.GOOGLE_CLIENT_ID
+    clientID: process.env.GOOGLE_CLIENT_ID || '823996637625.apps.googleusercontent.com'
     clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    callbackURL: process.env.GOOGLE_CALLBACK_URL
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || '/oauth/google/callback'
 
   authenticationOptions: => 
     {
       scope: [
-        'https://www.googleapis.com/auth/userinfo.profile',                                  
+        'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email'
       ]
     }

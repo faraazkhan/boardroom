@@ -1,3 +1,4 @@
+logger = require '../services/logger'
 ApplicationController = require './application'
 BoardsController = require '../controllers/boards'
 User = require '../models/user'
@@ -17,25 +18,33 @@ class SessionsController extends ApplicationController
     @registerAuthenticators()
 
   registerAuthenticators: ()=>
-    try
-      providers = fs.readdirSync path.resolve __dirname, '../services/authentication/providers/'
-      for filename in providers
-        do (filename)=>
-          providerAuthenticator = require "../services/authentication/providers/#{filename}"
-          if providerAuthenticator.isConfigured()
+    providers = fs.readdirSync path.resolve __dirname, '../services/authentication/providers/'
+    for filename in providers
+      do (filename)=>
+        providerAuthenticator = require "../services/authentication/providers/#{filename}"
+        if providerAuthenticator.isConfigured()
+          try
             passport.use providerAuthenticator.passportStrategy()
             @authenticators[providerAuthenticator.name] = providerAuthenticator
-
-    catch e
-      console.warn @name, e.message
+            logger.info -> "auth: registered #{providerAuthenticator.name} provider"
+          catch e
+            logger.warn -> "auth: error regsitering #{providerAuthenticator.name} provider - #{e.message}"
+        else
+          logger.warn -> "auth: unable to register #{providerAuthenticator.name} provider - not configured"
 
   newOAuth: (request,response, next)=>
     provider = request.params?.provider
+    authenticator = @authenticators[provider]
+    unless authenticator?
+      logger.error -> "no registered provider for #{provider}"
+      response.redirect '/login'
+      return
+
     try
-      opts = @authenticators[provider].authenticationOptions()
+      opts = authenticator.authenticationOptions()
       passport.authenticate(provider, opts)(request,response)
     catch e
-      console.error "no registered provider for #{provider}", e.message
+      logger.error -> "error authenticating with #{provider} - #{e.message}"
       response.redirect '/login'
 
   createOAuth: (request,response, next)=>
@@ -48,7 +57,9 @@ class SessionsController extends ApplicationController
     passport.authenticate(provider, { successRedirect, failureRedirect })(request,response, next)
 
   new: (request, response) =>
-    response.render 'login', {layout: false}
+    providers = for name, provider of @authenticators
+      name
+    response.render 'login', {layout: false, providers}
 
   # create: (request, response) ->
   #   redirect_url = request.session?.post_auth_url ? '/'

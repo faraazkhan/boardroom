@@ -16,15 +16,13 @@ html
 
       #social-login(action='/login', method='post')
         h2 sign in with
-        button(onclick="javascript:window.location = href='oauth/twitter'")
-          i.icon-twitter
-          span Twitter
-        button(onclick="javascript:window.location = href='oauth/facebook'")
-          i.icon-facebook
-          span Facebook
-        button(onclick="javascript:window.location = href='oauth/google'")
-          i.icon-google-plus
-          span Google+
+        each provider in providers
+          - var icon = provider
+          if provider == 'google'
+            - icon = 'google-plus'
+          button(onclick="javascript:window.location = href='oauth/#{provider}'")
+            i(class="icon-#{icon}")
+            span #{provider}
         hr
         blockquote
           em
