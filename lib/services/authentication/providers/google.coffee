@@ -9,7 +9,7 @@ class Google extends Provider
   passportStrategyClass: GoogleStrategy
 
   secret:
-    clientID: process.env.GOOGLE_CLIENT_ID || '823996637625.apps.googleusercontent.com'
+    clientID: process.env.GOOGLE_CLIENT_ID || '823996637625-ncfoctaop4ml75e8q6diuhbgl8jdiqvt.apps.googleusercontent.com'
     clientSecret: process.env.GOOGLE_CLIENT_SECRET
     callbackURL: process.env.GOOGLE_CALLBACK_URL || '/oauth/google/callback'
 

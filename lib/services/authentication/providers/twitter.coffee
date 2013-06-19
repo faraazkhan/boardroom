@@ -8,7 +8,7 @@ class Twitter extends Provider
   passportStrategyClass: TwitterStrategy
 
   secret:
-    consumerKey: process.env.TWITTER_KEY || 'TzhP8uHvhXuDkaI4t2oXg'
+    consumerKey: process.env.TWITTER_KEY || 'GTCNZRp7ZAzq5ByFyLk4cQ'
     consumerSecret: process.env.TWITTER_SECRET
     callbackURL: process.env.TWITTER_CALLBACK_URL || '/oauth/twitter/callback'
 
