@@ -5,7 +5,7 @@ Group = require "./group"
 
 BoardSchema = new mongoose.Schema
   name     : { type: String, required: true }
-  creator  : { type: String }
+  creator  : { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
   created  : { type: Date }
   updated  : { type: Date }
 
@@ -15,7 +15,7 @@ BoardSchema.virtual('groups').set (groups) -> @vGroups = groups
 
 BoardSchema.virtual('currentUserId').get () -> @vCurrentUserId
 BoardSchema.virtual('currentUserId').set (currentUserId) -> @vCurrentUserId = currentUserId
-BoardSchema.virtual('userIdentitySet').get () -> @vUserIdentitySet
+BoardSchema.virtual('userIdentitySet').get () -> @vUserIdentitySet ?= {}
 BoardSchema.virtual('userIdentitySet').set (userIdentitySet) -> @vUserIdentitySet = userIdentitySet
 
 
