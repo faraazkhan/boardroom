@@ -1,14 +1,14 @@
 { mongoose } = require './db'
 
 CardSchema = new mongoose.Schema
-  groupId      : { type: String, required: true }
+  groupId     : { type: String, required: true }
   creator     : { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
   authors     : [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
   plusAuthors : [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
-  text         : { type: String, default: '' }
-  colorIndex   : { type: Number, default: 2, min: 0, max: 4 }
-  created      : { type: Date }
-  updated      : { type: Date }
+  text        : { type: String, default: '' }
+  colorIndex  : { type: Number, default: 2, min: 0, max: 4 }
+  created     : { type: Date }
+  updated     : { type: Date }
 
 CardSchema.pre 'save', (next) ->
   @created = new Date() unless @created?
