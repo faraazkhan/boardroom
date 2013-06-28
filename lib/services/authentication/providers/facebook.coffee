@@ -8,9 +8,9 @@ class Facebook extends Provider
   passportStrategyClass: FacebookStrategy
 
   secret:
-    clientID: process.env.FACEBOOK_APP_ID
+    clientID: process.env.FACEBOOK_APP_ID || '170007976510137'
     clientSecret: process.env.FACEBOOK_APP_SECRET
-    callbackURL: process.env.FACEBOOK_CALLBACK_URL
+    callbackURL: process.env.FACEBOOK_CALLBACK_URL || '/oauth/facebook/callback'
 
   identityFromOAuth: (accessToken, refreshToken, profile) ->
     profile.avatar = "https://graph.facebook.com/#{profile.id}/picture"
