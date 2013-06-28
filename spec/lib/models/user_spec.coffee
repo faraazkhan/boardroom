@@ -6,16 +6,79 @@ describe 'User', ->
 
   describe "logging in", ->
     describe 'given an authenticated identity', ->
-      source = 'identitySource'
-      sourceId = '123'
-      passedIdentity = undefined
+      source          = undefined
+      sourceId        = undefined
+      username        = undefined
+      email           = undefined
+      displayName     = undefined
+      passedIdentity  = undefined
 
       beforeEach (done) ->
+        source          = 'identitySource'
+        sourceId        = '123'
+        username        = 'foo'
+        email           = 'foo@here.com'
+        displayName     = username
+        passedIdentity  = undefined
         Factory.build 'identity',
-          { source: source, sourceId: sourceId, displayName: 'foo' },
+          { source, sourceId, username, email, displayName },
           (error, o) ->
             passedIdentity = o
             done()
+
+      describe 'for a legacy user who had a previous (non-oauth) account', ->
+        legacyUser = undefined
+        loggedInUser = undefined
+
+        describe 'with a twitter login', ->
+          beforeEach (done) ->
+            source = 'twitter'
+            username = 'twitter_user'
+            displayName = username
+            email = undefined
+            legacyId = "@#{username}"
+            Factory.build 'identity',
+              { source:'boardroom-legacy', sourceId:legacyId, username: legacyId, displayName: legacyId }
+              (err, existingIdentity) ->
+                Factory "user",
+                  { identities: [existingIdentity] }
+                  (err, o) ->
+                    legacyUser = o
+                    Factory.build 'identity',
+                      { source, sourceId, username },
+                      (error, o) ->
+                        passedIdentity = o
+                        User.logIn passedIdentity, (err, o) ->
+                          loggedInUser = o
+                          done()
+
+          it 'captures the old account', ->
+            expect(legacyUser.id).toEqual(loggedInUser.id)
+
+        describe 'with an email login', ->
+          beforeEach (done) ->
+            source = 'google'
+            username = 'email.user'
+            displayName = username
+            email = "#{username}@gmail.com"
+            legacyId = email
+            Factory.build 'identity',
+              { source:'boardroom-legacy', sourceId:legacyId, username:legacyId, displayName:legacyId }
+              (err, existingIdentity) ->
+                Factory "user",
+                  { identities: [existingIdentity] }
+                  (err, o) ->
+                    legacyUser = o
+                    Factory.build 'identity',
+                      { source, sourceId, username, email, displayName },
+                      (error, o) ->
+                        passedIdentity = o
+                        User.logIn passedIdentity, (err, o) ->
+                          loggedInUser = o
+                          done()
+
+          it 'captures the old account', ->
+            expect(legacyUser.id).toEqual(loggedInUser.id)
 
       describe 'for an existing user with a matching identity', ->
         existingUser = undefined

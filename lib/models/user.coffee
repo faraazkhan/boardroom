@@ -10,9 +10,18 @@ userSchema = new mongoose.Schema
 
 userSchema.statics =
   logIn: (identity, callback) ->
-    @findOne { 'identities.source': identity.source, 'identities.sourceId': identity.sourceId }, (err, user) ->
-      user ?= new User
-      user.updateIdentity(identity, callback)
+    @migrateLegacyUser identity, (err, gotCaptured) =>
+      @findOne { 'identities.source': identity.source, 'identities.sourceId': identity.sourceId }, (err, user) ->
+        user ?= new User
+        user.updateIdentity(identity, callback)
+
+  migrateLegacyUser: (identity, callback)->
+    username = "@#{identity.username}" if 'twitter' is identity.source
+    username ?= identity.email ? identity.emails?[0]?.value
+    @findOne { 'identities.source': 'boardroom-legacy', 'identities.username': username }, (err, user) ->
+      return callback(null, false) unless user?
+      user.identities = [ identity ]
+      user.save callback
 
   avatarFor: (handle) ->
     if match = /^@(.*)/.exec(handle)
@@ -31,7 +40,7 @@ userSchema.methods =
       @identities.push identity
     @save callback
 
-userSchema.virtual('activeIdentity').get () -> 
+userSchema.virtual('activeIdentity').get () ->
   identity = @identities[0] ? {}
   {
     userId: @id
@@ -41,7 +50,6 @@ userSchema.virtual('activeIdentity').get () ->
     avatar: identity.avatar
     source: identity.source
   }
-
 
 User = mongoose.model 'User', userSchema
 
