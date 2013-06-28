@@ -23,7 +23,7 @@ class BoardsController extends ApplicationController
         board._id = board.id
         board.users = Sockets.boards[board.name] || {}
         board.displayName = userIdentity.displayName
-        board.userIdentitySet = {}
+        board.userIdentitySet ?= {}
         board.userIdentitySet[userIdentity.userId] = userIdentity
         board.currentUserId = userIdentity.userId
         response.render 'board', { board, userIdentity, loglevel }
