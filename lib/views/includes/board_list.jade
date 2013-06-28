@@ -19,7 +19,8 @@ for board in boards
 
     .info
       a.title(href='/boards/' + board._id) #{board.name}
-      img.creator.avatar(src=userIdentity.avatar, title=userIdentity.displayName)
+      - creatorIdentity = board.userIdentitySet[board.creator]
+      img.creator.avatar(src=creatorIdentity.avatar, title=creatorIdentity.displayName)
       .date
         p
           | updated on&nbsp;

@@ -65,7 +65,7 @@ BoardSchema.methods =
     for card in @cards()
       for userId in card.authors
         continue unless userId?
-        collabId = collabId?.toString()
+        collabId = userId?.toString()
         collabs.push collabId unless ( collabId == @creator or collabId in collabs )
     collabs
 
