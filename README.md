@@ -54,10 +54,12 @@ Deployment uses Capistrano. Acceptance is the default stage.
     brew install mongodb
     brew install redis
     brew install node
+    npm install -g foreman
     npm install
+    cp .env.template .env
     # start mongo. for instructions: brew info mongodb
     # start redis. for instructions: brew info redis
-    node ./index.js
+    nf start -p 7777
 
 Visit [localhost:7777](http://localhost:7777).
 

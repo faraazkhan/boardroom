@@ -30,6 +30,7 @@ GroupSchema.statics =
 
   collaboratedBy: (user, callback) ->
     Card.find { authors: user }, (error, cards) =>
+      return callback(error, []) unless cards?
       groupIds = ( card.groupId for card in cards when card.groupId? )
       @find { _id: { $in: groupIds } }, null, { sort: 'name' }, callback
 
@@ -43,7 +44,6 @@ GroupSchema.methods =
   isRemovable: (callback) ->
     Card.findByGroupId @id, (error, cards) ->
       callback(cards.length == 0)
-
 
 Group = mongoose.model 'Group', GroupSchema
 

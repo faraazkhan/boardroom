@@ -4,13 +4,20 @@ Card = require "./card"
 Group = require "./group"
 
 BoardSchema = new mongoose.Schema
-  name    : { type: String, required: true }
-  creator : { type: String, required: true }
-  created : { type: Date }
-  updated : { type: Date }
+  name     : { type: String, required: true }
+  creator  : { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  created  : { type: Date }
+  updated  : { type: Date }
 
 BoardSchema.virtual('groups').get () -> @vGroups
 BoardSchema.virtual('groups').set (groups) -> @vGroups = groups
+
+
+BoardSchema.virtual('currentUserId').get () -> @vCurrentUserId
+BoardSchema.virtual('currentUserId').set (currentUserId) -> @vCurrentUserId = currentUserId
+BoardSchema.virtual('userIdentitySet').get () -> @vUserIdentitySet ?= {}
+BoardSchema.virtual('userIdentitySet').set (userIdentitySet) -> @vUserIdentitySet = userIdentitySet
+
 
 BoardSchema.pre 'save', (next) ->
   @created = new Date() unless @created?
@@ -55,8 +62,11 @@ BoardSchema.methods =
 
   collaborators: ->
     collabs = []
-    ( ( collabs.push user unless ( user == @creator or collabs.indexOf(user) >= 0 ) ) \
-      for user in card.authors ) for card in @cards()
+    for card in @cards()
+      for userId in card.authors
+        continue unless userId?
+        collabId = userId?.toString()
+        collabs.push collabId unless ( collabId == @creator or collabId in collabs )
     collabs
 
   lastUpdated: ->

@@ -8,12 +8,12 @@ addRouting = require './routes'
 class Boardroom
   constructor: (@opts = {}) ->
     @opts.cluster ?= false
-    authenticate = @opts.authenticate ? require './services/authenticate'
+    loginProtection = @opts.loginProtection ? require './services/authentication/login_protection'
     createSocketNamespace = @opts.createSocketNamespace ? Sockets.middleware
 
     @app = express()
     configure @app
-    addRouting @app, authenticate, createSocketNamespace
+    addRouting @app, loginProtection, createSocketNamespace
 
   start: ->
     server = @app.listen parseInt(process.env.PORT) || 7777

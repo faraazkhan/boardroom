@@ -6,9 +6,11 @@ Board = require "#{lib}/models/board"
 Group = require "#{lib}/models/group"
 Card = require "#{lib}/models/card"
 User = require "#{lib}/models/user"
+Identity = require "#{lib}/models/identity"
 
 Factory = require "#{speclib}/support/factories"
 async = require 'async'
+_ = require 'underscore'
 
 timeout = null
 finalizers = []
@@ -19,14 +21,17 @@ finalizers.push ->
 afterAll = ->
   f() for f in finalizers
 
-beforeEach (next)->
+beforeEach (next) ->
   clearTimeout timeout if timeout?
-  Board.remove (err)->
-    Group.remove (err)->
-      Card.remove (err)->
-        next()
+  async.parallel [
+    (callback) -> Board.remove callback
+    (callback) -> Group.remove callback
+    (callback) -> Card.remove callback
+    (callback) -> User.remove callback
+    (callback) -> Identity.remove callback
+  ], next
 
 afterEach ->
   timeout = setTimeout afterAll, 100
 
-module.exports = { finalizers, Board, Group, Card, User, Factory, async }
+module.exports = { finalizers, Board, Group, Card, User, Factory, async, Identity, _ }

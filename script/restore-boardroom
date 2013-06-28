@@ -1,0 +1,4 @@
+#!/bin/bash
+
+mongo boardroom_development --eval "db.dropDatabase()"
+mongorestore -d boardroom_development boardroom/boardroom_$1

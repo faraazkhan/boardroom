@@ -2,9 +2,9 @@
 
 CardSchema = new mongoose.Schema
   groupId     : { type: String, required: true }
-  creator     : { type: String, required: true }
-  authors     : { type: Array, default: [] }
-  plusAuthors : { type: Array, default: [] }
+  creator     : { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  authors     : [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  plusAuthors : [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
   text        : { type: String, default: '' }
   colorIndex  : { type: Number, default: 2, min: 0, max: 4 }
   created     : { type: Date }

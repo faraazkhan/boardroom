@@ -3,9 +3,9 @@ for board in boards
     .actions
       .copy-url
         a.btn.icon-link(data-left-title="Copy URL for this board.") &nbsp;
-      - if (board.creator === user.user_id)
+      - if (board.creator.toString() === userIdentity.userId.toString())
         form(id="form-#{board._id}", action="/boards/#{board._id}", method="post")
-          button(class="delete-btn icon-delete", data-left-title="Delete this board permanently") &nbsp;
+          button(class="delete-btn icon-delete", data-left-title="Delete this board permanently")
 
     .note-count
       .counts
@@ -19,7 +19,8 @@ for board in boards
 
     .info
       a.title(href='/boards/' + board._id) #{board.name}
-      img.creator.avatar(src='/user/avatar/#{encodeURIComponent(board.creator)}', title='#{board.creator}')
+      - creatorIdentity = board.userIdentitySet[board.creator]
+      img.creator.avatar(src=creatorIdentity.avatar, title=creatorIdentity.displayName)
       .date
         p
           | updated on&nbsp;
@@ -30,6 +31,5 @@ for board in boards
           date = board.created
           include pretty_date
 
-
-  script
+  script.
     $('#form-#{board._id}').on('submit', function(){ return confirm('WARNING: This will delete all cards this board!!  You cannot get this board back.\n\nAre you sure you want to do this?') })

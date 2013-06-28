@@ -14,11 +14,19 @@ describe 'boardroom.views.Card', =>
       </div>
       </body></html>
     '''
-    card1Data = { _id: '3', text: 'foo', authors: ['@card_maker'], colorIndex: 1, x: 20, y: 25}
-    card2Data = { _id: '4' }
+    @userIdentity0 = {userId:"board_maker",  username:"board_maker", displayName:"Board Maker", email:"board_maker@gmail.com", source:"google", avatar:"http://www.me.com/pic0"}
+    @userIdentity1 = {userId:"card_maker_1", username:"card_maker", displayName:"Card Maker 1", email:"card_maker_1@gmail.com", source:"google", avatar:"http://www.me.com/pic1"}
+    @userIdentity2 = {userId:"card_maker_2", username:"card_maker", displayName:"Card Maker 2", email:"card_maker_2@gmail.com", source:"google", avatar:"http://www.me.com/pic2"}
+    userIdentitySet = {}
+    userIdentitySet["#{@userIdentity0.userId}"] = @userIdentity0
+    userIdentitySet["#{@userIdentity1.userId}"] = @userIdentity1
+    userIdentitySet["#{@userIdentity2.userId}"] = @userIdentity2
+
+    card1Data = {_id: '3', text: 'foo', authors: [@userIdentity1.userId], colorIndex: 1, x: 20, y: 25}
+    card2Data = {_id: '4', text: 'bar', authors: [@userIdentity2.userId], colorIndex: 1, x: 40, y: 45}
     cards = [ card1Data, card2Data ]
     groups = [ { _id: '2', cards } ]
-    boardData = { _id: '1',  user_id: '@carbon_five', groups }
+    boardData =  { _id: '1', currentUserId: @userIdentity0.userId, creator: @userIdentity0.userId, userIdentitySet, groups }
 
     # initialize the board
     @board = new boardroom.models.Board boardData
@@ -91,9 +99,9 @@ describe 'boardroom.views.Card', =>
       expect(@cardView.$('.plus-count').text()).toBe('')
 
       auths = @card.get(modelProperty)
-      @card.set(modelProperty, ['liker1', auths...])
+      @card.set(modelProperty, [@userIdentity0.userId, auths...])
       expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 1}")
-      @card.set(modelProperty, ['liker2', auths...])
+      @card.set(modelProperty, [@userIdentity1.userId, auths...])
       expect(@cardView.$('.plus-count').text()).toBe("+#{auths.length + 1}") 
       @card.set(modelProperty, oldValue)
 
@@ -103,7 +111,7 @@ describe 'boardroom.views.Card', =>
       oldValue = @card.get(modelProperty)
       expect(@card.get('authors').length).toEqual oldValue.length
 
-      newValue = ['@space_cadet',  oldValue...]
+      newValue = [@userIdentity0.userId,  oldValue...]
       @card.set(modelProperty, newValue) 
       expect(@card.get('authors').length).toEqual newValue.length
 

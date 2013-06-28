@@ -1,29 +1,73 @@
-{ Factory, Board, Group, Card, async } = require "../support/model_test_support"
+{ Factory, Board, Group, Card, async, _ } = require "../support/model_test_support"
+
+createBundle = (boardName, user, done) ->
+  Factory.create "board", { name: boardName, creator:user.id }, (err, board) ->
+    Factory.create "group", { boardId: board.id }, (err, group) ->
+      Factory.create "card", {
+        groupId: group.id,
+        creator: user
+        authors: [user]
+      }, (err, card) ->
+        done null, {
+          board: board
+          group: group
+          card: card
+        }
 
 describe 'board.Board', ->
   describe '.createdBy', ->
-    beforeEach (done) ->
-      Factory.createBundle done
+    describe 'given a user', ->
+      user = undefined
 
-    it 'finds boards I created', (done) ->
-      Board.createdBy 'board-creator-1', (err, boards) ->
-        expect(boards.length).toEqual 1
-        expect(boards[0].name).toEqual 'board1'
-        expect(boards[0].groups.length).toEqual 1
-        expect(boards[0].groups[0].cards.length).toEqual 1
-        done()
+      beforeEach (done) ->
+        async.parallel {
+          user: async.apply Factory.create, 'user'
+          otherUser: async.apply Factory.create, 'user'
+        }, (err, results) ->
+          { user, otherUser } = results
+
+          async.parallel [
+            async.apply Factory.create, 'board', { creator: user.id, name: 'board1' }
+            async.apply Factory.create, 'board', { creator: otherUser.id, name: 'board2' }
+            async.apply Factory.create, 'board', { creator: otherUser.id, name: 'board3' }
+            async.apply Factory.create, 'board', { creator: user.id, name: 'board4' }
+            async.apply Factory.create, 'board', { creator: user.id, name: 'board5' }
+          ], done
+
+      it 'only returns boards created by that user', (done) ->
+        Board.createdBy user.id, (err, boards) ->
+          expect(boards.length).toEqual 3
+          expect(boards[0].name).toEqual 'board1'
+          done()
 
   describe '.collaboratedBy', ->
-    beforeEach (done) ->
-      Factory.createBundle done
+    describe 'given a user and some boards', ->
+      users = undefined
+      boardA = undefined
+      boardB = undefined
 
-    it 'finds boards i collaborated on', (done) ->
-      Board.collaboratedBy 'board-creator-1', (err, boards) ->
-        expect(boards.length).toEqual 2
-        names = (board.name for board in boards)
-        expect(names[0]).toEqual 'board2'
-        expect(names[1]).toEqual 'board3'
-        done()
+      beforeEach (done) ->
+        async.parallel [
+          async.apply Factory.create, 'user'
+          async.apply Factory.create, 'user'
+        ], (err, results) ->
+          users = results
+          async.parallel [
+            async.apply createBundle, "board1", users[0]
+            async.apply createBundle, "board2", users[0]
+          ], (err, bundles) ->
+            boardA = bundles[0].board
+            boardB = bundles[1].board
+
+            bundles[1].card.authors.push users[1].id
+            bundles[1].card.save done
+
+      it 'only returns boards that the user has collaborated on', (done) ->
+        Board.collaboratedBy users[1], (err, boards) ->
+          expect(err).toBeNull()
+          expect(boards.length).toEqual(1)
+          expect(boards[0].name).toEqual boardB.name
+          done()
 
   describe '#lastUpdated', ->
     beforeEach (done) =>

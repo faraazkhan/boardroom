@@ -13,6 +13,7 @@ class boardroom.models.Card extends Backbone.Model
   group: -> @get 'group'
   board: -> @group().board()
   currentUser: -> @board().currentUser()
+  currentUserId: -> @board().currentUserId()
 
   moveTo: (x, y) ->
     @set { x, y }
@@ -60,7 +61,7 @@ class boardroom.models.Card extends Backbone.Model
   plusOne: ->
     @group().bringForward()
     plusAuthors = @get 'plusAuthors'
-    author = @currentUser()
+    author = @currentUserId()
     unless plusAuthors.indexOf(author) >= 0
       clone = _.clone(plusAuthors) # need to clone other backbone won't trigger a change event
       clone.push author
@@ -68,7 +69,7 @@ class boardroom.models.Card extends Backbone.Model
 
   touch: =>
     authors = @get 'authors'
-    author = @currentUser()
+    author = @currentUserId()
     unless authors.indexOf(author) >= 0
       clone = _.clone(authors)
       clone.push author

@@ -10,10 +10,25 @@ describe 'boardroom.views.Board', =>
       </div>
       </body></html>
     '''
-    card1Data = { _id: 'c1', text: 'fum', authors: ['@card_cat'], colorIndex: 2, x: 220, y: 225}
-    card2Data = { _id: 'c2', text: 'foo', authors: ['@card_maker'], colorIndex: 1, x: 20, y: 25}
+
+    @userIdentity0 = {userId:"board_maker",  username:"board_maker", displayName:"Board Maker", email:"board_maker@gmail.com", source:"google", avatar:"http://www.me.com/pic0"}
+    @userIdentity1 = {userId:"card_maker_1", username:"card_maker", displayName:"Card Maker 1", email:"card_maker_1@gmail.com", source:"google", avatar:"http://www.me.com/pic1"}
+    @userIdentity2 = {userId:"card_maker_2", username:"card_maker", displayName:"Card Maker 2", email:"card_maker_2@gmail.com", source:"google", avatar:"http://www.me.com/pic2"}
+    userIdentitySet = {}
+    userIdentitySet["#{@userIdentity0.userId}"] = @userIdentity0
+    userIdentitySet["#{@userIdentity1.userId}"] = @userIdentity1
+    userIdentitySet["#{@userIdentity2.userId}"] = @userIdentity2
+
+    card1Data = {_id: '3', text: 'foo', authors: [@userIdentity1.userId], colorIndex: 1, x: 20, y: 25}
+    card2Data = {_id: '4', text: 'bar', authors: [@userIdentity2.userId], colorIndex: 1, x: 40, y: 45}
+    cards = [ card1Data, card2Data ]
     groups = [ { _id: 'g1', cards:[ card1Data ] }, { _id: 'g2', cards: [ card2Data ] } ]
-    boardData = { _id: 'b1',  name:'test-board', status:'start', user_id: '@carbon_five', groups }
+    boardData =  { _id: '1', name: 'test-board', status: 'start', currentUserId: @userIdentity0.userId, creator: @userIdentity0.userId, userIdentitySet, groups }
+
+    # card1Data = { _id: 'c1', text: 'fum', authors: ['@card_cat'], colorIndex: 2, x: 220, y: 225}
+    # card2Data = { _id: 'c2', text: 'foo', authors: ['@card_maker'], colorIndex: 1, x: 20, y: 25}
+    # groups = [ { _id: 'g1', cards:[ card1Data ] }, { _id: 'g2', cards: [ card2Data ] } ]
+    # boardData = { _id: 'b1',  name:'test-board', status:'start', user_id: '@carbon_five', groups }
 
     # initialize the board
     @board = new boardroom.models.Board boardData
@@ -90,8 +105,8 @@ describe 'boardroom.views.Board', =>
         @numGroups = $('.group').length
         @numCards = $('.card').length
 
-        cardData = _id: 'c77', text: 'add77', authors: ['@card_adder'], colorIndex: 2, x: 120, y: 125
-        groupData = _id: 'gnew', cards: [ cardData ]
+        cardData = {_id: '77', text: '888', authors: [@userIdentity2.userId], colorIndex: 1, x: 80, y: 85}
+        groupData = { _id: 'gnew', cards:[ cardData ] }
 
         group = new boardroom.models.Group groupData
         # group.set 'board', @board, { silent: true } # !!! smelly

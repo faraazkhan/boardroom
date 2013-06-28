@@ -14,11 +14,15 @@ html
           | Welcome to
         | Boardroom
 
-      form#login(action='/login', method='post')
-        input#user_id(name='user_id', type='text', value='Twitter @username or Gravatar email', defaultValue='Twitter @username or Gravatar email')
-        .button-container.inset
-          button Get on Board
-
+      #social-login(action='/login', method='post')
+        h2 sign in with
+        each provider in providers
+          - var icon = provider
+          if provider == 'google'
+            - icon = 'google-plus'
+          button(onclick="javascript:window.location = href='oauth/#{provider}'")
+            i(class="icon-#{icon}")
+            span #{provider}
         hr
         blockquote
           em

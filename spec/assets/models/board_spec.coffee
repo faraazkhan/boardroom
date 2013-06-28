@@ -1,18 +1,16 @@
 describe 'boardroom.models.Board', ->
   beforeEach ->
+    @userIdentity0 = {userId:"board_maker",  username:"board_maker", displayName:"Board Maker", email:"board_maker@gmail.com", source:"google", avatar:"http://www.me.com/pic0"}
+    userIdentitySet = {}
+    userIdentitySet["#{@userIdentity0.userId}"] = @userIdentity0
+
     group1 = { _id: '1', cards: [ { _id: '11' }, { _id: '12' } ] }
     group2 = { _id: '2', cards: [ { _id: '21' }, { _id: '22' } ] }
     @board = new boardroom.models.Board
-      user_id: '@foo'
+      currentUserId: @userIdentity0.userId
+      creator: @userIdentity0.userId
+      userIdentitySet: userIdentitySet
       groups: [ group1, group2 ]
-
-  describe '#addUser', ->
-    beforeEach ->
-      @user = { user_id: '@bar' }
-      @board.addUser @user
-
-    it 'adds the user to its users', ->
-      expect(@board.get('users')[@user.user_id]).toEqual @user
 
   describe '#findGroup', ->
     it 'finds the group', ->
