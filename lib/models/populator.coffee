@@ -50,7 +50,7 @@ class Populator
     userIdSet = {}
     for group in board.groups # collect unique userId's for all card authors
       for card in group.cards
-        userIdSet[authorId] = 1 for authorId in [card.creator, card.authors..., card.plusAuthors...]
+        userIdSet[authorId] = 1 for authorId in [board.creator, card.creator, card.authors..., card.plusAuthors...]
 
     for authorId, value of userIdSet # functor to lookup active Identity for each user
       do (authorId)->

@@ -21,7 +21,7 @@ for board in boards
       a.title(href='/boards/' + board._id) #{board.name}
       - creatorIdentity = board.userIdentitySet[board.creator]
       - if (creatorIdentity === undefined) creatorIdentity = { displayName: 'unknown user' }
-      img.creator.avatar(src=creatorIdentity.avatar, title=creatorIdentity.displayName)
+      img.creator.avatar(id=board.creator, src=creatorIdentity.avatar, title=creatorIdentity.displayName)
       .date
         p
           | updated on&nbsp;
