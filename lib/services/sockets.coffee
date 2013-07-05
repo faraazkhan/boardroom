@@ -26,11 +26,18 @@ class Sockets
     boardNamespace = @io
       .of("/boards/#{boardId}")
       .on 'connection', (socket) =>
+        # remoteAddress = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address
+        # logger.info -> "Socket connection from #{remoteAddress}"
+
         for name, modelClass of handlers
           handler = new Handler modelClass, name, boardId, socket
           handler.registerAll()
 
+        socket.on 'disconnect', =>
+          logger.info -> "#{socket.boardroomUser?.displayName} has disconnected"
+
         socket.on 'join', (user) =>
+          socket.boardroomUser = user
           @users[user.userId] = user
           boardNamespace.emit 'join', { userId: user.userId, @users }
           logger.info -> "#{user.displayName} has joined board #{boardId}"

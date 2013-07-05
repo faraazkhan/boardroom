@@ -86,8 +86,10 @@ class boardroom.Handler
 
   onReconnect: =>
     @logger.debug 'onReconnect'
-    @board.set 'status', null
-    @send 'join', @userMessage()
+    # @board.set 'status', null
+    # this is a hack, but i can't get socket.io reconnect to work
+    window.location.reload()
+    # @send 'join', @userMessage()
 
   onJoin: (message) =>
     @logger.debug 'onJoin'
