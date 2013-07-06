@@ -3,10 +3,14 @@ class boardroom.views.Board extends boardroom.views.Base
   className: 'board'
 
   events:
-    'dblclick': 'hiRequestNewCard'
+    'dblclick'  : 'hiRequestNewCard'
+
+  touchEvents:
+    'doubletap' : 'hiRequestNewCard'
 
   initialize: (attributes) ->
     super attributes
+    @render()
     @initializeGroups()
     @initializeDroppable()
     @resizeHTML()
@@ -36,6 +40,9 @@ class boardroom.views.Board extends boardroom.views.Base
   ###
       render
   ###
+
+  render: ->
+    @$el.hammer()
 
   statusModalDiv: ->
     @$('#connection-status-modal')
@@ -81,7 +88,8 @@ class boardroom.views.Board extends boardroom.views.Base
       human interaction event handlers
   ###
 
-  hiRequestNewCard: (event) ->
+  hiRequestNewCard: (e) ->
+    event = if e.pageX? then e else e.gesture.srcEvent
     return unless event.target.className == 'board'
     offset = @$el.offset()
     @model.createGroup

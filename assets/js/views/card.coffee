@@ -29,12 +29,17 @@ class boardroom.views.Card extends boardroom.views.Base
     id: @model.id
 
   events: # human interaction event
-    'click .color'     : 'hiChangeColor'
-    'keyup textarea'   : 'hiChangeText'
-    'focus textarea'   : 'hiFocusText'
-    'blur textarea'    : 'hiUnFocusText'
-    'click .plus1 .btn': 'hiIncrementPlusCount'
-    'click .delete-btn': 'hiDelete'
+    'click .color'        : 'hiChangeColor'
+    'keyup textarea'      : 'hiChangeText'
+    'focus textarea'      : 'hiFocusText'
+    'blur textarea'       : 'hiUnFocusText'
+    'click .plus1 .btn'   : 'hiIncrementPlusCount'
+    'click .delete-btn'   : 'hiDelete'
+
+  touchEvents:
+    'tap .color'          : 'hiChangeColor'
+    'tap .plus1 .btn'     : 'hiIncrementPlusCount'
+    'tap .delete-btn'     : 'hiDelete'
 
   initialize: (attributes) ->
     super attributes
@@ -87,6 +92,7 @@ class boardroom.views.Card extends boardroom.views.Base
 
   render: ->
     @$el.html(@template())
+    @$el.hammer()
     @$el.find('textarea').css('resize', 'none').autosize { append: "\n" }
     @updateText @model, @model.get('text')
     setTimeout @triggerAutosize, 10
@@ -178,13 +184,13 @@ class boardroom.views.Card extends boardroom.views.Base
     colorIndex = $(event.target).attr('class').match(/color-(\d+)/)[1]
     @model.colorize colorIndex
 
-  hiChangeText: (e)->
+  hiChangeText: (event) ->
     @model.type @$('textarea').val()
 
-  hiFocusText: (event)->
+  hiFocusText: (event) ->
     @model.focus()
 
-  hiUnFocusText: (event)->
+  hiUnFocusText: (event) ->
     @model.unfocus()
 
   hiIncrementPlusCount: (e) ->

@@ -18,6 +18,7 @@ $.fn.droppable = (opts) ->
     (offset.left - threshold) <= data.x <= (offset.left + threshold) and (offset.top - threshold) <= data.y <= (offset.top + threshold)
 
   $(window).on 'drag', (event, data) ->
+    return unless data?
     return if data? and $this[0] == data.target
     return unless $this.is(':visible')
 

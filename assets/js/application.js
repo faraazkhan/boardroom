@@ -8,6 +8,8 @@
 //= require './vendor/webfonts.js'
 //= require './vendor/jquery.zclip.min.js'
 //= require './vendor/modernizr-2.6.2.js'
+//= require './vendor/hammer-1.0.5.js'
+//= require './vendor/jquery.hammer-1.0.5.js'
 //= require './boardroom'
 //= require './utils/logger'
 //= require './handler'
