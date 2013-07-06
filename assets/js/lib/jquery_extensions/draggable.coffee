@@ -23,9 +23,13 @@ $.fn.draggable = (opts) ->
       x: offset.left
       y: offset.top
 
-  $this.on 'mousedown.draggable', (e) ->
-    return true unless e.which == 1  # only drag left-click drags
-    return true if e.ctrlKey         # ctrl is the same as right click on os x
+  downEvent = ( if Modernizr.touch then 'touchstart' else 'mousedown' ) + '.draggable'
+  upEvent   = ( if Modernizr.touch then 'touchend'   else 'mouseup' )   + '.draggable'
+  moveEvent = ( if Modernizr.touch then 'touchmove'  else 'mousemove' ) + '.draggable'
+
+  mousedown = (e) ->
+    return true if e.type == 'mousedown' && e.which != 1   # only left clicks drags
+    return true if e.type == 'mousedown' && e.ctrlKey      # crtl is the same as right click on os x
     return true unless settings.isOkToDrag()
 
     @isDragging = false
@@ -34,38 +38,36 @@ $.fn.draggable = (opts) ->
     e.originalEvent.preventDefault() unless $(e.target).is('textarea') || $(e.target).is('input')
     return true unless settings.isTarget(e.target)
 
-    origX = lastX = e.pageX
-    origY = lastY = e.pageY
+    origX = lastX = e.originalEvent.pageX
+    origY = lastY = e.originalEvent.pageY
     origLeft = $this.offset().left
     origTop = $this.offset().top
 
-    $(window).on 'mousemove.draggable', (e) ->
+    mousemove = (e) ->
       settings.startedDragging() unless @isDragging
       @isDragging = true
-      deltaX = e.pageX - origX
-      deltaY = e.pageY - origY
+      deltaX = e.originalEvent.pageX - origX
+      deltaY = e.originalEvent.pageY - origY
 
       offsetX = origLeft + deltaX
       offsetX = Math.max [offsetX, settings.minX]...
-
       offsetY = origTop + deltaY
       offsetY = Math.max [offsetY, settings.minY]...
-
       offset = settings.position deltaX, deltaY, offsetX, offsetY, e
 
       $this.offset left: offset.left, top: offset.top
 
-      lastX = e.pageX
-      lastY = e.pageY
+      lastX = e.originalEvent.pageX
+      lastY = e.originalEvent.pageY
 
       trigger 'drag'
       settings.onMouseMove e
       false
 
-    $(window).on 'mouseup.draggable', (e) ->
+    mouseup = (e) ->
       e.stopPropagation()
-      $(window).off 'mousemove.draggable'
-      $(window).off 'mouseup.draggable'
+      $(window).off moveEvent
+      $(window).off upEvent
       if @isDragging
         settings.onMouseUp e
         settings.stoppedDragging()
@@ -74,7 +76,12 @@ $.fn.draggable = (opts) ->
       @isDragging = false
       true
 
+    $(window).on moveEvent, mousemove
+    $(window).on upEvent, mouseup
+
     settings.onMouseDown e
     true
+
+  $this.on downEvent, mousedown
 
   $this

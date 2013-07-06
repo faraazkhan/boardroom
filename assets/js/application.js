@@ -7,6 +7,7 @@
 //= require './vendor/bootstrap.min.js'
 //= require './vendor/webfonts.js'
 //= require './vendor/jquery.zclip.min.js'
+//= require './vendor/modernizr-2.6.2.js'
 //= require './boardroom'
 //= require './utils/logger'
 //= require './handler'
