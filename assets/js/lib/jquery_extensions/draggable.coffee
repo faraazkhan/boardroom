@@ -31,12 +31,13 @@ $.fn.draggable = (opts) ->
     return true if e.type == 'mousedown' && e.which != 1   # only left clicks drags
     return true if e.type == 'mousedown' && e.ctrlKey      # crtl is the same as right click on os x
     return true unless settings.isOkToDrag()
+    return true unless settings.isTarget(e.target)
 
     @isDragging = false
     e.stopPropagation()
+
     # this fixes a WebKit cursor issue (although there may be a better way)
     e.originalEvent.preventDefault() unless $(e.target).is('textarea') || $(e.target).is('input')
-    return true unless settings.isTarget(e.target)
 
     origX = lastX = e.originalEvent.pageX
     origY = lastY = e.originalEvent.pageY

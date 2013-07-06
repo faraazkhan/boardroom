@@ -173,9 +173,7 @@ class boardroom.views.Card extends boardroom.views.Base
     @$el.find('textarea').focus()
     @model.focus()
 
-  ###
-      human interaction event handlers
-  ###
+  # human interaction event handlers
 
   hiDelete: (event) ->
     @model.delete()
@@ -193,5 +191,5 @@ class boardroom.views.Card extends boardroom.views.Base
   hiUnFocusText: (event) ->
     @model.unfocus()
 
-  hiIncrementPlusCount: (e) ->
+  hiIncrementPlusCount: (event) ->
     @model.plusOne()
