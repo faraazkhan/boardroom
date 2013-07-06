@@ -91,6 +91,7 @@ class boardroom.views.Board extends boardroom.views.Base
   hiRequestNewCard: (e) ->
     event = if e.pageX? then e else e.gesture.srcEvent
     return unless event.target.className == 'board'
+    e.gesture.preventDefault() if e.gesture?
     offset = @$el.offset()
     @model.createGroup
       x: event.pageX - offset.left
