@@ -11,7 +11,12 @@ class HomeController extends ApplicationController
     try
       user = request.user
       cmp = (a, b) ->
-        a.name.toLowerCase().localeCompare b.name.toLowerCase()
+        if a.created == b.created
+          0
+        else if a.created > b.created
+          -1
+        else
+          1
 
       loadCreated = (done) ->
         Board.createdBy user.id, (err, boards) ->
