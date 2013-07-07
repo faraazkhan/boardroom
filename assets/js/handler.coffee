@@ -1,6 +1,6 @@
 class boardroom.Handler
 
-  constructor: (@board) ->
+  constructor: (@board, @metrics) ->
     @user = @board.currentUser()
     @logger = boardroom.utils.Logger.instance
     @logger.user = @user
@@ -70,6 +70,7 @@ class boardroom.Handler
     else
       @logger.info logmsg
 
+    @metrics.track name
     @socket.emit name, message
 
   onConnect: =>

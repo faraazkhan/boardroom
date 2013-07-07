@@ -12,7 +12,9 @@ script(type="text/javascript").
     var board = new boardroom.models.Board(boardAttrs);
 
     boardroom.utils.Logger.instance.setBoard(board);
-    new boardroom.Handler(board).initialize();
+
+    var metrics = new boardroom.utils.Metrics(board);
+    new boardroom.Handler(board, metrics).initialize();
 
     var roomView = new boardroom.views.Room({ model: board });
     roomView.render();
