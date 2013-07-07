@@ -13,8 +13,11 @@ class boardroom.views.Group extends boardroom.views.Base
     id: @model.id
 
   events:
-    'keyup .name'    : 'hiChangeGroupName'
-    'click .add-card': 'hiRequestNewCard'
+    'keyup .name'       : 'hiChangeGroupName'
+    'click .add-card'   : 'hiRequestNewCard'
+
+  touchEvents:
+    'tap .add-card'     : 'hiRequestNewCard'
 
   initialize: (attributes) ->
     super attributes
@@ -87,6 +90,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   render: ->
     @$el.html(@template())
+    @$el.hammer()
     @updateName @model, @model.get('name')
     @updatePosition @model.get('x'), @model.get('y')
     @updateZ @model, @model.get('z')

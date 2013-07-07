@@ -3,6 +3,7 @@ class boardroom.views.Base extends Backbone.View
   initialize: (attributes) =>
     super attributes
     @logger = boardroom.utils.Logger.instance
+    $.extend(@events, (@touchEvents || {})) if Modernizr.touch
 
   createDragLock: =>
     onLock = (avatar, message) =>
