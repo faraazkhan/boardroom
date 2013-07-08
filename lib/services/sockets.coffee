@@ -6,28 +6,29 @@ Group = require '../models/group'
 Card = require '../models/card'
 
 class Sockets
-  @boards: {}
+  @info: {}
 
   @middleware: (request, _, next) =>
-    @findOrCreateByBoardId request.params.id
+    @createSocket request.params.id
     next()
 
-  @findOrCreateByBoardId: (boardId) ->
-    unless @boards[boardId]
-      @createBoard boardId
+  @createSocket: (boardId) ->
+    return if @socketInfo boardId
 
-  @createBoard: (boardId) ->
     handlers =
       board: Board
       group: Group
       card : Card
-    @users = {}
+
+    env = process.env.NODE_ENV ? 'development'
+    namespace = "/#{env}/boards/#{boardId}"
+    @info[boardId] = { namespace }
 
     boardNamespace = @io
-      .of("/boards/#{boardId}")
+      .of(namespace)
       .on 'connection', (socket) =>
-        #remoteAddress = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address
-        #logger.info -> "Socket connection from #{remoteAddress} (pid #{process.pid})"
+        remoteAddress = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address
+        logger.debug -> "Socket connection from #{remoteAddress} (pid #{process.pid})"
 
         for name, modelClass of handlers
           handler = new Handler modelClass, name, boardId, socket
@@ -38,7 +39,6 @@ class Sockets
 
         socket.on 'join', (user) =>
           socket.boardroomUser = user
-          @users[user.userId] = user
           boardNamespace.emit 'join', { userId: user.userId, @users }
           logger.info -> "#{user.displayName} has joined board #{boardId} (pid: #{process.pid})"
 
@@ -48,11 +48,13 @@ class Sockets
         socket.on 'marker', ({user, boardId}) =>
           logger.rememberEvent boardId, 'marker', { author: user }
 
-    @boards[boardId] = @users
+  @socketInfo: (boardId) ->
+    @info[boardId]
 
   @start: (server) ->
     RedisStore = require 'socket.io/lib/stores/redis'
     redis      = require 'socket.io/node_modules/redis'
+
     store = new RedisStore
       redisPub: redis.createClient()
       redisSub: redis.createClient()

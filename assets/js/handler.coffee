@@ -1,6 +1,7 @@
 class boardroom.Handler
 
-  constructor: (@board, @metrics) ->
+  constructor: (@namespace, @board) ->
+    @metrics = new boardroom.utils.Metrics @board
     @user = @board.currentUser()
     @logger = boardroom.utils.Logger.instance
     @logger.user = @user
@@ -57,8 +58,8 @@ class boardroom.Handler
       return if group.id?
       @send 'group.create', @groupMessage(group)
 
-  createSocket: ->
-    io.connect "/boards/#{@board.id}"
+  createSocket: =>
+    io.connect @namespace
 
   send: (name, message, options) =>
     return unless message?
