@@ -26,8 +26,8 @@ class Sockets
     boardNamespace = @io
       .of("/boards/#{boardId}")
       .on 'connection', (socket) =>
-        # remoteAddress = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address
-        # logger.info -> "Socket connection from #{remoteAddress}"
+        #remoteAddress = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address
+        #logger.info -> "Socket connection from #{remoteAddress} (pid #{process.pid})"
 
         for name, modelClass of handlers
           handler = new Handler modelClass, name, boardId, socket
@@ -40,7 +40,7 @@ class Sockets
           socket.boardroomUser = user
           @users[user.userId] = user
           boardNamespace.emit 'join', { userId: user.userId, @users }
-          logger.info -> "#{user.displayName} has joined board #{boardId}"
+          logger.info -> "#{user.displayName} has joined board #{boardId} (pid: #{process.pid})"
 
         socket.on 'log', ({user, boardId, level, msg}) =>
           logger.logClient user, boardId, level, msg
@@ -50,17 +50,16 @@ class Sockets
 
     @boards[boardId] = @users
 
-  @start: (server, opts) ->
+  @start: (server) ->
+    RedisStore = require 'socket.io/lib/stores/redis'
+    redis      = require 'socket.io/node_modules/redis'
+    store = new RedisStore
+      redisPub: redis.createClient()
+      redisSub: redis.createClient()
+      redisClient: redis.createClient()
+
     @io = sockets.listen server
     @io.set 'log level', 1
-
-    if opts?.cluster is true
-      RedisStore = require 'socket.io/lib/stores/redis'
-      redis      = require 'socket.io/node_modules/redis'
-
-      @io.set 'store', new RedisStore
-        redisPub: redis.createClient()
-        redisSub: redis.createClient()
-        redisClient: redis.createClient()
+    @io.set 'store', store
 
 module.exports = Sockets
