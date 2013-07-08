@@ -16,17 +16,18 @@ class BoardsController extends ApplicationController
     loglevel = request.param 'loglevel'
     try
       id = request.params.id
-      Board.findById id, (err, board) ->
+      socketInfo = Sockets.socketInfo id
+      namespace = (socketInfo ? {}).namespace
+      Board.findById id, (err, boardModel) =>
         throw err if err
-        @throw404 response unless board?
-        board = board.toObject getters: true
+        return @throw404 response unless boardModel?
+        board = boardModel.toObject getters: true
         board._id = board.id
-        board.users = Sockets.boards[board.name] || {}
         board.displayName = userIdentity.displayName
         board.userIdentitySet ?= {}
         board.userIdentitySet[userIdentity.userId] = userIdentity
         board.currentUserId = userIdentity.userId
-        response.render 'board', { board, userIdentity, loglevel }
+        response.render 'board', { board, userIdentity, loglevel, namespace }
     catch error
       return @throw500 response, error
 
