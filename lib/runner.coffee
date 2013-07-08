@@ -4,15 +4,15 @@ logger = require './services/logger'
 logger.setLevel 'info'
 
 # node.js clustering feature-flag
-doCluster = false
+doCluster = process.env.NODE_CLUSTER? ? false
 
-start = ->
+start = () ->
   Boardroom = require './boardroom'
-  app = new Boardroom
-  app.start()
+  new Boardroom().start()
 
 if cluster.isMaster
   logger.warn -> 'Starting Boardroom'
+  logger.info -> "  cluster mode: #{doCluster}"
 
   Migrator = require './services/migrator'
   migrator = new Migrator
@@ -20,7 +20,7 @@ if cluster.isMaster
     throw error if error?
 
     unless doCluster
-      start { cluster: false }
+      start()
       return
 
     cpus = require('os').cpus().length
@@ -47,4 +47,4 @@ else
     js: [ 'login', 'index', 'application' ]
     css: [ 'application' ]
 
-  start { cluster: true }
+  start()

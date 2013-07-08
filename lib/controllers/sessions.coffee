@@ -26,7 +26,7 @@ class SessionsController extends ApplicationController
           try
             passport.use providerAuthenticator.passportStrategy()
             @authenticators[providerAuthenticator.name] = providerAuthenticator
-            logger.info -> "auth: registered #{providerAuthenticator.name} provider"
+            logger.debug -> "auth: registered #{providerAuthenticator.name} provider"
           catch e
             logger.warn -> "auth: error regsitering #{providerAuthenticator.name} provider - #{e.message}"
         else

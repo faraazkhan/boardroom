@@ -7,7 +7,6 @@ addRouting = require './routes'
 
 class Boardroom
   constructor: (@opts = {}) ->
-    @opts.cluster ?= false
     loginProtection = @opts.loginProtection ? require './services/authentication/login_protection'
     createSocketNamespace = @opts.createSocketNamespace ? Sockets.middleware
 
@@ -17,6 +16,6 @@ class Boardroom
 
   start: ->
     server = @app.listen parseInt(process.env.PORT) || 7777
-    Sockets.start server, @opts
+    Sockets.start server
 
 module.exports = Boardroom

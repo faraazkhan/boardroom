@@ -14,7 +14,6 @@ class boardroom.views.Base extends Backbone.View
 
   createEditLock: (selector) =>
     onLock = (avatar, message) =>
-      console.log 'locking edit ', selector
       @showNotice avatar, message if avatar? and message?
       @disableEditing selector
     onUnlock = =>
