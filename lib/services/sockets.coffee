@@ -6,6 +6,7 @@ Group = require '../models/group'
 Card = require '../models/card'
 
 class Sockets
+  @users: {}
   @info: {}
 
   @middleware: (request, _, next) =>
@@ -35,9 +36,11 @@ class Sockets
           handler.registerAll()
 
         socket.on 'disconnect', =>
+          delete @users[socket.boardroomUser?.id]
           logger.info -> "#{socket.boardroomUser?.displayName} has disconnected"
 
         socket.on 'join', (user) =>
+          @users[user.id] = user
           socket.boardroomUser = user
           boardNamespace.emit 'join', { userId: user.userId, @users }
           logger.info -> "#{user.displayName} has joined board #{boardId} (pid: #{process.pid})"

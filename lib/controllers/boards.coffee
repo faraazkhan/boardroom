@@ -16,8 +16,8 @@ class BoardsController extends ApplicationController
     loglevel = request.param 'loglevel'
     try
       id = request.params.id
-      socketInfo = Sockets.socketInfo id
-      namespace = (socketInfo ? {}).namespace
+      socketInfo = Sockets.socketInfo(id) ? {}
+      namespace = socketInfo.namespace
       Board.findById id, (err, boardModel) =>
         throw err if err
         return @throw404 response unless boardModel?
