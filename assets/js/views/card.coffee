@@ -11,7 +11,7 @@ class boardroom.views.Card extends boardroom.views.Base
       <div class='plus-count'></div>
       <div class='toolbar'>
         <div class='plus1'>
-          <a class='btn' href='#'>+1</a>
+          <span class='btn'>+1</span>
         </div>
         <div class='colors'>
           <span class='color color-0'></span>

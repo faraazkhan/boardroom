@@ -1,6 +1,6 @@
 .card.color-0 {
   .delete { color: @tanDark; background-color: @tanMid;}
-  .plus1 a { background-color: @tanLight; &:hover {color: @tanDark}}
+  .plus1 .btn { background-color: @tanLight; &:hover {color: @tanDark}}
   .toolbar { color: @tanDark; background-color: @tanMid;}
 }
 .tan, .tan .light { background-color : @tanLight;}
@@ -9,7 +9,7 @@
 
 .card.color-1 {
   .delete { color: @redDark; background-color: @redMid;}
-  .plus1 a { background-color: @redLight; &:hover {color: @redDark}}
+  .plus1 .btn { background-color: @redLight; &:hover {color: @redDark}}
   .toolbar { color: @redDark; background-color: @redMid;}
 }
 .red, .red .light { background-color : @redLight;}
@@ -18,7 +18,7 @@
 
 .card.color-2 {
   .delete { color: @yellowDark; background-color: @yellowMid;}
-  .plus1 a { background-color: @yellowLight; &:hover {color: @yellowDark}}
+  .plus1 .btn { background-color: @yellowLight; &:hover {color: @yellowDark}}
   .toolbar { color: @yellowDark; background-color: @yellowMid;}
 }
 .yellow, .yellow .light {background-color : @yellowLight;}
@@ -27,7 +27,7 @@
 
 .card.color-3 {
   .delete { color: @blueDark; background-color: @blueMid;}
-  .plus1 a { background-color: @blueLight; &:hover {color: @blueDark}}
+  .plus1 .btn { background-color: @blueLight; &:hover {color: @blueDark}}
   .toolbar { color: @blueDark; background-color: @blueMid;}
 }
 .blue, .blue .light { background-color : @blueLight;}
@@ -36,7 +36,7 @@
 
 .card.color-4 {
   .delete { color: @greenDark; background-color: @greenMid;}
-  .plus1 a { background-color: @greenLight; &:hover {color: @greenDark}}
+  .plus1 .btn { background-color: @greenLight; &:hover {color: @greenDark}}
   .toolbar { color: @greenDark; background-color: @greenMid;}
 }
 .green, .green .light { background-color : @greenLight;}
@@ -61,7 +61,7 @@
   @c: #FF7F00;
   .card-background(@c);
   .delete { background-color: hsl(hue(@c), 100%, 77%); color: hsl(hue(spin(@c, -8)), 66%, 66%);}
-  .plus1 a { background-color: hsl(hue(@c), 100%, 77%); &:hover {color: @blueDark}}
+  .plus1 .btn { background-color: hsl(hue(@c), 100%, 77%); &:hover {color: @blueDark}}
   .toolbar { background-color: hsl(hue(spin(@c, -8)), 66%, 66%);}
 }
 
@@ -69,6 +69,6 @@
   @c: green;
   .card-background(@c);
   .delete { background-color: hsl(hue(@c), 100%, 77%); color: hsl(hue(spin(@c, -8)), 66%, 66%);}
-  .plus1 a { background-color: hsl(hue(@c), 100%, 77%); &:hover {color: @blueDark}}
+  .plus1 .btn { background-color: hsl(hue(@c), 100%, 77%); &:hover {color: @blueDark}}
   .toolbar { background-color: hsl(hue(spin(@c, -8)), 66%, 66%);}
 }

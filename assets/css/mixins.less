@@ -344,6 +344,10 @@
   .transition-timing-function('linear, linear, linear, linear, ease-out, ease-in, ease-in');
 }
 
+.transition-none() {
+  .transition-property(~"none");
+}
+
 // Transformations
 .rotate(@degrees) {
   -webkit-transform: rotate(@degrees);
