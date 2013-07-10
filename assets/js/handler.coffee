@@ -71,7 +71,7 @@ class boardroom.Handler
     else
       @logger.info logmsg
 
-    @metrics.track name
+    @metrics.track name, message
     @socket.emit name, message
 
   onConnect: =>
