@@ -20,7 +20,7 @@ class Handler
     model.save (err, model) =>
       if err?
         logger.error => "Cannot save #{@name}:"
-        logger.logValidationErrors err.errors
+        logger.logValidationErrors err
       else
         message = model.toJSON()
         message.cid = data.cid
@@ -34,7 +34,7 @@ class Handler
         model.updateAttributes data, (err, model) =>
           if err?
             logger.error => "Cannot update #{@name}:"
-            logger.logValidationErrors err.errors
+            logger.logValidationErrors err
           else
             @socket.broadcast.emit event, data
       else

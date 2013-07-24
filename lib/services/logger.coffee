@@ -44,9 +44,12 @@ class Logger
     @log level, clientMsg
     @logBoardHistory user, boardId if level == 'ERROR'
 
-  logValidationErrors: (errors) =>
-    for property, error of errors
-      @error -> error.message
+  logValidationErrors: (err) =>
+    if err.errors?
+      for property, error of err.errors
+        @error -> error.message
+    else
+      @error -> err.message
 
   logBoardHistory: (user, boardId) =>
     events = @getBoardHistory user, boardId

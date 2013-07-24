@@ -1,7 +1,7 @@
 cluster = require 'cluster'
 
 logger = require './services/logger'
-logger.setLevel 'info'
+logger.setLevel( process.env.LOG_LEVEL ? 'info' )
 
 # node.js clustering feature-flag
 doCluster = process.env.NODE_CLUSTER? ? false
