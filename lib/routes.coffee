@@ -20,6 +20,7 @@ addRouting = (app, loginProtection, createSocketNamespace) ->
 
   boardsController = new BoardsController
   app.get '/boards/:id', loginProtection, createSocketNamespace, boardsController.show
+  app.get '/boards/:id/warm', createSocketNamespace, boardsController.warm
   app.post '/boards/:id', loginProtection, boardsController.destroy
   app.post '/boards', loginProtection, boardsController.create
 

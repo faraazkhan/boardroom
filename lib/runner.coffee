@@ -3,16 +3,21 @@ cluster = require 'cluster'
 logger = require './services/logger'
 logger.setLevel( process.env.LOG_LEVEL ? 'info' )
 
+env = process.env.NODE_ENV ? 'development'
+port = process.env.PORT ? 7777
+
 # node.js clustering feature-flag
 doCluster = process.env.NODE_CLUSTER? ? false
 
 start = () ->
   Boardroom = require './boardroom'
-  new Boardroom().start()
+  new Boardroom({ env, port }).start()
 
 if cluster.isMaster
   logger.warn -> 'Starting Boardroom'
-  logger.info -> "  cluster mode: #{doCluster}"
+  logger.info -> "  env: #{env}"
+  logger.info -> "  port: #{port}"
+  logger.info -> "  cluster: #{doCluster}"
 
   Migrator = require './services/migrator'
   migrator = new Migrator

@@ -31,6 +31,9 @@ class BoardsController extends ApplicationController
     catch error
       return @throw500 response, error
 
+  warm: (request, response) =>
+    response.redirect '/'
+
   destroy: (request, response) =>
     redirect = () ->
       response.redirect "/"
