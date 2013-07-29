@@ -4,7 +4,7 @@ ContentsController = require './controllers/contents'
 SessionsController = require './controllers/sessions'
 BoardsController = require './controllers/boards'
 
-addRouting = (app, loginProtection, createSocketNamespace) ->
+addRouting = (env, app, loginProtection, createSocketNamespace) ->
   homeController = new HomeController
   app.get '/', loginProtection, homeController.index
 
@@ -20,7 +20,7 @@ addRouting = (app, loginProtection, createSocketNamespace) ->
 
   boardsController = new BoardsController
   app.get '/boards/:id', loginProtection, createSocketNamespace, boardsController.show
-  app.get '/boards/:id/warm', createSocketNamespace, boardsController.warm
+  app.get '/boards/:id/warm', createSocketNamespace, boardsController.warm unless env == 'production'
   app.post '/boards/:id', loginProtection, boardsController.destroy
   app.post '/boards', loginProtection, boardsController.create
 

@@ -32,7 +32,7 @@ class BoardsController extends ApplicationController
       return @throw500 response, error
 
   warm: (request, response) =>
-    response.redirect '/'
+    @throw404 response
 
   destroy: (request, response) =>
     redirect = () ->

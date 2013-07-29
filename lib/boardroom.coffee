@@ -14,7 +14,7 @@ class Boardroom
 
     @app = express()
     configure @app
-    addRouting @app, loginProtection, createSocketNamespace
+    addRouting @env, @app, loginProtection, createSocketNamespace
 
   start: ->
     server = @app.listen @port
