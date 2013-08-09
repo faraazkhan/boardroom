@@ -19,6 +19,8 @@ if cluster.isMaster
   logger.info -> "  port: #{port}"
   logger.info -> "  cluster: #{doCluster}"
 
+  require('look').start() if env == 'development'
+
   Migrator = require './services/migrator'
   migrator = new Migrator
   migrator.migrate (error) ->

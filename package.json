@@ -40,6 +40,7 @@
     "superagent": "latest",
     "supertest": "latest",
     "jsdom": "latest",
-    "socket.io-client": "latest"
+    "socket.io-client": "latest",
+    "look": "latest"
   }
 }
