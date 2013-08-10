@@ -1,0 +1,3 @@
+#!/bin/bash
+
+node script/load-generator/index.js $*
