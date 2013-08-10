@@ -41,6 +41,7 @@
     "supertest": "latest",
     "jsdom": "latest",
     "socket.io-client": "latest",
-    "look": "latest"
+    "look": "latest",
+    "commander": "1"
   }
 }
