@@ -6,6 +6,7 @@ logger.setLevel( process.env.LOG_LEVEL ? 'info' )
 env = process.env.NODE_ENV ? 'development'
 port = process.env.PORT ? 7777
 cpus = process.env.CPUS ? 1
+profile = process.env.PROFILE ? false
 
 start = () ->
   Boardroom = require './boardroom'
@@ -13,9 +14,10 @@ start = () ->
 
 if cluster.isMaster
   logger.warn -> 'Starting Boardroom'
-  logger.info -> "  env: #{env}"
-  logger.info -> "  port: #{port}"
-  logger.info -> "  cpus: #{cpus}"
+  logger.info -> "  env:     #{env}"
+  logger.info -> "  port:    #{port}"
+  logger.info -> "  cpus:    #{cpus}"
+  logger.info -> "  profile: #{profile}"
 
   Migrator = require './services/migrator'
   migrator = new Migrator
@@ -26,7 +28,9 @@ if cluster.isMaster
     cpus = parseInt cpus
 
     if cpus == 1
-      require('look').start() if env == 'development'
+      if profile && profile != 'false'
+        profile = 5959 if profile == 'true' || profile == true
+        require('look').start(profile)
       start()
       return
 

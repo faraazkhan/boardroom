@@ -30,7 +30,8 @@
     "mongodb": "1.2",
     "cli-color": "latest",
     "nodemon": "~0.7.2",
-    "underscore": "latest"
+    "underscore": "latest",
+    "look": "latest"
   },
   "devDependencies": {
     "async": "0.2.6",
@@ -41,7 +42,6 @@
     "supertest": "latest",
     "jsdom": "latest",
     "socket.io-client": "latest",
-    "look": "latest",
     "commander": "1"
   }
 }
