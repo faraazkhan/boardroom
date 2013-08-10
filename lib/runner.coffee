@@ -5,9 +5,7 @@ logger.setLevel( process.env.LOG_LEVEL ? 'info' )
 
 env = process.env.NODE_ENV ? 'development'
 port = process.env.PORT ? 7777
-
-# node.js clustering feature-flag
-doCluster = process.env.NODE_CLUSTER? ? false
+cpus = process.env.CPUS ? 1
 
 start = () ->
   Boardroom = require './boardroom'
@@ -17,20 +15,21 @@ if cluster.isMaster
   logger.warn -> 'Starting Boardroom'
   logger.info -> "  env: #{env}"
   logger.info -> "  port: #{port}"
-  logger.info -> "  cluster: #{doCluster}"
-
-  require('look').start() if env == 'development'
+  logger.info -> "  cpus: #{cpus}"
 
   Migrator = require './services/migrator'
   migrator = new Migrator
   migrator.migrate (error) ->
     throw error if error?
 
-    unless doCluster
+    cpus = require('os').cpus().length if cpus == 'all'
+    cpus = parseInt cpus
+
+    if cpus == 1
+      require('look').start() if env == 'development'
       start()
       return
 
-    cpus = require('os').cpus().length
     for n in [1..cpus]
       worker = cluster.fork()
       worker.ident = -> "Worker #{@id} (pid #{@process.pid})"
