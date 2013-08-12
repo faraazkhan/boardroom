@@ -84,6 +84,12 @@ Visit [localhost:7777](http://localhost:7777).
 ### Ubuntu / Debian
 coming soon
 
+## Load Testing
+
+You can generate load to a Boardroom server with the 'load' tool:
+
+    script/load
+
 ## New to Mongo?
 
 Run through the quick tutorial in the "Try It Out" shell at [mongodb.org](http://www.mongodb.org/).
