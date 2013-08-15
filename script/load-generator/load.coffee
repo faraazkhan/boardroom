@@ -42,13 +42,13 @@ doMaster = ->
 
   workers = { w: [] }
   workers.get = (i) -> workers.w[i % program.workers]
+  workers.all = workers.w
   createWorkers = (spy) ->
     for i in [0...program.workers]
       worker = cluster.fork()
       worker.on 'message', (msg) ->
-        spy.onSendJoin()   if msg.cmd == 'join'
-        spy.onSendUpdate() if msg.cmd == 'update'
-        spy.onSendDelete() if msg.cmd == 'delete'
+        spy.onConnect()              if msg.cmd == 'connect'
+        spy.hit('send', msg.command) if msg.cmd == 'hit'
       workers.w.push worker
 
   startBanging = ->
@@ -93,6 +93,8 @@ doWorker = ->
     else if cmd == 'new monkey'
       body = msg.body
       monkeys[body.i] = new Monkey(body.i, body.board, body.url, body.events)
+    else if cmd == 'start'
+      ( monkey.start() if monkey? ) for monkey in monkeys
 
 if cluster.isMaster
   doMaster()

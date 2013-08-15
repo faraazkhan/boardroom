@@ -6,12 +6,13 @@ class Monkey
   constructor: (@index, @boardId, url, @events) ->
     @running = false
     @socket = io.connect url, { 'force new connection': true }
+    process.send { cmd: 'connect' }
+    @socket.on 'connect', @onConnect
     @socket.on 'join', @onJoin
     @socket.on 'group.create', @onGroupCreate
     @socket.on 'card.create', @onCardCreate
     @group = @card = null
     @userId = "#{@index}"
-    @start()
 
   start: ->
     @running = true
@@ -27,7 +28,13 @@ class Monkey
   pause: (f, millis = null) ->
     setTimeout f, millis ? random.pause()
 
+  hit: (command) =>
+    process.send { cmd: 'hit', command }
+
   #----- Socket handlers -----#
+
+  onConnect: =>
+    @hit 'connect'
 
   onJoin: (message) =>
     if message.userId == @userId
@@ -48,7 +55,7 @@ class Monkey
   join: =>
     return unless @running
     @socket.emit 'join', { @userId, displayName: "Load Tester #{@userId}" }
-    process.send { cmd: 'join' }
+    @hit 'join'
 
   createGroup: =>
     return unless @running
@@ -64,7 +71,7 @@ class Monkey
     @editCard() if r == 0
     @colorizeCard() if r == 1
     @moveGroup() if r > 1
-    process.send { cmd: 'update' }
+    @hit 'update'
 
   moveGroup: =>
     x = Math.abs(@group.x += random.move())
@@ -84,7 +91,7 @@ class Monkey
   deleteGroup: =>
     @socket.emit 'card.delete', { _id: @card._id, @boardId }
     @socket.emit 'group.delete', { _id: @group._id, @boardId, @index }
-    process.send { cmd: 'delete' }
+    @hit 'delete'
 
   #----- Load generator -----#
 
