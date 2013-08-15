@@ -6,11 +6,11 @@ class Monkey
   constructor: (@index, @boardId, url, @events) ->
     @running = false
     @socket = io.connect url, { 'force new connection': true }
-    process.send { cmd: 'connect' }
     @socket.on 'connect', @onConnect
     @socket.on 'join', @onJoin
     @socket.on 'group.create', @onGroupCreate
     @socket.on 'card.create', @onCardCreate
+    @hit 'connect'
     @group = @card = null
     @userId = "#{@index}"
 
@@ -34,7 +34,7 @@ class Monkey
   #----- Socket handlers -----#
 
   onConnect: =>
-    @hit 'connect'
+    process.send { cmd: 'connect' }
 
   onJoin: (message) =>
     if message.userId == @userId
@@ -64,6 +64,7 @@ class Monkey
   createCard: =>
     return unless @running
     @socket.emit 'card.create', { @boardId, groupId: @group._id, colorIndex: random.color(), text: @userId, cid: @index }
+    @hit 'create'
 
   updateGroup: =>
     return unless @running

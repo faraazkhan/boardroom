@@ -33,11 +33,14 @@ doMaster = ->
   gethttpurls = ->
     "http://#{program.host}:#{port}/boards/#{program.board}/warm" for port in [program.port...(program.port + program.servers)]
 
+  spy = null
+
   sigintSem = 0
   process.on 'SIGINT', ->
     process.exit() if sigintSem > 0
     sigintSem += 1
     console.log "cleaning up..."
+    spy.stop()
     worker.send({ cmd: 'stop' }) for worker in workers.w
 
   workers = { w: [] }
@@ -59,7 +62,7 @@ doMaster = ->
     for i in [0...program.sessions]
       worker = workers.get i
       worker.send
-        cmd: 'new monkey'
+        cmd: 'new'
         body:
           i: i
           board: program.board
@@ -85,16 +88,16 @@ doWorker = ->
   monkeys = []
   process.on 'message', (msg) ->
     cmd = msg.cmd
-    if cmd == 'stop'
-      ( monkey.stop() if monkey? ) for monkey in monkeys
-    else if cmd == 'disconnect'
-      i = msg.body
-      monkeys[i].disconnect()
-    else if cmd == 'new monkey'
+    if cmd == 'new'
       body = msg.body
       monkeys[body.i] = new Monkey(body.i, body.board, body.url, body.events)
     else if cmd == 'start'
       ( monkey.start() if monkey? ) for monkey in monkeys
+    else if cmd == 'stop'
+      ( monkey.stop() if monkey? ) for monkey in monkeys
+    else if cmd == 'disconnect'
+      i = msg.body
+      monkeys[i].disconnect()
 
 if cluster.isMaster
   doMaster()

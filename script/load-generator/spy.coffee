@@ -2,19 +2,20 @@ io = require 'socket.io-client'
 
 class Spy
 
-
   constructor: (url, @sessionCount, @workers) ->
+    @running = true
     @socket = io.connect url, { 'force new connection': true }
     @socket.on 'join', @onJoin
-    @socket.on 'group.delete', @onGroupDelete
+    @socket.on 'card.create', @onCardCreate
     @socket.on 'card.update', @onReceiveUpdate
     @socket.on 'group.update', @onReceiveUpdate
+    @socket.on 'group.delete', @onGroupDelete
 
-    @commands = [ 'connect', 'join', 'update', 'delete' ]
+    @commands = [ 'connect', 'join', 'create', 'update', 'delete' ]
     @stats = {}
     @stats[command] = { send: 0, receive: 0 } for command in @commands
 
-    @progressInt = setInterval @showProgress, 2000
+    @progressInt = setInterval @checkProgress, 2000
 
   hit: (direction, command) =>
     @stats[command][direction] += 1
@@ -27,29 +28,34 @@ class Spy
   onJoin: =>
     @hit 'receive', 'join'
 
+  onCardCreate: (message) =>
+    @hit 'receive', 'create'
+
+  onReceiveUpdate: (message) =>
+    @hit 'receive', 'update'
+
   onGroupDelete: (message) =>
     i = message.index
     worker = @workers.get i
     worker.send { cmd: 'disconnect', body: i }
     @hit 'receive', 'delete'
-    if @stats.delete.receive == @stats.join.receive
-      setTimeout @stop, 1000
 
-  onReceiveUpdate: (message) =>
-    @hit 'receive', 'update'
-
-  showProgress: =>
+  checkProgress: =>
     msg = "#{@sessionCount} sessions: "
     for cmd, i in @commands
       msg += cmd + " (#{@stats[cmd].send} / #{@stats[cmd].receive})"
       msg += ', ' unless i == @commands.length - 1
     console.log msg
+    if !@running && @stats.delete.receive == @stats.create.receive
+      @exit()
 
-  stop: =>
-    @showProgress()
+  exit: =>
     console.log 'all done'
     @socket.disconnect()
     clearInterval @progressInt
     process.exit()
+
+  stop: =>
+    @running = false
 
 module.exports = Spy
