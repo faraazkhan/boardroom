@@ -67,8 +67,10 @@ class Monkey
     process.send { cmd: 'update' }
 
   moveGroup: =>
-    x = @group.x += random.move()
-    y = @group.y += random.move()
+    x = Math.abs(@group.x += random.move())
+    x = 800 - (x - 800) if x > 800
+    y = Math.abs(@group.y += random.move())
+    y = 500 - (y - 500) if y > 500
     @socket.emit 'group.update', { _id: @group._id, @boardId, x, y }
 
   editCard: =>
@@ -89,8 +91,8 @@ class Monkey
   startBanging: ->
     delay = ( 1000 * 60 ) / @events
     bang = =>
-      @updateGroup()
       if @running
+        @updateGroup()
         @pause bang, delay
       else
         @pause @deleteGroup, 1000

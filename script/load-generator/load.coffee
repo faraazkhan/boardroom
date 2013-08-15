@@ -11,8 +11,8 @@ doMaster = ->
   program
     .version('1.0')
     .option('-b, --board <id>', 'The id of the board (required)')
-    .option('-n, --sessions [count]', 'Number of sessions you want to open [2]', parseInt, 2)
-    .option('-e, --events [count]', 'Number of events per minute per session [60]', parseInt, 60)
+    .option('-n, --sessions [count]', 'Number of sessions you want to open [10]', parseInt, 10)
+    .option('-e, --events [count]', 'Number of events per minute per session [60]', parseInt, 120)
     .option('-h, --host [name]', 'Host of the server to test [localhost]', 'localhost')
     .option('-p, --port [number]', 'Port of server to test [7777]', parseInt, 7777)
     .option('-E, --env [name]', 'Node environment (NODE_ENV) of server to test [development]', 'development')
