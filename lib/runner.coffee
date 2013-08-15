@@ -1,4 +1,5 @@
 cluster = require 'cluster'
+sh = require 'execSync'
 
 logger = require './services/logger'
 logger.setLevel( process.env.LOG_LEVEL ? 'info' )
@@ -7,6 +8,7 @@ env = process.env.NODE_ENV ? 'development'
 port = process.env.PORT ? 7777
 cpus = process.env.CPUS ? 1
 profile = process.env.PROFILE ? false
+maxfiles = sh.exec('ulimit -n').stdout.trim()
 
 start = () ->
   Boardroom = require './boardroom'
@@ -14,10 +16,11 @@ start = () ->
 
 if cluster.isMaster
   logger.warn -> 'Starting Boardroom'
-  logger.info -> "  env:     #{env}"
-  logger.info -> "  port:    #{port}"
-  logger.info -> "  cpus:    #{cpus}"
-  logger.info -> "  profile: #{profile}"
+  logger.warn -> "  env:      #{env}"
+  logger.warn -> "  port:     #{port}"
+  logger.warn -> "  cpus:     #{cpus}"
+  logger.warn -> "  profile:  #{profile}"
+  logger.warn -> "  maxfiles: #{maxfiles}  (via ulimit -n)"
 
   Migrator = require './services/migrator'
   migrator = new Migrator

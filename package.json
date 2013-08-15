@@ -25,13 +25,14 @@
     "passport-facebook": "0.1.x",
     "passport-google-oauth": "0.1.x",
     "less": "1",
-    "coffee-script": "1.5",
+    "coffee-script": "1",
     "mongoose": "3",
     "mongodb": "1.2",
     "cli-color": "latest",
     "nodemon": "~0.7.2",
     "underscore": "latest",
-    "look": "latest"
+    "look": "latest",
+    "execSync": "latest"
   },
   "devDependencies": {
     "async": "0.2.6",
