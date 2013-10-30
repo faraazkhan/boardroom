@@ -40,7 +40,7 @@ class Sockets
           logger.info -> "#{socket.boardroomUser?.displayName} has disconnected"
 
         socket.on 'join', (user) =>
-          @users[user.id] = user
+          @users[user.userId] = user
           socket.boardroomUser = user
           boardNamespace.emit 'join', { userId: user.userId, @users }
           logger.info -> "#{user.displayName} has joined board #{boardId} (pid: #{process.pid})"
