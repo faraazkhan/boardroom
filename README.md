@@ -82,7 +82,9 @@ Visit [localhost:7777](http://localhost:7777).
 9. Visit [localhost:7777](http://localhost:7777).
 
 ### Ubuntu / Debian
-coming soon
+
+		$ sudo apt-get install mongodb-10gen nodejs nodejs-dev npm redis-server
+		$ sudo npm install
 
 ## Load Testing
 
