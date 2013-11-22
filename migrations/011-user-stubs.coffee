@@ -47,12 +47,13 @@ createUniqueUsers = (next)->
           do (board) ->
             uniqueUsers[board.creator] = 1
       count = 0
-      numUniquUsers = Object.keys(uniqueUsers).length
+      numUniqueUsers = Object.keys(uniqueUsers).length
+      return next() unless numUniqueUsers > 0
       for username, x of uniqueUsers
         do (username)->
           User.create newUserData(username), (err, user)->
             uniqueUsers[username] = user
-            next null, uniqueUsers if numUniquUsers is ++count
+            next null, uniqueUsers if numUniqueUsers is ++count
 
 bindUsersToAuthors = (uniqueUsers, next)->
   DB.find 'cards', { _id: { $exists: true } }, (error, cards) ->
