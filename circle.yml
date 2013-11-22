@@ -1,0 +1,9 @@
+deployment:
+  staging:
+    branch: development
+    commands:
+      - cap acceptance deploy
+  production:
+    branch: master
+    commands:
+      - cap production deploy
