@@ -3,6 +3,8 @@
 
 BoardsController = require '../../../lib/controllers/boards'
 
+sinon = require 'sinon'
+
 describeController 'BoardsController', (session) ->
   describe '#create', ->
     name = 'name-1'
@@ -68,6 +70,48 @@ describeController 'BoardsController', (session) ->
         .end (request, response) ->
           expect(response.statusCode).toBe 404
           done()
+
+  describe '#destroy', ->
+    request = null
+    response = null
+
+    describe 'board does not exist', ->
+      beforeEach (done) ->
+        session.request()
+          .post("/boards/#{1}")
+          .end (req, res) ->
+            # store the request/response for the tests
+            request = req
+            response = res
+            done()
+
+      it 'redirects', ->
+        expect(response.redirect).toBeTruthy()
+
+    describe 'board does exist', ->
+      board_id = null
+
+      beforeEach (done) ->
+        Factory.create 'user', (error, user) ->
+          session.login user
+          Factory "board", (err, board) ->
+            # store the board_id for the tests
+            board_id = board.id
+            session.request()
+              .post("/boards/#{board_id}")
+              .end (req, res) ->
+                # store the request/response for the tests
+                request = req
+                response = res
+                done()
+
+      it 'removes the board', (done) ->
+        Board.findById board_id, (error, board) ->
+          expect(board).toBeNull()
+          done()
+
+      it 'redirects', ->
+        expect(response.redirect).toBeTruthy()
 
   # describe '#destroy', ->
   #   board = undefined
