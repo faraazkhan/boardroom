@@ -54,6 +54,21 @@ describeController 'BoardsController', (session) ->
             expect(res.statusCode).toBe(200)
             done()
 
+  describe '#warm', ->
+    beforeEach (done) ->
+      Factory.create 'user', (error, user) ->
+        session.login user
+        Factory "board", (err, board) ->
+          id = 1
+          done()
+
+    it '404s', (done) ->
+      session.request()
+        .get("/boards/#{1}/warm")
+        .end (request, response) ->
+          expect(response.statusCode).toBe 404
+          done()
+
   # describe '#destroy', ->
   #   board = undefined
   #   response = undefined
