@@ -115,32 +115,6 @@ describeController 'BoardsController', (session) ->
         redirect = url.parse response.headers.location
         expect(redirect.pathname).toEqual '/'
 
-  # describe '#destroy', ->
-  #   board = undefined
-  #   response = undefined
-
-  #   beforeEach (done) ->
-  #     Factory.create 'user', (error, user) ->
-  #       session.login user
-
-  #       Factory "board", (err, _board) ->
-  #         board = _board
-  #         session.request()
-  #           .post("/boards/#{board.id}")
-  #           .end (err, _response) ->
-  #             response = _response
-  #             done()
-
-  #   it 'redirects to the root', ->
-  #     expect(response.redirect).toBeTruthy()
-  #     redirect = url.parse response.headers.location
-  #     expect(redirect.pathname).toEqual '/'
-
-  #   it 'deletes the board', (done) ->
-  #     Board.findById board.id, (err, board) ->
-  #       expect(board).toBeNull()
-  #       done()
-
   # describe '#build', ->
   #   name = 'name-1'
   #   creator = undefined
