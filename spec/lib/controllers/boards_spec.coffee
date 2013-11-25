@@ -3,6 +3,8 @@
 
 BoardsController = require '../../../lib/controllers/boards'
 
+sinon = require 'sinon'
+
 describeController 'BoardsController', (session) ->
   describe '#create', ->
     name = 'name-1'
@@ -54,31 +56,64 @@ describeController 'BoardsController', (session) ->
             expect(res.statusCode).toBe(200)
             done()
 
-  # describe '#destroy', ->
-  #   board = undefined
-  #   response = undefined
+  describe '#warm', ->
+    beforeEach (done) ->
+      Factory.create 'user', (error, user) ->
+        session.login user
+        Factory "board", (err, board) ->
+          id = 1
+          done()
 
-  #   beforeEach (done) ->
-  #     Factory.create 'user', (error, user) ->
-  #       session.login user
+    it '404s', (done) ->
+      session.request()
+        .get("/boards/#{1}/warm")
+        .end (request, response) ->
+          expect(response.statusCode).toBe 404
+          done()
 
-  #       Factory "board", (err, _board) ->
-  #         board = _board
-  #         session.request()
-  #           .post("/boards/#{board.id}")
-  #           .end (err, _response) ->
-  #             response = _response
-  #             done()
+  describe '#destroy', ->
+    request = null
+    response = null
 
-  #   it 'redirects to the root', ->
-  #     expect(response.redirect).toBeTruthy()
-  #     redirect = url.parse response.headers.location
-  #     expect(redirect.pathname).toEqual '/'
+    describe 'board does not exist', ->
+      beforeEach (done) ->
+        session.request()
+          .post("/boards/#{1}")
+          .end (req, res) ->
+            # store the request/response for the tests
+            request = req
+            response = res
+            done()
 
-  #   it 'deletes the board', (done) ->
-  #     Board.findById board.id, (err, board) ->
-  #       expect(board).toBeNull()
-  #       done()
+      it 'redirects', ->
+        expect(response.redirect).toBeTruthy()
+
+    describe 'board does exist', ->
+      board_id = null
+
+      beforeEach (done) ->
+        Factory.create 'user', (error, user) ->
+          session.login user
+          Factory "board", (err, board) ->
+            # store the board_id for the tests
+            board_id = board.id
+            session.request()
+              .post("/boards/#{board_id}")
+              .end (req, res) ->
+                # store the request/response for the tests
+                request = req
+                response = res
+                done()
+
+      it 'removes the board', (done) ->
+        Board.findById board_id, (error, board) ->
+          expect(board).toBeNull()
+          done()
+
+      it 'redirects', ->
+        expect(response.redirect).toBeTruthy()
+        redirect = url.parse response.headers.location
+        expect(redirect.pathname).toEqual '/'
 
   # describe '#build', ->
   #   name = 'name-1'
