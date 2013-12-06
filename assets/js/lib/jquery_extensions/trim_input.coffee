@@ -24,11 +24,11 @@ $.fn.adjustWidth = ->
   $(@).css 'width', width
 
 $.fn.trimInput = (minWidth) ->
-  @each ->    
+  @each ->
     originalWidth = $(@).css('width')
-    
+
     maxWidth = $(@).innerWidth()
-    
+
     $(@).data('maxWidth', maxWidth)
     $(@).data('minWidth', minWidth)
 

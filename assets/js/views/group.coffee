@@ -40,6 +40,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @initializeCards()
     @initializeDraggable()
     @initializeDroppable()
+    @$('.name').trimInput(80)
 
   initializeLocks: =>
     @dragLock = @createDragLock()
@@ -102,7 +103,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   updateName: (group, name, options) =>
     if @$('.name').val() != name
-      @$('.name').val(name).trimInput(80)
+      @$('.name').val(name).adjustWidth()
     if options?.rebroadcast
       userIdentity = @model.board().userIdentityForId group.get 'author'
       @editLock.lock(1000, userIdentity.get('avatar'), "#{userIdentity.get('displayName')} is typing...") if userIdentity?
