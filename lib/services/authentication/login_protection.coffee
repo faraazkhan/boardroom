@@ -3,5 +3,5 @@ module.exports = (request, response, next) ->
     next()
   else
     request.session ?= {}
-    request.session.go2URL ?= request.url
+    request.session.go2URL = request.url
     response.redirect '/login'

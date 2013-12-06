@@ -6,6 +6,7 @@ Board = require './../models/board'
 class HomeController extends ApplicationController
   index: (request, response) =>
     go2URL = request.session?.go2URL || '/'
+    request.session?.go2URL = null
     return response.redirect go2URL unless '/' is go2URL
 
     try
