@@ -14,8 +14,23 @@ $.fn.droppable = (opts) ->
   isHovering = (data) ->
     return false unless data?
     threshold = settings.threshold
-    offset = $this.offset()
-    (offset.left - threshold) <= data.x <= (offset.left + threshold) and (offset.top - threshold) <= data.y <= (offset.top + threshold)
+
+    drop = $this.offset()
+    drop.bottom = drop.top + $this.height()
+    drop.right = drop.left + $this.width()
+
+    drag = $(data.target).offset()
+    drag.bottom = drag.top + $(data.target).height()
+    drag.right = drag.left + $(data.target).width()
+
+    dragPoint = [ drag.left + (drag.right  - drag.left) / 2.0,
+                  drag.top  + (drag.bottom - drag.top)  / 2.0  ]
+
+    dropBox = drop
+    dropBox.contains = (point) ->
+      this.left <= point[0] <= this.right and this.top <= point[1] <= this.bottom
+
+    dropBox.contains dragPoint
 
   $(window).on 'drag', (event, data) ->
     return unless data?
