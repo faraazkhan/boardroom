@@ -74,7 +74,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initializeDroppable: ->
     @$el.droppable
-      threshold: 88
+      priority: 0
       onHover: (event, target) =>
         @model.hover()
       onBlur: (event, target) =>

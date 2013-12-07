@@ -30,7 +30,6 @@ class boardroom.views.Board extends boardroom.views.Base
 
   initializeDroppable: ->
     @$el.droppable
-      threshold: Math.max @$el.height(), @$el.width()
       priority: 1
       onDrop: (mouseEvent, target) =>
         id = $(target).attr('id')

@@ -2,7 +2,6 @@ $.fn.droppable = (opts) ->
   $this = this
 
   settings = $.extend true,
-    threshold: 50
     priority: 0
     onHover: (event, target) ->
     onBlur: (event, target) ->
@@ -13,7 +12,6 @@ $.fn.droppable = (opts) ->
 
   isHovering = (data) ->
     return false unless data?
-    threshold = settings.threshold
 
     drop = $this.offset()
     drop.bottom = drop.top + $this.height()
@@ -34,7 +32,7 @@ $.fn.droppable = (opts) ->
 
   $(window).on 'drag', (event, data) ->
     return unless data?
-    return if data? and $this[0] == data.target
+    return if $this[0] == data.target
     return unless $this.is(':visible')
 
     nowHovering = isHovering(data)
@@ -47,7 +45,8 @@ $.fn.droppable = (opts) ->
       settings.onBlur event, data.target
 
   $(window).on 'drop', (event, data) ->
-    return if data? and $this[0] == data.target
+    return unless data?
+    return if $this[0] == data.target
     return unless $this.is(':visible')
 
     if isHovering(data)
@@ -58,9 +57,6 @@ $.fn.droppable = (opts) ->
           event.stopPropagation()
           settings.onDrop data.mouseEvent, data.target
 
-      if settings.priority == 0
-        drop()
-      else
-        setTimeout drop, settings.priority * 10
+      setTimeout drop, settings.priority * 10
 
   $this
