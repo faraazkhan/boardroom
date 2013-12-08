@@ -38,12 +38,12 @@ class boardroom.models.Group extends Backbone.Model
       authors: [ @currentUserId() ]
     @cards().add card
 
-  dropCard: (id) =>
+  dropCard: (id, location) =>
     card = @board().findCard id
     card.set 'groupId', @id
     card.drop()
 
-  dropGroup: (id) =>
+  dropGroup: (id, location) =>
     @board().mergeGroups @id, id
 
   hover: =>

@@ -81,9 +81,23 @@ class boardroom.views.Group extends boardroom.views.Base
         @model.blur()
       onDrop: (event, target) =>
         id = $(target).attr 'id'
-        @model.dropCard(id)  if $(target).is('.card')
-        @model.dropGroup(id) if $(target).is('.group')
+        location = @dropLocation target
+        @model.dropCard(id, location)  if $(target).is('.card')
+        @model.dropGroup(id, location) if $(target).is('.group')
         @model.blur()
+
+  dropLocation: (target) =>
+    bounds = $(target).bounds()
+    for cardDiv in @$('.card')
+      id = $(cardDiv).attr('id')
+      cardBounds = $(cardDiv).bounds()
+      upper = cardBounds.upperHalf().extendUp(6)
+      lower = cardBounds.lowerHalf().extendDown(6)
+      if upper.contains bounds.middle()
+        return { above: id }
+      if lower.contains bounds.middle()
+        return { below: id }
+    return {}
 
   ###
       render
