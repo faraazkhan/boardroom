@@ -18,7 +18,7 @@ class boardroom.models.Card extends Backbone.Model
   moveTo: (x, y) ->
     @set { x, y }
 
-  # we are doing an optimization.  instea of letting the remove() and add() handle the
+  # we are doing an optimization.  instead of letting the remove() and add() handle the
   # move (via listeners in the views), we are making those silent and triggering a
   # special 'moveToGroup' event.  this will ultimately cause the view to move the existing
   # div from one group to another instead of removing it and creating another.  this will
@@ -27,16 +27,21 @@ class boardroom.models.Card extends Backbone.Model
   moveToGroup: (card, groupId, options) =>
     oldGroup = @group()
     newGroup = @board().findGroup groupId
-    @board().trigger 'move:card', @, oldGroup, newGroup
     moveOptions = _(options).extend { movecard: true }
-    oldGroup.cards().remove @, moveOptions
+
+    # we MUST add this card to the new group BEFORE triggering move:card
     newGroup.cards().add @, moveOptions
+    @board().trigger 'move:card', @, oldGroup, newGroup
+
+    # then we can do the rest of the book keeping
+    oldGroup.cards().remove @, moveOptions
     @set 'group', newGroup, { silent: true }
     @drop()
 
   drop: ->
     @unset 'x'
     @unset 'y'
+    @blur()
 
   type: (text) ->
     @set { text }
@@ -52,6 +57,12 @@ class boardroom.models.Card extends Backbone.Model
 
   unfocus: () ->
     @focused = false
+
+  hover: (location) ->
+    @set 'hover', location
+
+  blur: ->
+    @unset 'hover'
 
   delete: ->
     cards = @group().cards()

@@ -50,14 +50,15 @@ class boardroom.models.Board extends Backbone.Model
         groupId: group.id
         creator: creator
         authors: [ creator ]
+        order: 0
       group.cards().add card
     @groups().add group
 
-  mergeGroups: (parentId, childId) =>
+  mergeGroups: (parentId, childId, location) =>
+    parent = @findGroup parentId
     child = @findGroup childId
     childCards = child.get('cards').toArray()
-    for card in childCards
-      card.set 'groupId', parentId
+    parent.addCards childCards, location
     @groups().remove child
 
   dropCard: (id) =>
@@ -68,6 +69,7 @@ class boardroom.models.Board extends Backbone.Model
     group = @newGroupAt coords
     group.onSaved = (group) =>
       card.set 'groupId', group.id
+      card.set 'order', 0
       card.drop()
     @groups().add group
 

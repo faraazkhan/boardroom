@@ -76,9 +76,11 @@ class boardroom.views.Group extends boardroom.views.Base
     @$el.droppable
       priority: 0
       onHover: (event, target) =>
-        @model.hover()
+        location = @dropLocation target
+        @model.hover location
       onBlur: (event, target) =>
-        @model.blur()
+        location = @dropLocation target
+        @model.blur location
       onDrop: (event, target) =>
         id = $(target).attr 'id'
         location = @dropLocation target
@@ -94,9 +96,9 @@ class boardroom.views.Group extends boardroom.views.Base
       upper = cardBounds.upperHalf().extendUp(6)
       lower = cardBounds.lowerHalf().extendDown(6)
       if upper.contains bounds.middle()
-        return { above: id }
+        return { id, position: 'above' }
       if lower.contains bounds.middle()
-        return { below: id }
+        return { id, position: 'below' }
     return {}
 
   ###
@@ -174,7 +176,10 @@ class boardroom.views.Group extends boardroom.views.Base
 
   displayCard: (cardView) =>
     @cardViews.push cardView
-    @renderCardInOrder cardView
+    wasFocused = cardView.model.focused
+    @$el.append cardView.el
+    @reorderCards()
+    cardView.focus() if wasFocused
     @updateGroupChrome()
     @resizeHTML()
 
@@ -189,22 +194,12 @@ class boardroom.views.Group extends boardroom.views.Base
     cardView = @findCardView card
     @cardViews.splice @cardViews.indexOf(cardView), 1
 
-  renderCardInOrder: (newCardView) ->
-    newCardDiv = newCardView.el
-    wasFocused = newCardView.model.focused
-
-    divToInsertBefore = null
-    for cardDiv in @$('.card') # identify which card to insert cardView before
-      cardModel = @model.findCard $(cardDiv).attr('id')
-      if cardModel.get('created') > newCardView.model.get('created')
-        divToInsertBefore = cardDiv
-        break
-
-    if divToInsertBefore?
-      $(newCardDiv).insertBefore divToInsertBefore # insert in order
-    else
-      @$el.append(newCardDiv) # put it at the end if this is the last card
-    newCardView.focus() if wasFocused
+  reorderCards: =>
+    ordered = _(@$('.card')).sort (a, b) =>
+      cardA = @model.findCard $(a).attr('id')
+      cardB = @model.findCard $(b).attr('id')
+      @model.cardSorter cardA, cardB
+    $(ordered).appendTo @$el
 
   ###
       human interaction event handlers
