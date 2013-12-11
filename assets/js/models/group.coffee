@@ -55,13 +55,15 @@ class boardroom.models.Group extends Backbone.Model
     @blurCards()
 
   addCards: (cards, location) =>
-    ordered = @cards().toArray()
+    ids = _(cards).pluck 'id'
+    ordered = @cards().reject (card) -> _(ids).contains(card.id)
     locCard = _(ordered).find (card) -> card.id == location.id
     locIndex = _(ordered).indexOf locCard
     spliceIndex = if location.position == 'above' then 0 else 1
     ordered.splice (locIndex + spliceIndex), 0, cards...
     _(ordered).each (card, index) -> card.set('order', index)
     card.set('groupId', @id) for card in cards
+    @cards().sort()
 
   removeCard: (card, cards, options) =>
     @cards().each (card, index) -> card.set('order', index)

@@ -27,17 +27,6 @@ $.fn.droppable = (opts) ->
     else
       settings.onBlur event, data.target
 
-    ###
-    nowHovering = isHovering(data)
-    if nowHovering and hovering == false
-      hovering = true
-      settings.onHover event, data.target
-
-    if !nowHovering and hovering == true
-      hovering = false
-      settings.onBlur event, data.target
-    ###
-
   $(window).on 'drop', (event, data) ->
     return unless data?
     return if $this[0] == data.target

@@ -32,8 +32,9 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:z',     @updateZ, @
     @model.on 'change:hover', @updateHover, @
 
-    @model.cards().on 'add', @displayNewCard, @
+    @model.cards().on 'add',    @displayNewCard, @
     @model.cards().on 'remove', @removeCard, @
+    @model.cards().on 'sort',   @reorderCards, @
 
   onAttach: =>
     @render()
