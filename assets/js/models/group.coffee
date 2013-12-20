@@ -61,11 +61,12 @@ class boardroom.models.Group extends Backbone.Model
     locIndex = _(ordered).indexOf locCard
     spliceIndex = if location.position == 'above' then 0 else 1
     ordered.splice (locIndex + spliceIndex), 0, cards...
-    _(ordered).each (card, index) -> card.set('order', index)
     card.set('groupId', @id) for card in cards
+    _(ordered).each (card, index) -> card.set('order', index)
     @cards().sort()
 
   removeCard: (card, cards, options) =>
+    cards.each (card, index) -> console.log(card.get('text'))
     @cards().each (card, index) -> card.set('order', index)
     unless options?.rebroadcast
       @delete options if cards.length == 0

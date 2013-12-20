@@ -133,6 +133,7 @@ class boardroom.views.Card extends boardroom.views.Base
       @dragLock.lock(1000, userIdentity.get('avatar'), userIdentity.get('displayName')) if userIdentity?
 
   updateOrder: (card, order, options) =>
+    console.log "update order for card #{card.get('text')} to: #{order}"
     text = card.get('text')
     text = text.replace /\d+ - /, ''
     text = "#{order} - #{text}"
