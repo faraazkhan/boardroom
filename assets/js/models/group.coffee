@@ -66,7 +66,6 @@ class boardroom.models.Group extends Backbone.Model
     @cards().sort()
 
   removeCard: (card, cards, options) =>
-    cards.each (card, index) -> console.log(card.get('text'))
     @cards().each (card, index) -> card.set('order', index)
     unless options?.rebroadcast
       @delete options if cards.length == 0
