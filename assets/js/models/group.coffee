@@ -10,6 +10,7 @@ class boardroom.models.Group extends Backbone.Model
     cards.each (card) => card.set 'group', @, { silent: true }
     cards.comparator = @cardSorter
     @set 'cards', cards
+    cards.sort()
     cards.on 'remove', @removeCard, @
 
   cards: -> @get 'cards'
@@ -46,14 +47,14 @@ class boardroom.models.Group extends Backbone.Model
     @cards().add card
 
   dropCard: (id, location) =>
-    @logger.debug "models.Group.dropCard: card(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
+    @logger.info "models.Group.dropCard: card(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
     card = @board().findCard id
     @insertCards [card], location unless card.id == location.id
     card.drop()
     @blurCards()
 
   dropGroup: (id, location) =>
-    @logger.debug "models.Group.dropGroup: group(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
+    @logger.info "models.Group.dropGroup: group(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
     group = @board().findGroup id
     @board().mergeGroups @id, id, location
     group.drop()
