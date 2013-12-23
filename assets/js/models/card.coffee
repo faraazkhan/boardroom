@@ -8,8 +8,8 @@ class boardroom.models.Card extends Backbone.Model
     colorIndex: 2
 
   initialize: (attributes, options) ->
-    @.on 'change:groupId', @moveToGroup, @
-    @.on 'change:order',   @sortGroup,   @
+    @.on 'change:groupId', @updateGroupId, @
+    @.on 'change:order',   @updateOrder,   @
 
   group: -> @get 'group'
   board: -> @group().board()
@@ -19,10 +19,10 @@ class boardroom.models.Card extends Backbone.Model
   moveTo: (x, y) ->
     @set { x, y }
 
-  moveToGroup: (card, groupId, options) =>
+  updateGroupId: (card, groupId, options) =>
     @board().moveCard card, @group().id, groupId, options
 
-  sortGroup: (card, order, options) =>
+  updateOrder: (card, order, options) =>
     @group().cards().sort()
 
   drag: ->
