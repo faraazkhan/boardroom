@@ -52,6 +52,9 @@ class boardroom.views.Card extends boardroom.views.Base
     @model.on 'change:text',        @updateText, @
     @model.on 'change:x',           @updateX, @
     @model.on 'change:y',           @updateY, @
+    @model.on 'change:order',       @updateOrder, @
+    @model.on 'change:hover',       @updateHover, @
+    @model.on 'change:state',       @updateState, @
     @model.on 'change:plusAuthors', @updatePlusAuthors, @
     @model.on 'change:authors',     @updateAuthors, @
 
@@ -82,9 +85,8 @@ class boardroom.views.Card extends boardroom.views.Base
       onMouseMove: =>
         @model.moveTo @left(), @top()
       startedDragging: =>
-        @$el.addClass('dragging')
+        @model.drag()
       stoppedDragging: =>
-        @$el.removeClass('dragging')
 
   ###
       render
@@ -98,6 +100,7 @@ class boardroom.views.Card extends boardroom.views.Base
     setTimeout @triggerAutosize, 10
     @updatePosition @model.get('x'), @model.get('y')
     @updateColor @model, @model.get('colorIndex')
+    @updateOrder @model, @model.get('order')
     @updateAuthors @model, @model.get('authors')
     @updatePlusAuthors @model, @model.get('plusAuthors')
     @
@@ -128,6 +131,21 @@ class boardroom.views.Card extends boardroom.views.Base
     if options?.rebroadcast
       userIdentity = @model.board().userIdentityForId @model.get 'author'
       @dragLock.lock(1000, userIdentity.get('avatar'), userIdentity.get('displayName')) if userIdentity?
+
+  updateOrder: (card, order, options) =>
+    #text = card.get('text')
+    #text = text.replace /\d+ - /, ''
+    #text = "#{order} - #{text}"
+    #@updateText card, text, options
+
+  updateHover: (card, hover, options) =>
+    @$el.removeClassMatching /hover-\w+/
+    @$el.addClass "hover-#{hover}" if hover
+
+  updateState: (card, state, options) =>
+    previous = card.previous 'state'
+    @$el.removeClass previous if previous
+    @$el.addClass state if state
 
   updatePlusAuthors: (card, plusAuthors, options) =>
     return if plusAuthors.length == 0

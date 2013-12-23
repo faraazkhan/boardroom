@@ -5,17 +5,25 @@ class boardroom.models.Group extends Backbone.Model
     name: ''
 
   initialize: (attributes, options) ->
+    @logger = boardroom.utils.Logger.instance
     cards = new Backbone.Collection _.map(attributes?.cards, (card) -> new boardroom.models.Card(card))
     cards.each (card) => card.set 'group', @, { silent: true }
+    cards.comparator = @cardSorter
     @set 'cards', cards
-    cards.on 'remove', (card, cards, options) =>
-      unless options?.rebroadcast
-        @delete options if cards.length == 0
+    cards.sort()
+    cards.on 'remove', @removeCard, @
 
   cards: -> @get 'cards'
   board: -> @get 'board'
   currentUser: -> @board().currentUser()
   currentUserId: -> @board().currentUserId()
+
+  cardSorter: (a, b) ->
+    return 0 unless a and b
+    orderA = a.get 'order'
+    orderB = b.get 'order'
+    return orderA - orderB unless orderA == orderB
+    if a.get('created') > b.get('created') then 1 else 0
 
   findCard: (id) ->
     @cards().find (card) -> card.id == id
@@ -36,21 +44,58 @@ class boardroom.models.Group extends Backbone.Model
       groupId: @id
       creator: @currentUserId()
       authors: [ @currentUserId() ]
+      order: @cards().last().get('order') + 1
     @cards().add card
 
-  dropCard: (id) =>
+  dropCard: (id, location) =>
+    @logger.info "models.Group.dropCard: card(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
     card = @board().findCard id
-    card.set 'groupId', @id
+    @insertCards [card], location unless card.id == location.id
     card.drop()
+    @blurCards()
 
-  dropGroup: (id) =>
-    @board().mergeGroups @id, id
+  dropGroup: (id, location) =>
+    @logger.info "models.Group.dropGroup: group(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
+    group = @board().findGroup id
+    @board().mergeGroups @id, id, location
+    group.drop()
+    @blurCards()
 
-  hover: =>
+  insertCards: (cards, location) =>
+    ids = _(cards).pluck 'id'
+    ordered = @cards().reject (card) -> _(ids).contains(card.id)
+    locCard = _(ordered).find (card) -> card.id == location.id
+    locIndex = _(ordered).indexOf locCard
+    spliceIndex = if location.position == 'above' then 0 else 1
+    ordered.splice (locIndex + spliceIndex), 0, cards...
+    card.set('groupId', @id) for card in cards
+    _(ordered).each (card, index) -> card.set('order', index)
+
+  removeCard: (card, cards, options) =>
+    @cards().each (card, index) -> card.set('order', index)
+    unless options?.rebroadcast
+      @delete options if cards.length == 0
+
+  drag: =>
+    @set 'state', 'dragging'
+
+  drop: =>
+    @unset 'state'
+
+  hover: (location) =>
     @set 'hover', true
+    @cards().each (card) ->
+      if card.id == location.id
+        card.hover location.position
+      else
+        card.blur()
 
   blur: =>
     @set 'hover', false
+    @blurCards()
+
+  blurCards: =>
+    @cards().each (card) -> card.blur()
 
   delete: =>
     groups = @board().groups()

@@ -129,7 +129,14 @@
   &.dragging {
     .opacity(80);
     border: 1px dotted purple;
+    z-index: 99999;
   }
+}
+&.hover-above {
+  border-top: 2px solid black;
+}
+&.hover-below {
+  border-bottom: 2px solid black;
 }
 
 .plus-authors {

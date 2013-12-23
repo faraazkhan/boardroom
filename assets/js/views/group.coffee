@@ -31,9 +31,11 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:y',     @updateY, @
     @model.on 'change:z',     @updateZ, @
     @model.on 'change:hover', @updateHover, @
+    @model.on 'change:state', @updateState, @
 
-    @model.cards().on 'add', @displayNewCard, @
+    @model.cards().on 'add',    @displayNewCard, @
     @model.cards().on 'remove', @removeCard, @
+    @model.cards().on 'sort',   @reorderCards, @
 
   onAttach: =>
     @render()
@@ -68,22 +70,39 @@ class boardroom.views.Group extends boardroom.views.Base
       onMouseMove: =>
         @model.moveTo @left(), @top()
       startedDragging: =>
-        @$el.addClass 'dragging'
+        @model.drag()
       stoppedDragging: =>
-        @$el.removeClass 'dragging'
 
   initializeDroppable: ->
     @$el.droppable
-      threshold: 88
+      priority: 0
       onHover: (event, target) =>
-        @model.hover()
+        location = @dropLocation target
+        @model.hover location
       onBlur: (event, target) =>
-        @model.blur()
+        location = @dropLocation target
+        @model.blur location
       onDrop: (event, target) =>
         id = $(target).attr 'id'
-        @model.dropCard(id)  if $(target).is('.card')
-        @model.dropGroup(id) if $(target).is('.group')
+        location = @dropLocation target
+        @model.dropCard(id, location)  if $(target).is('.card')
+        @model.dropGroup(id, location) if $(target).is('.group')
         @model.blur()
+
+  dropLocation: (target) =>
+    bounds = $(target).bounds()
+    targetId = $(target).attr('id')
+    for cardDiv in @$('.card')
+      id = $(cardDiv).attr('id')
+      unless id == targetId
+        cardBounds = $(cardDiv).bounds()
+        upper = cardBounds.upperHalf().extendUp(6)
+        lower = cardBounds.lowerHalf().extendDown(6)
+        if upper.contains bounds.middle()
+          return { id, position: 'above' }
+        if lower.contains bounds.middle()
+          return { id, position: 'below' }
+    return { id: targetId }
 
   ###
       render
@@ -131,6 +150,11 @@ class boardroom.views.Group extends boardroom.views.Base
       @$el.removeClass 'stackable'
       @updateGroupChrome()
 
+  updateState: (group, state, options) =>
+    previous = group.previous 'state'
+    @$el.removeClass previous if previous
+    @$el.addClass state if state
+
   updateGroupChrome: ->
     if @model.cards().length > 1
       fadeComplete = =>
@@ -160,7 +184,10 @@ class boardroom.views.Group extends boardroom.views.Base
 
   displayCard: (cardView) =>
     @cardViews.push cardView
-    @renderCardInOrder cardView
+    wasFocused = cardView.model.focused
+    @$el.append cardView.el
+    @reorderCards()
+    cardView.focus() if wasFocused
     @updateGroupChrome()
     @resizeHTML()
 
@@ -175,22 +202,13 @@ class boardroom.views.Group extends boardroom.views.Base
     cardView = @findCardView card
     @cardViews.splice @cardViews.indexOf(cardView), 1
 
-  renderCardInOrder: (newCardView) ->
-    newCardDiv = newCardView.el
-    wasFocused = newCardView.model.focused
-
-    divToInsertBefore = null
-    for cardDiv in @$('.card') # identify which card to insert cardView before
-      cardModel = @model.findCard $(cardDiv).attr('id')
-      if cardModel.get('created') > newCardView.model.get('created')
-        divToInsertBefore = cardDiv
-        break
-
-    if divToInsertBefore?
-      $(newCardDiv).insertBefore divToInsertBefore # insert in order
-    else
-      @$el.append(newCardDiv) # put it at the end if this is the last card
-    newCardView.focus() if wasFocused
+  reorderCards: =>
+    @logger.debug 'views.Group.reorderCards()'
+    ordered = _(@$('.card')).sort (a, b) =>
+      cardA = @model.findCard $(a).attr('id')
+      cardB = @model.findCard $(b).attr('id')
+      @model.cardSorter cardA, cardB
+    $(ordered).appendTo @$el
 
   ###
       human interaction event handlers
