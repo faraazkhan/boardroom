@@ -33,7 +33,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:hover', @updateHover, @
     @model.on 'change:state', @updateState, @
 
-    @model.cards().on 'add',    @displayNewCard, @
+    @model.cards().on 'add',    @addCard, @
     @model.cards().on 'remove', @removeCard, @
     @model.cards().on 'sort',   @reorderCards, @
 
@@ -50,7 +50,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initializeCards: =>
     @cardViews = []
-    @model.cards().each @displayNewCard, @
+    @model.cards().each @addCard, @
 
   initializeDraggable: ->
     boardOffset = @$el.closest('.board').offset()
@@ -169,27 +169,12 @@ class boardroom.views.Group extends boardroom.views.Base
       @$('.add-card').hide()
       @$el.addClass('single-card') unless @$el.is('single-card')
 
-  findCardView: (card) =>
-    _(@cardViews).find (cv) => cv.model == card
-
-  displayExistingCard: (cardView) =>
-    @displayCard cardView
-
-  displayNewCard: (card, cards, options) =>
+  addCard: (card, cards, options) =>
     return if options?.movecard
     cardView = new boardroom.views.Card { model: card }
-    @displayCard cardView
+    @displayCardView cardView
     cardView.trigger 'attach'
     cardView.focus() if card.get('creator') == @model.currentUserId()
-
-  displayCard: (cardView) =>
-    @cardViews.push cardView
-    wasFocused = cardView.model.focused
-    @$el.append cardView.el
-    @reorderCards()
-    cardView.focus() if wasFocused
-    @updateGroupChrome()
-    @resizeHTML()
 
   removeCard: (card, cards, options) =>
     unless options?.movecard
@@ -197,6 +182,18 @@ class boardroom.views.Group extends boardroom.views.Base
       @removeCardView card
       cardView.remove()
     @updateGroupChrome()
+
+  findCardView: (card) =>
+    _(@cardViews).find (cv) => cv.model == card
+
+  displayCardView: (cardView) =>
+    @cardViews.push cardView
+    wasFocused = cardView.model.focused
+    @$el.append cardView.el
+    @reorderCards()
+    cardView.focus() if wasFocused
+    @updateGroupChrome()
+    @resizeHTML()
 
   removeCardView: (card) =>
     cardView = @findCardView card
