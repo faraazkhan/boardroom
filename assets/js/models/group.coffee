@@ -5,6 +5,7 @@ class boardroom.models.Group extends Backbone.Model
     name: ''
 
   initialize: (attributes, options) ->
+    @logger = boardroom.utils.Logger.instance
     cards = new Backbone.Collection _.map(attributes?.cards, (card) -> new boardroom.models.Card(card))
     cards.each (card) => card.set 'group', @, { silent: true }
     cards.comparator = @cardSorter
@@ -46,11 +47,13 @@ class boardroom.models.Group extends Backbone.Model
 
   dropCard: (id, location) =>
     card = @board().findCard id
-    @addCards [card], location
+    @logger.debug "models.Group.dropCard: card(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
+    @addCards [card], location unless card.id == location.id
     card.drop()
     @blurCards()
 
   dropGroup: (id, location) =>
+    @logger.debug "models.Group.dropGroup: group(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
     @board().mergeGroups @id, id, location
     @blurCards()
 

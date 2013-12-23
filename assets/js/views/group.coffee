@@ -91,16 +91,18 @@ class boardroom.views.Group extends boardroom.views.Base
 
   dropLocation: (target) =>
     bounds = $(target).bounds()
+    targetId = $(target).attr('id')
     for cardDiv in @$('.card')
       id = $(cardDiv).attr('id')
-      cardBounds = $(cardDiv).bounds()
-      upper = cardBounds.upperHalf().extendUp(6)
-      lower = cardBounds.lowerHalf().extendDown(6)
-      if upper.contains bounds.middle()
-        return { id, position: 'above' }
-      if lower.contains bounds.middle()
-        return { id, position: 'below' }
-    return {}
+      unless id == targetId
+        cardBounds = $(cardDiv).bounds()
+        upper = cardBounds.upperHalf().extendUp(6)
+        lower = cardBounds.lowerHalf().extendDown(6)
+        if upper.contains bounds.middle()
+          return { id, position: 'above' }
+        if lower.contains bounds.middle()
+          return { id, position: 'below' }
+    return { id: targetId }
 
   ###
       render
