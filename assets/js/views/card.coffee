@@ -133,10 +133,10 @@ class boardroom.views.Card extends boardroom.views.Base
       @dragLock.lock(1000, userIdentity.get('avatar'), userIdentity.get('displayName')) if userIdentity?
 
   updateOrder: (card, order, options) =>
-    text = card.get('text')
-    text = text.replace /\d+ - /, ''
-    text = "#{order} - #{text}"
-    @updateText card, text, options
+    #text = card.get('text')
+    #text = text.replace /\d+ - /, ''
+    #text = "#{order} - #{text}"
+    #@updateText card, text, options
 
   updateHover: (card, hover, options) =>
     @$el.removeClassMatching /hover-\w+/

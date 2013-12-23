@@ -19,6 +19,7 @@ class boardroom.models.Group extends Backbone.Model
   currentUserId: -> @board().currentUserId()
 
   cardSorter: (a, b) ->
+    return 0 unless a and b
     orderA = a.get 'order'
     orderB = b.get 'order'
     return orderA - orderB unless orderA == orderB
