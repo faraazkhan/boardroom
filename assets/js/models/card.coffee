@@ -38,9 +38,13 @@ class boardroom.models.Card extends Backbone.Model
     @set 'group', newGroup, { silent: true }
     @drop()
 
+  drag: ->
+    @set 'state', 'dragging'
+
   drop: ->
     @unset 'x'
     @unset 'y'
+    @unset 'state'
     @blur()
 
   type: (text) ->

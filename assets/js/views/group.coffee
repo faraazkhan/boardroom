@@ -31,6 +31,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:y',     @updateY, @
     @model.on 'change:z',     @updateZ, @
     @model.on 'change:hover', @updateHover, @
+    @model.on 'change:state', @updateState, @
 
     @model.cards().on 'add',    @displayNewCard, @
     @model.cards().on 'remove', @removeCard, @
@@ -69,9 +70,8 @@ class boardroom.views.Group extends boardroom.views.Base
       onMouseMove: =>
         @model.moveTo @left(), @top()
       startedDragging: =>
-        @$el.addClass 'dragging'
+        @model.drag()
       stoppedDragging: =>
-        @$el.removeClass 'dragging'
 
   initializeDroppable: ->
     @$el.droppable
@@ -150,6 +150,11 @@ class boardroom.views.Group extends boardroom.views.Base
       @$el.removeClass 'stackable'
       @updateGroupChrome()
 
+  updateState: (group, state, options) =>
+    previous = group.previous 'state'
+    @$el.removeClass previous if previous
+    @$el.addClass state if state
+
   updateGroupChrome: ->
     if @model.cards().length > 1
       fadeComplete = =>
@@ -198,6 +203,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @cardViews.splice @cardViews.indexOf(cardView), 1
 
   reorderCards: =>
+    @logger.debug 'views.Group.reorderCards()'
     ordered = _(@$('.card')).sort (a, b) =>
       cardA = @model.findCard $(a).attr('id')
       cardB = @model.findCard $(b).attr('id')

@@ -74,6 +74,8 @@ class boardroom.models.Board extends Backbone.Model
     @groups().add group
 
   dropGroup: (id) =>
+    group = @findGroup id
+    group.drop()
 
   #
   # Utility functions

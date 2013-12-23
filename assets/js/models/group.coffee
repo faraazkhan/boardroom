@@ -46,15 +46,17 @@ class boardroom.models.Group extends Backbone.Model
     @cards().add card
 
   dropCard: (id, location) =>
-    card = @board().findCard id
     @logger.debug "models.Group.dropCard: card(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
+    card = @board().findCard id
     @addCards [card], location unless card.id == location.id
     card.drop()
     @blurCards()
 
   dropGroup: (id, location) =>
     @logger.debug "models.Group.dropGroup: group(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
+    group = @board().findGroup id
     @board().mergeGroups @id, id, location
+    group.drop()
     @blurCards()
 
   addCards: (cards, location) =>
@@ -72,6 +74,12 @@ class boardroom.models.Group extends Backbone.Model
     @cards().each (card, index) -> card.set('order', index)
     unless options?.rebroadcast
       @delete options if cards.length == 0
+
+  drag: =>
+    @set 'state', 'dragging'
+
+  drop: =>
+    @unset 'state'
 
   hover: (location) =>
     @set 'hover', true
