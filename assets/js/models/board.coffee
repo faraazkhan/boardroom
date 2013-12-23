@@ -58,7 +58,7 @@ class boardroom.models.Board extends Backbone.Model
     parent = @findGroup parentId
     child = @findGroup childId
     childCards = child.get('cards').toArray()
-    parent.addCards childCards, location
+    parent.insertCards childCards, location
     @groups().remove child
 
   dropCard: (id) =>

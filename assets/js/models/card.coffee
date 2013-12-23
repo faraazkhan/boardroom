@@ -9,6 +9,7 @@ class boardroom.models.Card extends Backbone.Model
 
   initialize: (attributes, options) ->
     @.on 'change:groupId', @moveToGroup, @
+    @.on 'change:order',   @sortGroup,   @
 
   group: -> @get 'group'
   board: -> @group().board()
@@ -37,6 +38,9 @@ class boardroom.models.Card extends Backbone.Model
     oldGroup.cards().remove @, moveOptions
     @set 'group', newGroup, { silent: true }
     @drop()
+
+  sortGroup: (card, order, options) =>
+    @group().cards().sort()
 
   drag: ->
     @set 'state', 'dragging'

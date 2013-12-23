@@ -48,7 +48,7 @@ class boardroom.models.Group extends Backbone.Model
   dropCard: (id, location) =>
     @logger.debug "models.Group.dropCard: card(#{id}) -> group(#{@id}) at #{JSON.stringify(location)}"
     card = @board().findCard id
-    @addCards [card], location unless card.id == location.id
+    @insertCards [card], location unless card.id == location.id
     card.drop()
     @blurCards()
 
@@ -59,7 +59,7 @@ class boardroom.models.Group extends Backbone.Model
     group.drop()
     @blurCards()
 
-  addCards: (cards, location) =>
+  insertCards: (cards, location) =>
     ids = _(cards).pluck 'id'
     ordered = @cards().reject (card) -> _(ids).contains(card.id)
     locCard = _(ordered).find (card) -> card.id == location.id
@@ -68,7 +68,6 @@ class boardroom.models.Group extends Backbone.Model
     ordered.splice (locIndex + spliceIndex), 0, cards...
     card.set('groupId', @id) for card in cards
     _(ordered).each (card, index) -> card.set('order', index)
-    @cards().sort()
 
   removeCard: (card, cards, options) =>
     @cards().each (card, index) -> card.set('order', index)
