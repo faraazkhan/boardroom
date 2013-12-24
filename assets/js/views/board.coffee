@@ -78,10 +78,7 @@ class boardroom.views.Board extends boardroom.views.Base
     oldGroupView = @findGroupView oldGroup
     newGroupView = @findGroupView newGroup
     cardView = oldGroupView.findCardView card
-
     newGroupView.displayCardView cardView
-    oldGroupView.removeCardView card
-    oldGroupView.updateGroupChrome()
 
   ###
       human interaction event handlers
