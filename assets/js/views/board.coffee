@@ -19,14 +19,14 @@ class boardroom.views.Board extends boardroom.views.Base
     @model.on 'change:status', @updateStatus, @
     @model.on 'move:card', @moveCard, @
 
-    @model.groups().on 'add', @displayNewGroup, @
+    @model.groups().on 'add', @addGroup, @
     @model.groups().on 'remove', @removeGroup, @
 
     @updateStatus @, @model.get('status')
 
   initializeGroups: ->
     @groupViews = []
-    @model.groups().each @displayNewGroup, @
+    @model.groups().each @addGroup, @
 
   initializeDroppable: ->
     @$el.droppable
@@ -59,7 +59,7 @@ class boardroom.views.Board extends boardroom.views.Base
   findGroupViewByCid: (cid) =>
     _(@groupViews).find (gv) => gv.model.cid == cid
 
-  displayNewGroup: (group, options) =>
+  addGroup: (group, options) =>
     group.set 'board', @model, { silent: true }
     return if @findGroupViewByCid(group.cid)?  # it's already in there +++ update the div's id
     groupView = new boardroom.views.Group { model: group }
@@ -78,10 +78,7 @@ class boardroom.views.Board extends boardroom.views.Base
     oldGroupView = @findGroupView oldGroup
     newGroupView = @findGroupView newGroup
     cardView = oldGroupView.findCardView card
-
-    newGroupView.displayExistingCard cardView
-    oldGroupView.removeCardView card
-    oldGroupView.updateGroupChrome()
+    newGroupView.displayCardView cardView
 
   ###
       human interaction event handlers

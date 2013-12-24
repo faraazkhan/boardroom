@@ -33,7 +33,7 @@ class boardroom.views.Group extends boardroom.views.Base
     @model.on 'change:hover', @updateHover, @
     @model.on 'change:state', @updateState, @
 
-    @model.cards().on 'add',    @displayNewCard, @
+    @model.cards().on 'add',    @addCard, @
     @model.cards().on 'remove', @removeCard, @
     @model.cards().on 'sort',   @reorderCards, @
 
@@ -50,7 +50,7 @@ class boardroom.views.Group extends boardroom.views.Base
 
   initializeCards: =>
     @cardViews = []
-    @model.cards().each @displayNewCard, @
+    @model.cards().each @addCard, @
 
   initializeDraggable: ->
     boardOffset = @$el.closest('.board').offset()
@@ -169,34 +169,30 @@ class boardroom.views.Group extends boardroom.views.Base
       @$('.add-card').hide()
       @$el.addClass('single-card') unless @$el.is('single-card')
 
-  findCardView: (card) =>
-    _(@cardViews).find (cv) => cv.model == card
-
-  displayExistingCard: (cardView) =>
-    @displayCard cardView
-
-  displayNewCard: (card, cards, options) =>
+  addCard: (card, cards, options) =>
     return if options?.movecard
     cardView = new boardroom.views.Card { model: card }
-    @displayCard cardView
+    @displayCardView cardView
     cardView.trigger 'attach'
     cardView.focus() if card.get('creator') == @model.currentUserId()
 
-  displayCard: (cardView) =>
+  removeCard: (card, cards, options) =>
+    cardView = @findCardView card
+    @removeCardView card
+    @updateGroupChrome()
+    cardView.remove() unless options?.movecard
+
+  findCardView: (card) =>
+    _(@cardViews).find (cv) => cv.model == card
+
+  displayCardView: (cardView) =>
     @cardViews.push cardView
-    wasFocused = cardView.model.focused
+    focused = cardView.model.focused
     @$el.append cardView.el
     @reorderCards()
-    cardView.focus() if wasFocused
+    cardView.focus() if focused
     @updateGroupChrome()
     @resizeHTML()
-
-  removeCard: (card, cards, options) =>
-    unless options?.movecard
-      cardView = @findCardView card
-      @removeCardView card
-      cardView.remove()
-    @updateGroupChrome()
 
   removeCardView: (card) =>
     cardView = @findCardView card
@@ -204,11 +200,14 @@ class boardroom.views.Group extends boardroom.views.Base
 
   reorderCards: =>
     @logger.debug 'views.Group.reorderCards()'
+    # re-ordering blurs, so let's re-focus as necessary
+    focused = _(@cardViews).find (cv) -> cv.model.focused
     ordered = _(@$('.card')).sort (a, b) =>
       cardA = @model.findCard $(a).attr('id')
       cardB = @model.findCard $(b).attr('id')
       @model.cardSorter cardA, cardB
     $(ordered).appendTo @$el
+    focused.focus() if focused?
 
   ###
       human interaction event handlers

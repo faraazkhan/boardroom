@@ -61,6 +61,19 @@ class boardroom.models.Board extends Backbone.Model
     parent.insertCards childCards, location
     @groups().remove child
 
+  moveCard: (card, fromGroupId, toGroupId, options) =>
+    fromGroup = @findGroup fromGroupId
+    toGroup   = @findGroup toGroupId
+
+    # note: we MUST add card to toGroup before triggering move:card
+    moveOptions = _(options).extend { movecard: true }
+    toGroup.cards().add card, moveOptions
+    @trigger 'move:card', card, fromGroup, toGroup
+    fromGroup.cards().remove card, moveOptions
+
+    card.set 'group', toGroup, { silent: true }
+    card.drop()
+
   dropCard: (id) =>
     card = @findCard id
     coords =

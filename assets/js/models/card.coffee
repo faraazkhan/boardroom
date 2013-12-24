@@ -8,8 +8,8 @@ class boardroom.models.Card extends Backbone.Model
     colorIndex: 2
 
   initialize: (attributes, options) ->
-    @.on 'change:groupId', @moveToGroup, @
-    @.on 'change:order',   @sortGroup,   @
+    @.on 'change:groupId', @updateGroupId, @
+    @.on 'change:order',   @updateOrder,   @
 
   group: -> @get 'group'
   board: -> @group().board()
@@ -19,27 +19,10 @@ class boardroom.models.Card extends Backbone.Model
   moveTo: (x, y) ->
     @set { x, y }
 
-  # we are doing an optimization.  instead of letting the remove() and add() handle the
-  # move (via listeners in the views), we are making those silent and triggering a
-  # special 'moveToGroup' event.  this will ultimately cause the view to move the existing
-  # div from one group to another instead of removing it and creating another.  this will
-  # allow one person to be typing on a card while another person moves it to a new group
-  # without losing any of the typing.
-  moveToGroup: (card, groupId, options) =>
-    oldGroup = @group()
-    newGroup = @board().findGroup groupId
-    moveOptions = _(options).extend { movecard: true }
+  updateGroupId: (card, groupId, options) =>
+    @board().moveCard card, @group().id, groupId, options
 
-    # we MUST add this card to the new group BEFORE triggering move:card
-    newGroup.cards().add @, moveOptions
-    @board().trigger 'move:card', @, oldGroup, newGroup
-
-    # then we can do the rest of the book keeping
-    oldGroup.cards().remove @, moveOptions
-    @set 'group', newGroup, { silent: true }
-    @drop()
-
-  sortGroup: (card, order, options) =>
+  updateOrder: (card, order, options) =>
     @group().cards().sort()
 
   drag: ->
